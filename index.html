@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOOPMIC - Solo Creator Webtoon Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            900: '#064e3b',
+                            accent: '#8b5cf6',
+                            pink: '#ec4899',
+                            dark: '#0a0d14',
+                            card: '#121722',
+                            border: '#1f293d'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        comic: ['Impact', 'Trebuchet MS', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDKs (Compatibility Libraries for Direct Web Browser Loading) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0d14;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0d14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f293d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+
+        /* Neon Glow Effects */
+        .glow-green {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.35);
+        }
+        .glow-purple {
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.35);
+        }
+        .glow-pink {
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.35);
+        }
+
+        /* Webtoon Panel Stack Animation */
+        .panel-glow:hover {
+            filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.4));
+        }
+
+        .glass-nav {
+            background: rgba(10, 13, 20, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Smooth tab transition */
+        .tab-pane {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .tab-pane.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Reading Progress Bar */
+        #reading-progress {
+            transition: width 0.1s ease-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-16 md:pb-0">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 glass-nav border-b border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                
+                <!-- Logo & Brand -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 via-brand-accent to-brand-pink p-0.5 flex items-center justify-center glow-green">
+                        <div class="w-full h-full bg-brand-dark rounded-[10px] flex items-center justify-center">
+                            <i class="fa-solid fa-bolt text-brand-500 text-lg"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-brand-500 via-emerald-400 to-brand-accent font-comic">SOOPMIC</span>
+                        <span class="hidden sm:inline-block text-[10px] uppercase font-bold tracking-widest text-brand-accent bg-brand-accent/10 px-2 py-0.5 rounded-full border border-brand-accent/20 ml-2">Official Portal</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex items-center space-x-1">
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-brand-500 bg-brand-500/10 border border-brand-500/30 flex items-center space-x-2 transition">
+                        <i class="fa-solid fa-[#10b981] fa-compass"></i>
+                        <span>Explore Comics</span>
+                    </button>
+                    <button onclick="switchTab('bookmarks')" id="nav-bookmarks" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-gray-800/50 flex items-center space-x-2 transition relative">
+                        <i class="fa-solid fa-bookmark"></i>
+                        <span>Bookmarks</span>
+                        <span id="bookmark-badge" class="hidden absolute -top-1 -right-1 bg-brand-500 text-black font-extrabold text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                    </button>
+                    <button onclick="switchTab('likes')" id="nav-likes" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-gray-800/50 flex items-center space-x-2 transition">
+                        <i class="fa-solid fa-heart"></i>
+                        <span>Liked</span>
+                    </button>
+                    <button onclick="switchTab('studio')" id="nav-studio" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-brand-accent hover:text-purple-300 hover:bg-brand-accent/10 flex items-center space-x-2 border border-brand-accent/30 transition ml-2">
+                        <i class="fa-solid fa-lock text-xs"></i>
+                        <span>Author Studio</span>
+                    </button>
+                </nav>
+
+                <!-- Search & Profile Controls -->
+                <div class="flex items-center space-x-3">
+                    <button onclick="openAuthModal()" id="auth-btn" class="px-3 py-1.5 rounded-xl bg-brand-500 text-black font-bold text-xs glow-green transition">
+                        Log In / Verify Email
+                    </button>
+
+                    <button onclick="switchTab('profile')" id="nav-profile" class="flex items-center space-x-2 p-1.5 rounded-xl border border-brand-border bg-brand-card hover:border-brand-500 transition">
+                        <img id="header-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Profile" class="w-8 h-8 rounded-lg object-cover">
+                        <span class="hidden lg:inline text-xs font-semibold text-gray-300 pr-1" id="header-username">Guest</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dynamic Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ================= PAGE 1: READER DASHBOARD ================= -->
+        <section id="page-dashboard" class="tab-pane active space-y-8">
+            
+            <!-- Hero Spotlight Banner -->
+            <div id="hero-carousel" class="relative rounded-2xl overflow-hidden bg-brand-card border border-brand-border min-h-[320px] md:min-h-[400px] flex items-end p-6 md:p-10 shadow-2xl">
+                <div class="absolute inset-0 bg-cover bg-center transition-all duration-700" id="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&auto=format&fit=crop&q=80');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/70 to-transparent"></div>
+                
+                <div class="relative z-10 max-w-2xl space-y-3">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-brand-500 text-black uppercase tracking-wider glow-green">Featured Masterpiece</span>
+                    <h1 id="hero-title" class="text-3xl sm:text-5xl font-extrabold text-white font-comic tracking-wide drop-shadow-md">SOLO LEVELING: ASCENSION</h1>
+                    <p id="hero-desc" class="text-gray-300 text-xs sm:text-sm line-clamp-2 md:line-clamp-3 leading-relaxed">In a world where hunters awaken magical powers, one weak hunter gains an mysterious system that allows him to level up endlessly alone.</p>
+                    <div class="flex items-center space-x-3 pt-2">
+                        <button onclick="openComicDetail('c1')" class="px-6 py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-black font-extrabold text-sm flex items-center space-x-2 transition glow-green">
+                            <i class="fa-solid fa-play"></i>
+                            <span>Read Now</span>
+                        </button>
+                        <button onclick="toggleBookmark('c1')" class="p-3 rounded-xl bg-brand-dark/80 hover:bg-brand-border text-white border border-brand-border transition">
+                            <i class="fa-regular fa-bookmark"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search & Filter Bar -->
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4 bg-brand-card p-4 rounded-2xl border border-brand-border">
+                <div class="relative w-full md:w-96">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                    <input type="text" id="search-input" onkeyup="filterComics()" placeholder="Search title, genre, or character..." class="w-full bg-brand-dark border border-brand-border text-gray-200 text-sm rounded-xl pl-11 pr-4 py-2.5 focus:outline-none focus:border-brand-500 transition">
+                </div>
+
+                <div class="flex items-center space-x-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-none" id="genre-filters">
+                    <button onclick="filterGenre('All')" class="genre-btn active px-4 py-2 rounded-xl text-xs font-bold bg-brand-500 text-black whitespace-nowrap transition">All Works</button>
+                    <button onclick="filterGenre('Action')" class="genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-dark text-gray-400 hover:text-white border border-brand-border whitespace-nowrap transition">Action</button>
+                    <button onclick="filterGenre('Fantasy')" class="genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-dark text-gray-400 hover:text-white border border-brand-border whitespace-nowrap transition">Fantasy</button>
+                    <button onclick="filterGenre('Sci-Fi')" class="genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-dark text-gray-400 hover:text-white border border-brand-border whitespace-nowrap transition">Sci-Fi</button>
+                    <button onclick="filterGenre('Romance')" class="genre-btn px-4 py-2 rounded-xl text-xs font-bold bg-brand-dark text-gray-400 hover:text-white border border-brand-border whitespace-nowrap transition">Romance</button>
+                </div>
+            </div>
+
+            <!-- Author's Showcase Gallery Grid -->
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white font-comic tracking-wide">MY COMIC CATALOGUE</h2>
+                        <p class="text-xs text-gray-400">All original series created and published by Author</p>
+                    </div>
+                    <span class="text-xs font-semibold text-brand-500 bg-brand-500/10 px-3 py-1 rounded-full border border-brand-500/20" id="comic-count">3 Works</span>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6" id="comic-grid">
+                    <!-- Populated Dynamically JS -->
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================= PAGE 2: COMIC DETAIL & CHAPTERS MODAL/VIEW ================= -->
+        <section id="page-detail" class="tab-pane space-y-6">
+            <button onclick="switchTab('dashboard')" class="text-xs text-gray-400 hover:text-brand-500 flex items-center space-x-2 transition mb-4">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Back to Catalogue</span>
+            </button>
+
+            <!-- Detail Header -->
+            <div class="bg-brand-card border border-brand-border rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-8">
+                <img id="detail-cover" src="" alt="Cover" class="w-full md:w-64 h-80 object-cover rounded-xl border border-brand-border shadow-xl">
+                
+                <div class="flex-grow space-y-4">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span id="detail-genre" class="px-3 py-1 rounded-full text-xs font-bold bg-brand-accent/20 text-brand-accent border border-brand-accent/30">Genre</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-brand-500/20 text-brand-500 border border-brand-500/30">Official Author Original</span>
+                    </div>
+
+                    <h1 id="detail-title" class="text-3xl md:text-4xl font-extrabold text-white font-comic">Comic Title</h1>
+                    <p id="detail-desc" class="text-gray-300 text-sm leading-relaxed">Comic Description goes here...</p>
+                    
+                    <!-- Creator Badge -->
+                    <div class="flex items-center space-x-3 p-3 bg-brand-dark rounded-xl border border-brand-border w-fit">
+                        <div class="w-8 h-8 rounded-full bg-brand-accent/20 flex items-center justify-center text-brand-accent text-xs font-bold">
+                            <i class="fa-solid fa-pen-nib"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-gray-400 block uppercase font-bold">Written & Drawn By</span>
+                            <span class="text-xs font-bold text-white">Author (Sole Creator)</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex items-center space-x-4 pt-2">
+                        <button id="detail-like-btn" onclick="toggleLikeCurrent()" class="px-5 py-2.5 rounded-xl bg-brand-dark hover:bg-rose-950/30 text-rose-500 border border-rose-500/30 text-xs font-bold flex items-center space-x-2 transition">
+                            <i class="fa-regular fa-heart"></i>
+                            <span id="detail-like-text">Like Comic</span>
+                        </button>
+                        <button id="detail-bookmark-btn" onclick="toggleBookmarkCurrent()" class="px-5 py-2.5 rounded-xl bg-brand-dark hover:bg-brand-500/10 text-brand-500 border border-brand-500/30 text-xs font-bold flex items-center space-x-2 transition">
+                            <i class="fa-regular fa-bookmark"></i>
+                            <span id="detail-bookmark-text">Bookmark (Email Verification Required)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cast & Character Section -->
+            <div class="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
+                <h3 class="text-lg font-bold text-white font-comic flex items-center space-x-2">
+                    <i class="fa-solid fa-users text-brand-500"></i>
+                    <span>CHARACTERS & LORE</span>
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="detail-characters">
+                    <!-- Dynamic Character Cards -->
+                </div>
+            </div>
+
+            <!-- Chapter List & Discussion -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Episode Selector -->
+                <div class="lg:col-span-2 bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
+                    <h3 class="text-lg font-bold text-white font-comic flex items-center justify-between">
+                        <span>RELEASED EPISODES</span>
+                        <span class="text-xs font-normal text-gray-400">Vertical Webtoon & Page Mode</span>
+                    </h3>
+                    <div class="space-y-3" id="detail-episodes">
+                        <!-- Dynamic Chapters -->
+                    </div>
+                </div>
+
+                <!-- Comment Section -->
+                <div class="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
+                    <h3 class="text-lg font-bold text-white font-comic flex items-center space-x-2">
+                        <i class="fa-solid fa-comments text-brand-accent"></i>
+                        <span>READER DISCUSSION</span>
+                    </h3>
+                    
+                    <!-- Comment Input Box -->
+                    <div class="space-y-2">
+                        <textarea id="comment-input" rows="3" placeholder="Share your thoughts on this chapter..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-gray-200 focus:outline-none focus:border-brand-500 transition resize-none"></textarea>
+                        <button onclick="postComment()" class="w-full py-2 bg-brand-500 hover:bg-brand-600 text-black font-extrabold text-xs rounded-xl transition glow-green">Post Comment</button>
+                    </div>
+
+                    <!-- Comment List -->
+                    <div class="space-y-3 max-h-80 overflow-y-auto pr-1" id="comment-list">
+                        <!-- Dynamic Comments -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 3: READING MODE (SCROLL VS PAGE MODES) ================= -->
+        <section id="page-reader" class="tab-pane">
+            <!-- Reader Control Header Bar -->
+            <div class="sticky top-16 z-30 bg-brand-dark/95 border-b border-brand-border py-3 px-4 flex flex-wrap items-center justify-between gap-2">
+                <button onclick="closeReader()" class="text-xs text-gray-400 hover:text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-chevron-left"></i>
+                    <span>Exit Reader</span>
+                </button>
+                
+                <span id="reader-chapter-title" class="text-xs font-bold text-brand-500 truncate max-w-[180px] sm:max-w-xs">Chapter Title</span>
+
+                <!-- Mode Toggle -->
+                <div class="flex items-center bg-brand-card p-1 rounded-xl border border-brand-border">
+                    <button id="mode-scroll-btn" onclick="setReaderMode('scroll')" class="px-3 py-1 rounded-lg text-xs font-bold text-white bg-brand-500/20 border border-brand-500/30 flex items-center space-x-1 transition">
+                        <i class="fa-solid fa-arrows-up-down text-[10px]"></i>
+                        <span>Scroll</span>
+                    </button>
+                    <button id="mode-page-btn" onclick="setReaderMode('page')" class="px-3 py-1 rounded-lg text-xs font-bold text-gray-400 hover:text-white flex items-center space-x-1 transition">
+                        <i class="fa-solid fa-book-open text-[10px]"></i>
+                        <span>Page Mode</span>
+                    </button>
+                </div>
+
+                <!-- Navigation Controls for Reader -->
+                <div class="flex items-center space-x-2">
+                    <button onclick="prevChapter()" class="p-2 bg-brand-card rounded-lg text-xs text-gray-300 hover:text-white" title="Previous Chapter"><i class="fa-solid fa-angles-left"></i></button>
+                    <button onclick="nextChapter()" class="p-2 bg-brand-card rounded-lg text-xs text-gray-300 hover:text-white" title="Next Chapter"><i class="fa-solid fa-angles-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Reading Progress bar -->
+            <div class="w-full bg-brand-border h-1 sticky top-[113px] z-30">
+                <div id="reading-progress" class="bg-brand-500 h-1 w-0"></div>
+            </div>
+
+            <!-- VIEW 1: SCROLL MODE CONTAINER -->
+            <div id="reader-scroll-container" class="max-w-2xl mx-auto py-6 space-y-0 text-center">
+                <!-- Stacked Panel Images dynamically loaded -->
+            </div>
+
+            <!-- VIEW 2: PAGE-BY-PAGE CLICK / ARROW MODE CONTAINER -->
+            <div id="reader-page-container" class="max-w-2xl mx-auto py-6 hidden flex-col items-center space-y-4">
+                
+                <!-- Page Progress Indicator -->
+                <div class="flex items-center justify-between w-full px-4 text-xs text-gray-400">
+                    <span id="page-counter">Panel 1 of 1</span>
+                    <span class="text-[10px] text-brand-500">Use ← → Keyboard Arrows or Click Buttons</span>
+                </div>
+
+                <!-- Upper Navigation Buttons -->
+                <div class="flex items-center justify-between w-full px-2 gap-2">
+                    <button onclick="prevPagePanel()" class="flex-1 py-2 bg-brand-card hover:bg-brand-border border border-brand-border rounded-xl text-xs font-bold text-gray-300 hover:text-white transition flex items-center justify-center space-x-1">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Prev Panel</span>
+                    </button>
+                    <button onclick="nextPagePanel()" class="flex-1 py-2 bg-brand-500 hover:bg-brand-600 rounded-xl text-xs font-extrabold text-black transition glow-green flex items-center justify-center space-x-1">
+                        <span>Next Panel</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- Page Panel Frame -->
+                <div class="relative w-full rounded-xl overflow-hidden border border-brand-border bg-black group shadow-2xl">
+                    <img id="single-panel-img" src="" class="w-full h-auto object-contain max-h-[75vh]" alt="Comic Panel">
+                    
+                    <div onclick="prevPagePanel()" class="absolute left-0 top-0 bottom-0 w-1/4 bg-gradient-to-r from-black/40 to-transparent opacity-0 group-hover:opacity-100 cursor-pointer flex items-center justify-start pl-4 transition">
+                        <i class="fa-solid fa-chevron-left text-2xl text-white drop-shadow"></i>
+                    </div>
+                    <div onclick="nextPagePanel()" class="absolute right-0 top-0 bottom-0 w-1/4 bg-gradient-to-l from-black/40 to-transparent opacity-0 group-hover:opacity-100 cursor-pointer flex items-center justify-end pr-4 transition">
+                        <i class="fa-solid fa-chevron-right text-2xl text-white drop-shadow"></i>
+                    </div>
+                </div>
+
+                <!-- Lower Navigation Buttons -->
+                <div class="flex items-center justify-between w-full px-2 gap-2 pt-2">
+                    <button onclick="prevPagePanel()" class="flex-1 py-2.5 bg-brand-card hover:bg-brand-border border border-brand-border rounded-xl text-xs font-bold text-gray-300 hover:text-white transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Previous Panel</span>
+                    </button>
+                    <button onclick="nextPagePanel()" class="flex-1 py-2.5 bg-brand-500 hover:bg-brand-600 rounded-xl text-xs font-extrabold text-black transition glow-green flex items-center justify-center space-x-2">
+                        <span>Next Panel</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- End of Chapter Footer -->
+            <div class="max-w-2xl mx-auto py-10 px-4 text-center space-y-4 border-t border-brand-border mt-8">
+                <h4 class="text-lg font-bold text-white font-comic">You reached the end of this chapter!</h4>
+                <div class="flex justify-center space-x-4">
+                    <button onclick="prevChapter()" class="px-6 py-2.5 rounded-xl bg-brand-card hover:bg-brand-border text-xs font-bold text-white transition">Previous Episode</button>
+                    <button onclick="nextChapter()" class="px-6 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-xs font-extrabold text-black transition glow-green">Next Episode</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 4: BOOKMARKS ================= -->
+        <section id="page-bookmarks" class="tab-pane space-y-6">
+            <div>
+                <h2 class="text-2xl font-bold text-white font-comic">MY BOOKMARKED COMICS</h2>
+                <p class="text-xs text-gray-400">Series saved for quick reading access</p>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6" id="bookmark-grid">
+                <!-- Dynamic Bookmarks -->
+            </div>
+        </section>
+
+        <!-- ================= PAGE 5: LIKED COMICS ================= -->
+        <section id="page-likes" class="tab-pane space-y-6">
+            <div>
+                <h2 class="text-2xl font-bold text-white font-comic">LIKED SERIES</h2>
+                <p class="text-xs text-gray-400">Comics you have given love and appreciation</p>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6" id="likes-grid">
+                <!-- Dynamic Likes -->
+            </div>
+        </section>
+
+        <!-- ================= PAGE 6: AUTHOR CREATOR STUDIO (ADMIN ONLY) ================= -->
+        <section id="page-studio" class="tab-pane space-y-8">
+            <div id="admin-lock-screen" class="p-8 bg-brand-card border border-brand-border rounded-2xl text-center space-y-4">
+                <i class="fa-solid fa-lock text-4xl text-brand-accent"></i>
+                <h2 class="text-2xl font-bold text-white font-comic">AUTHOR ACCESS RESTRICTED</h2>
+                <p class="text-xs text-gray-400">Only the platform author account can publish comics and access creator studio tools.</p>
+                <button onclick="openAuthModal()" class="px-6 py-2.5 bg-brand-accent text-white font-bold text-xs rounded-xl glow-purple">Sign In as Admin Author</button>
+            </div>
+
+            <div id="admin-studio-content" class="hidden space-y-6">
+                <div class="bg-gradient-to-r from-brand-accent/20 via-purple-900/10 to-brand-card p-6 md:p-8 rounded-2xl border border-brand-accent/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div class="space-y-2">
+                        <span class="px-3 py-1 rounded-full text-[10px] font-bold bg-brand-accent text-white uppercase tracking-wider">Solo Creator Space</span>
+                        <h1 class="text-3xl font-extrabold text-white font-comic">AUTHOR'S CREATIVE STUDIO</h1>
+                        <p class="text-gray-300 text-xs max-w-xl">Publish new comics, add vertical strip episodes, and track your reader analytics directly.</p>
+                    </div>
+                    <button onclick="openPublishModal()" class="px-6 py-3 rounded-xl bg-brand-accent hover:bg-purple-600 text-white font-bold text-xs flex items-center space-x-2 transition glow-purple">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Publish New Series</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="bg-brand-card border border-brand-border p-4 rounded-xl space-y-1">
+                        <span class="text-xs text-gray-400 font-semibold">Total Views</span>
+                        <p class="text-2xl font-bold text-brand-500 font-comic">128.4K</p>
+                    </div>
+                    <div class="bg-brand-card border border-brand-border p-4 rounded-xl space-y-1">
+                        <span class="text-xs text-gray-400 font-semibold">Total Likes</span>
+                        <p class="text-2xl font-bold text-brand-pink font-comic">42.1K</p>
+                    </div>
+                    <div class="bg-brand-card border border-brand-border p-4 rounded-xl space-y-1">
+                        <span class="text-xs text-gray-400 font-semibold">Subscribers</span>
+                        <p class="text-2xl font-bold text-brand-accent font-comic">8.9K</p>
+                    </div>
+                    <div class="bg-brand-card border border-brand-border p-4 rounded-xl space-y-1">
+                        <span class="text-xs text-gray-400 font-semibold">Published Works</span>
+                        <p class="text-2xl font-bold text-white font-comic" id="studio-work-count">3</p>
+                    </div>
+                </div>
+
+                <div class="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
+                    <h3 class="text-lg font-bold text-white font-comic">MANAGE YOUR WORKS</h3>
+                    <div class="divide-y divide-brand-border" id="studio-comic-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 7: USER PROFILE ================= -->
+        <section id="page-profile" class="tab-pane space-y-6">
+            <div class="max-w-xl mx-auto bg-brand-card border border-brand-border rounded-2xl p-6 md:p-8 space-y-6">
+                <h2 class="text-2xl font-bold text-white font-comic text-center">READER PROFILE</h2>
+                
+                <div class="flex flex-col items-center space-y-4">
+                    <div class="relative group">
+                        <img id="profile-avatar-preview" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="w-24 h-24 rounded-2xl object-cover border-2 border-brand-500 shadow-lg">
+                        <label class="absolute inset-0 bg-black/60 rounded-2xl opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs font-bold text-white cursor-pointer transition">
+                            <i class="fa-solid fa-camera mr-1"></i> Change
+                            <input type="file" id="avatar-input" accept="image/*" class="hidden" onchange="updateProfileAvatar(this)">
+                        </label>
+                    </div>
+                    <p class="text-[11px] text-gray-400">Supports PNG, JPG, or PDF previews</p>
+                </div>
+
+                <div class="space-y-4 pt-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Display Name</label>
+                        <input type="text" id="profile-name-input" value="Reader" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Email Address (For Chapter Alerts)</label>
+                        <input type="email" id="profile-email-input" placeholder="user@example.com" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                    <button onclick="saveProfile()" class="w-full py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-black font-extrabold text-xs transition glow-green">Save Profile Changes</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Touch Nav Bar for Mobile -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-brand-dark/95 border-t border-brand-border py-2 px-4 flex justify-around items-center backdrop-blur-md">
+        <button onclick="switchTab('dashboard')" class="flex flex-col items-center space-y-1 text-brand-500">
+            <i class="fa-solid fa-compass text-base"></i>
+            <span class="text-[10px]">Explore</span>
+        </button>
+        <button onclick="switchTab('bookmarks')" class="flex flex-col items-center space-y-1 text-gray-400">
+            <i class="fa-solid fa-bookmark text-base"></i>
+            <span class="text-[10px]">Saved</span>
+        </button>
+        <button onclick="switchTab('likes')" class="flex flex-col items-center space-y-1 text-gray-400">
+            <i class="fa-solid fa-heart text-base"></i>
+            <span class="text-[10px]">Likes</span>
+        </button>
+        <button onclick="switchTab('studio')" class="flex flex-col items-center space-y-1 text-brand-accent">
+            <i class="fa-solid fa-feather-pointed text-base"></i>
+            <span class="text-[10px]">Studio</span>
+        </button>
+        <button onclick="switchTab('profile')" class="flex flex-col items-center space-y-1 text-gray-400">
+            <i class="fa-solid fa-user text-base"></i>
+            <span class="text-[10px]">Profile</span>
+        </button>
+    </div>
+
+    <!-- MODAL 1: AUTHENTICATION & EMAIL VERIFICATION -->
+    <div id="modal-auth" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-md w-full space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold text-white font-comic">USER ACCOUNT & VERIFICATION</h3>
+                <button onclick="closeModal('modal-auth')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <p class="text-xs text-gray-300">To bookmark series or receive email chapter notifications, please create an account and click the verification link sent to your inbox.</p>
+            
+            <input type="email" id="auth-email" placeholder="Your Email Address" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-500">
+            <input type="password" id="auth-pass" placeholder="Password" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-500">
+            
+            <div class="flex gap-2">
+                <button onclick="handleRegister()" class="flex-1 py-3 bg-brand-500 text-black font-extrabold text-xs rounded-xl glow-green">Register & Send Link</button>
+                <button onclick="handleLogin()" class="flex-1 py-3 bg-brand-dark border border-brand-border text-white font-bold text-xs rounded-xl">Log In</button>
+            </div>
+            <p id="auth-status" class="text-[11px] text-brand-pink font-semibold text-center"></p>
+        </div>
+    </div>
+
+    <!-- MODAL 2: PUBLISH COMIC -->
+    <div id="modal-publish" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-lg w-full space-y-4 my-8">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold text-white font-comic">PUBLISH NEW WORK</h3>
+                <button onclick="closeModal('modal-publish')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Comic Title</label>
+                    <input type="text" id="pub-title" placeholder="e.g. Cyberpunk Ninja" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Genre</label>
+                    <select id="pub-genre" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
+                        <option>Action</option>
+                        <option>Fantasy</option>
+                        <option>Sci-Fi</option>
+                        <option>Romance</option>
+                        <option>Slice of Life</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Cover Image URL</label>
+                    <input type="text" id="pub-cover" placeholder="https://..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Description</label>
+                    <textarea id="pub-desc" rows="3" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white resize-none"></textarea>
+                </div>
+            </div>
+            <button onclick="publishNewComic()" class="w-full py-3 bg-brand-accent text-white font-bold text-xs rounded-xl glow-purple">Publish Comic Series</button>
+        </div>
+    </div>
+
+    <!-- Application Script Logic -->
+    <script>
+        // Set your AUTHOR/ADMIN email address here:
+        const ADMIN_EMAIL = "shahidah@soopmic.com"; // Replace with your personal admin email address
+
+        // YOUR FIREBASE CONFIGURATION INTEGRATED
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzxh8Y5boz4uezZOMb2bwxJtagaAcwbgI",
+            authDomain: "soopmic-16076.firebaseapp.com",
+            projectId: "soopmic-16076",
+            storageBucket: "soopmic-16076.firebasestorage.app",
+            messagingSenderId: "1038536806743",
+            appId: "1:1038536806743:web:a2c6e61f9e51c9b562ee12",
+            measurementId: "G-QS04G4KP35"
+        };
+
+        // Initialize Firebase
+        if (typeof firebase !== 'undefined' && firebase.apps && !firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        let currentUser = null;
+        let comics = [
+            {
+                id: 'c1',
+                title: 'SOLO LEVELING: ASCENSION',
+                genre: 'Fantasy',
+                cover: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop&q=80',
+                desc: 'In a world where gates opened connecting monsters and humans, weak hunter Jinwoo awakens an exclusive quest log system allowing him to level up without limits.',
+                likes: 1420,
+                characters: [
+                    { name: 'Jinwoo', role: 'Protagonist', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80' },
+                    { name: 'Cha Hae-In', role: 'S-Rank Hunter', img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80' }
+                ],
+                episodes: [
+                    { id: 'c1-e1', title: 'Chapter 1: The Double Dungeon', date: 'Oct 10, 2026', panels: ['https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80', 'https://images.unsplash.com/photo-1563089145-599997674d42?w=800&auto=format&fit=crop&q=80'] },
+                    { id: 'c1-e2', title: 'Chapter 2: Awakening System', date: 'Oct 14, 2026', panels: ['https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=800&auto=format&fit=crop&q=80'] }
+                ],
+                comments: [
+                    { user: 'Kael', text: 'The art quality is insane! Author did amazing!', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80' }
+                ]
+            },
+            {
+                id: 'c2',
+                title: 'NEON RUNNER 2099',
+                genre: 'Sci-Fi',
+                cover: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600&auto=format&fit=crop&q=80',
+                desc: 'A cybernetically enhanced courier uncovers a mega-corp conspiracy in the neon-drenched streets of future Tokyo.',
+                likes: 890,
+                characters: [
+                    { name: 'Ryn', role: 'Cyber Courier', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' }
+                ],
+                episodes: [
+                    { id: 'c2-e1', title: 'Chapter 1: High Speed Delivery', date: 'Sep 28, 2026', panels: ['https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80'] }
+                ],
+                comments: []
+            },
+            {
+                id: 'c3',
+                title: 'FLAMES OF ELDORIA',
+                genre: 'Action',
+                cover: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=80',
+                desc: 'An exiled prince masters elemental flame alchemy to reclaim his stolen dragon kingdom.',
+                likes: 2150,
+                characters: [
+                    { name: 'Ignis', role: 'Flame Prince', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80' }
+                ],
+                episodes: [
+                    { id: 'c3-e1', title: 'Chapter 1: The Ashen Exile', date: 'Aug 15, 2026', panels: ['https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&auto=format&fit=crop&q=80'] }
+                ],
+                comments: []
+            }
+        ];
+
+        let bookmarks = JSON.parse(localStorage.getItem('soopmic_bookmarks') || '[]');
+        let likes = JSON.parse(localStorage.getItem('soopmic_likes') || '[]');
+        let currentComicId = null;
+        let currentChapterIndex = 0;
+        let currentPanelIndex = 0;
+        let currentReaderMode = 'scroll';
+        let userProfile = JSON.parse(localStorage.getItem('soopmic_profile') || '{"name":"Reader","avatar":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80","email":""}');
+
+        document.addEventListener("DOMContentLoaded", () => {
+            renderComicGrid(comics);
+            updateBookmarkBadge();
+            loadProfileState();
+            setupScrollListener();
+            setupKeyboardNav();
+
+            if (typeof firebase !== 'undefined' && firebase.auth) {
+                firebase.auth().onAuthStateChanged(user => {
+                    currentUser = user;
+                    updateUserUI();
+                });
+            }
+        });
+
+        function updateUserUI() {
+            const authBtn = document.getElementById('auth-btn');
+            const usernameSpan = document.getElementById('header-username');
+            const adminLock = document.getElementById('admin-lock-screen');
+            const adminContent = document.getElementById('admin-studio-content');
+
+            if (currentUser) {
+                if (!currentUser.emailVerified) {
+                    authBtn.innerText = "Email Unverified (Click)";
+                    usernameSpan.innerText = currentUser.email + " (Unverified)";
+                } else {
+                    authBtn.innerText = "Log Out";
+                    usernameSpan.innerText = currentUser.email;
+                }
+
+                if (currentUser.email === ADMIN_EMAIL && currentUser.emailVerified) {
+                    adminLock.classList.add('hidden');
+                    adminContent.classList.remove('hidden');
+                } else {
+                    adminLock.classList.remove('hidden');
+                    adminContent.classList.add('hidden');
+                }
+            } else {
+                authBtn.innerText = "Log In / Verify Email";
+                usernameSpan.innerText = "Guest";
+                adminLock.classList.remove('hidden');
+                adminContent.classList.add('hidden');
+            }
+        }
+
+        function handleRegister() {
+            const email = document.getElementById('auth-email').value.trim();
+            const pass = document.getElementById('auth-pass').value.trim();
+            const status = document.getElementById('auth-status');
+
+            if (!email || !pass) {
+                status.innerText = "Please enter an email and password.";
+                return;
+            }
+
+            firebase.auth().createUserWithEmailAndPassword(email, pass)
+                .then(userCredential => {
+                    return userCredential.user.sendEmailVerification();
+                })
+                .then(() => {
+                    status.innerText = "Verification link sent! Please check your email inbox and click the verification link.";
+                })
+                .catch(err => {
+                    status.innerText = err.message;
+                });
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('auth-email').value.trim();
+            const pass = document.getElementById('auth-pass').value.trim();
+            const status = document.getElementById('auth-status');
+
+            if (!email || !pass) {
+                status.innerText = "Please enter your email and password.";
+                return;
+            }
+
+            firebase.auth().signInWithEmailAndPassword(email, pass)
+                .then(userCredential => {
+                    if (!userCredential.user.emailVerified) {
+                        status.innerText = "Your email is not verified yet. Please check your inbox for the link.";
+                    } else {
+                        closeModal('modal-auth');
+                        alert("Logged in successfully with verified email!");
+                    }
+                })
+                .catch(err => { status.innerText = err.message; });
+        }
+
+        function toggleBookmarkCurrent() {
+            if (!currentUser) {
+                alert("Please log in and verify your email address to bookmark comics!");
+                openAuthModal();
+                return;
+            }
+            if (!currentUser.emailVerified) {
+                alert("Email verification required! Please open the link sent to your email inbox before bookmarking.");
+                return;
+            }
+            if (currentComicId) {
+                toggleBookmark(currentComicId);
+                alert("Comic bookmarked! You will receive email notifications for new chapters.");
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById(`page-${tabId}`);
+            if (target) target.classList.add('active');
+
+            if (tabId === 'bookmarks') renderBookmarks();
+            if (tabId === 'likes') renderLikes();
+            if (tabId === 'studio') renderStudioWorks();
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderComicGrid(list) {
+            const grid = document.getElementById('comic-grid');
+            document.getElementById('comic-count').innerText = `${list.length} Works`;
+            grid.innerHTML = list.map(c => `
+                <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden group hover:border-brand-500/50 transition duration-300 cursor-pointer flex flex-col" onclick="openComicDetail('${c.id}')">
+                    <div class="relative aspect-[3/4] overflow-hidden">
+                        <img src="${c.cover}" alt="${c.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute top-2 right-2 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-md text-[10px] font-bold text-brand-500">${c.genre}</div>
+                    </div>
+                    <div class="p-3 flex-grow flex flex-col justify-between space-y-2">
+                        <h3 class="font-bold text-xs sm:text-sm text-white group-hover:text-brand-500 transition line-clamp-1">${c.title}</h3>
+                        <div class="flex items-center justify-between text-[10px] text-gray-400">
+                            <span><i class="fa-solid fa-heart text-rose-500 mr-1"></i>${c.likes}</span>
+                            <span>${c.episodes.length} Ch</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openComicDetail(comicId) {
+            currentComicId = comicId;
+            const comic = comics.find(c => c.id === comicId);
+            if (!comic) return;
+
+            document.getElementById('detail-cover').src = comic.cover;
+            document.getElementById('detail-title').innerText = comic.title;
+            document.getElementById('detail-genre').innerText = comic.genre;
+            document.getElementById('detail-desc').innerText = comic.desc;
+
+            document.getElementById('detail-characters').innerHTML = comic.characters.map(ch => `
+                <div class="bg-brand-dark p-2.5 rounded-xl border border-brand-border flex items-center space-x-2">
+                    <img src="${ch.img}" class="w-10 h-10 rounded-lg object-cover">
+                    <div>
+                        <h4 class="text-xs font-bold text-white">${ch.name}</h4>
+                        <span class="text-[10px] text-gray-400">${ch.role}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('detail-episodes').innerHTML = comic.episodes.map((ep, idx) => `
+                <div onclick="openReader('${comic.id}', ${idx})" class="bg-brand-dark p-3 rounded-xl border border-brand-border hover:border-brand-500 flex items-center justify-between cursor-pointer transition">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-play text-brand-500 text-xs"></i>
+                        <span class="text-xs font-bold text-gray-200">${ep.title}</span>
+                    </div>
+                    <span class="text-[10px] text-gray-500">${ep.date}</span>
+                </div>
+            `).join('');
+
+            renderComments(comic);
+            switchTab('detail');
+        }
+
+        function renderComments(comic) {
+            document.getElementById('comment-list').innerHTML = comic.comments.map(cm => `
+                <div class="bg-brand-dark p-2.5 rounded-xl border border-brand-border space-y-1">
+                    <div class="flex items-center space-x-2">
+                        <img src="${cm.avatar}" class="w-5 h-5 rounded-full object-cover">
+                        <span class="text-[11px] font-bold text-brand-500">${cm.user}</span>
+                    </div>
+                    <p class="text-[11px] text-gray-300">${cm.text}</p>
+                </div>
+            `).join('');
+        }
+
+        function postComment() {
+            const input = document.getElementById('comment-input');
+            if (!input.value.trim() || !currentComicId) return;
+
+            const comic = comics.find(c => c.id === currentComicId);
+            comic.comments.unshift({
+                user: userProfile.name,
+                avatar: userProfile.avatar,
+                text: input.value.trim()
+            });
+
+            input.value = '';
+            renderComments(comic);
+        }
+
+        function openReader(comicId, chapterIdx) {
+            const comic = comics.find(c => c.id === comicId);
+            if (!comic || !comic.episodes[chapterIdx]) return;
+
+            currentComicId = comicId;
+            currentChapterIndex = chapterIdx;
+            currentPanelIndex = 0;
+            const chapter = comic.episodes[chapterIdx];
+
+            document.getElementById('reader-chapter-title').innerText = `${comic.title} - ${chapter.title}`;
+            
+            document.getElementById('reader-scroll-container').innerHTML = chapter.panels.map(pUrl => `
+                <img src="${pUrl}" class="w-full h-auto object-cover rounded-md panel-glow mb-2" alt="Webtoon Panel">
+            `).join('');
+
+            applyReaderView();
+            switchTab('reader');
+        }
+
+        function setReaderMode(mode) {
+            currentReaderMode = mode;
+            const scrollBtn = document.getElementById('mode-scroll-btn');
+            const pageBtn = document.getElementById('mode-page-btn');
+
+            if (mode === 'scroll') {
+                scrollBtn.className = "px-3 py-1 rounded-lg text-xs font-bold text-white bg-brand-500/20 border border-brand-500/30 flex items-center space-x-1 transition";
+                pageBtn.className = "px-3 py-1 rounded-lg text-xs font-bold text-gray-400 hover:text-white flex items-center space-x-1 transition";
+            } else {
+                pageBtn.className = "px-3 py-1 rounded-lg text-xs font-bold text-white bg-brand-500/20 border border-brand-500/30 flex items-center space-x-1 transition";
+                scrollBtn.className = "px-3 py-1 rounded-lg text-xs font-bold text-gray-400 hover:text-white flex items-center space-x-1 transition";
+            }
+
+            applyReaderView();
+        }
+
+        function applyReaderView() {
+            const scrollBox = document.getElementById('reader-scroll-container');
+            const pageBox = document.getElementById('reader-page-container');
+
+            if (currentReaderMode === 'scroll') {
+                scrollBox.classList.remove('hidden');
+                pageBox.classList.add('hidden');
+                pageBox.classList.remove('flex');
+            } else {
+                scrollBox.classList.add('hidden');
+                pageBox.classList.remove('hidden');
+                pageBox.classList.add('flex');
+                updatePagePanelDisplay();
+            }
+        }
+
+        function updatePagePanelDisplay() {
+            const comic = comics.find(c => c.id === currentComicId);
+            if (!comic || !comic.episodes[currentChapterIndex]) return;
+
+            const panels = comic.episodes[currentChapterIndex].panels;
+            if (currentPanelIndex >= panels.length) currentPanelIndex = panels.length - 1;
+            if (currentPanelIndex < 0) currentPanelIndex = 0;
+
+            document.getElementById('single-panel-img').src = panels[currentPanelIndex];
+            document.getElementById('page-counter').innerText = `Panel ${currentPanelIndex + 1} of ${panels.length}`;
+
+            const progress = ((currentPanelIndex + 1) / panels.length) * 100;
+            document.getElementById('reading-progress').style.width = progress + '%';
+        }
+
+        function nextPagePanel() {
+            const comic = comics.find(c => c.id === currentComicId);
+            if (!comic || !comic.episodes[currentChapterIndex]) return;
+
+            const panels = comic.episodes[currentChapterIndex].panels;
+            if (currentPanelIndex < panels.length - 1) {
+                currentPanelIndex++;
+                updatePagePanelDisplay();
+            } else {
+                nextChapter();
+            }
+        }
+
+        function prevPagePanel() {
+            if (currentPanelIndex > 0) {
+                currentPanelIndex--;
+                updatePagePanelDisplay();
+            } else {
+                prevChapter();
+            }
+        }
+
+        function closeReader() { switchTab('detail'); }
+
+        function nextChapter() {
+            const comic = comics.find(c => c.id === currentComicId);
+            if (comic && currentChapterIndex < comic.episodes.length - 1) {
+                openReader(currentComicId, currentChapterIndex + 1);
+            }
+        }
+
+        function prevChapter() {
+            if (currentChapterIndex > 0) {
+                openReader(currentComicId, currentChapterIndex - 1);
+            }
+        }
+
+        function toggleBookmark(id) {
+            if (bookmarks.includes(id)) {
+                bookmarks = bookmarks.filter(item => item !== id);
+            } else {
+                bookmarks.push(id);
+            }
+            localStorage.setItem('soopmic_bookmarks', JSON.stringify(bookmarks));
+            updateBookmarkBadge();
+        }
+
+        function updateBookmarkBadge() {
+            const badge = document.getElementById('bookmark-badge');
+            if (bookmarks.length > 0) {
+                badge.innerText = bookmarks.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function renderBookmarks() {
+            const saved = comics.filter(c => bookmarks.includes(c.id));
+            const grid = document.getElementById('bookmark-grid');
+            if (saved.length === 0) {
+                grid.innerHTML = `<p class="col-span-full text-xs text-gray-500 py-8 text-center">No bookmarked comics yet.</p>`;
+            } else {
+                renderComicGridInContainer(saved, grid);
+            }
+        }
+
+        function renderLikes() {
+            const saved = comics.filter(c => likes.includes(c.id));
+            const grid = document.getElementById('likes-grid');
+            if (saved.length === 0) {
+                grid.innerHTML = `<p class="col-span-full text-xs text-gray-500 py-8 text-center">No liked comics yet.</p>`;
+            } else {
+                renderComicGridInContainer(saved, grid);
+            }
+        }
+
+        function renderComicGridInContainer(list, container) {
+            container.innerHTML = list.map(c => `
+                <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden cursor-pointer" onclick="openComicDetail('${c.id}')">
+                    <img src="${c.cover}" class="w-full h-48 object-cover">
+                    <div class="p-3">
+                        <h3 class="font-bold text-xs text-white truncate">${c.title}</h3>
+                        <span class="text-[10px] text-brand-500">${c.genre}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderStudioWorks() {
+            document.getElementById('studio-work-count').innerText = comics.length;
+            document.getElementById('studio-comic-list').innerHTML = comics.map(c => `
+                <div class="py-3 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <img src="${c.cover}" class="w-10 h-10 rounded-lg object-cover">
+                        <div>
+                            <h4 class="text-xs font-bold text-white">${c.title}</h4>
+                            <span class="text-[10px] text-gray-400">${c.episodes.length} Episodes Published</span>
+                        </div>
+                    </div>
+                    <button onclick="openComicDetail('${c.id}')" class="px-3 py-1 bg-brand-dark hover:bg-brand-border rounded-lg text-xs text-brand-500 border border-brand-border">View</button>
+                </div>
+            `).join('');
+        }
+
+        function openPublishModal() { document.getElementById('modal-publish').classList.remove('hidden'); }
+        function openAuthModal() { document.getElementById('modal-auth').classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function publishNewComic() {
+            const title = document.getElementById('pub-title').value.trim();
+            const genre = document.getElementById('pub-genre').value;
+            const cover = document.getElementById('pub-cover').value.trim() || 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop&q=80';
+            const desc = document.getElementById('pub-desc').value.trim();
+
+            if (!title) return;
+
+            const newComic = {
+                id: 'c' + (comics.length + 1),
+                title,
+                genre,
+                cover,
+                desc,
+                likes: 0,
+                characters: [],
+                episodes: [],
+                comments: []
+            };
+
+            comics.unshift(newComic);
+            closeModal('modal-publish');
+            renderComicGrid(comics);
+            switchTab('dashboard');
+        }
+
+        function loadProfileState() {
+            document.getElementById('header-avatar').src = userProfile.avatar;
+            document.getElementById('profile-avatar-preview').src = userProfile.avatar;
+            document.getElementById('header-username').innerText = userProfile.name;
+            document.getElementById('profile-name-input').value = userProfile.name;
+            document.getElementById('profile-email-input').value = userProfile.email || '';
+        }
+
+        function saveProfile() {
+            userProfile.name = document.getElementById('profile-name-input').value.trim() || 'Reader';
+            userProfile.email = document.getElementById('profile-email-input').value.trim();
+            localStorage.setItem('soopmic_profile', JSON.stringify(userProfile));
+            loadProfileState();
+            alert('Profile saved successfully!');
+        }
+
+        function updateProfileAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    userProfile.avatar = e.target.result;
+                    document.getElementById('profile-avatar-preview').src = e.target.result;
+                    document.getElementById('header-avatar').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function filterGenre(genre) {
+            document.querySelectorAll('.genre-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-500', 'text-black');
+                btn.classList.add('bg-brand-dark', 'text-gray-400');
+            });
+            if (event && event.target) {
+                event.target.classList.remove('bg-brand-dark', 'text-gray-400');
+                event.target.classList.add('bg-brand-500', 'text-black');
+            }
+
+            if (genre === 'All') {
+                renderComicGrid(comics);
+            } else {
+                renderComicGrid(comics.filter(c => c.genre === genre));
+            }
+        }
+
+        function filterComics() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = comics.filter(c => 
+                c.title.toLowerCase().includes(query) || 
+                c.genre.toLowerCase().includes(query) ||
+                c.desc.toLowerCase().includes(query)
+            );
+            renderComicGrid(filtered);
+        }
+
+        function setupScrollListener() {
+            window.addEventListener('scroll', () => {
+                if (currentReaderMode === 'scroll') {
+                    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                    const scrolled = (winScroll / height) * 100;
+                    const progressBar = document.getElementById('reading-progress');
+                    if (progressBar) progressBar.style.width = scrolled + '%';
+                }
+            });
+        }
+
+        function setupKeyboardNav() {
+            window.addEventListener('keydown', (e) => {
+                const readerTab = document.getElementById('page-reader');
+                if (readerTab && readerTab.classList.contains('active')) {
+                    if (e.key === 'ArrowRight') {
+                        nextPagePanel();
+                    } else if (e.key === 'ArrowLeft') {
+                        prevPagePanel();
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
