@@ -129,7 +129,7 @@
                 <!-- Desktop Navigation Links -->
                 <nav class="hidden md:flex items-center space-x-1">
                     <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-brand-500 bg-brand-500/10 border border-brand-500/30 flex items-center space-x-2 transition">
-                        <i class="fa-solid fa-[#10b981] fa-compass"></i>
+                        <i class="fa-solid fa-compass"></i>
                         <span>Explore Comics</span>
                     </button>
                     <button onclick="switchTab('bookmarks')" id="nav-bookmarks" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-gray-800/50 flex items-center space-x-2 transition relative">
@@ -594,8 +594,8 @@
 
     <!-- Application Script Logic -->
     <script>
-        // Set your AUTHOR/ADMIN email address here:
-        const ADMIN_EMAIL = "shahidah@soopmic.com"; // Replace with your personal admin email address
+        // Configured AUTHOR/ADMIN email address
+        const ADMIN_EMAIL = "idah2667@gmail.com";
 
         // YOUR FIREBASE CONFIGURATION INTEGRATED
         const firebaseConfig = {
@@ -696,15 +696,18 @@
             const adminContent = document.getElementById('admin-studio-content');
 
             if (currentUser) {
-                if (!currentUser.emailVerified) {
+                const isAdmin = (currentUser.email === ADMIN_EMAIL);
+
+                if (!currentUser.emailVerified && !isAdmin) {
                     authBtn.innerText = "Email Unverified (Click)";
                     usernameSpan.innerText = currentUser.email + " (Unverified)";
                 } else {
                     authBtn.innerText = "Log Out";
-                    usernameSpan.innerText = currentUser.email;
+                    usernameSpan.innerText = isAdmin ? "Author (Admin)" : currentUser.email;
                 }
 
-                if (currentUser.email === ADMIN_EMAIL && currentUser.emailVerified) {
+                // Unlock Author Studio for ADMIN_EMAIL
+                if (isAdmin) {
                     adminLock.classList.add('hidden');
                     adminContent.classList.remove('hidden');
                 } else {
@@ -751,31 +754,53 @@
                 return;
             }
 
+            if (currentUser) {
+                firebase.auth().signOut().then(() => {
+                    status.innerText = "Logged out successfully.";
+                    updateUserUI();
+                });
+                return;
+            }
+
             firebase.auth().signInWithEmailAndPassword(email, pass)
                 .then(userCredential => {
-                    if (!userCredential.user.emailVerified) {
-                        status.innerText = "Your email is not verified yet. Please check your inbox for the link.";
+                    closeModal('modal-auth');
+                    if (userCredential.user.email === ADMIN_EMAIL) {
+                        alert("Welcome back, Author! Studio Access Unlocked.");
+                        switchTab('studio');
                     } else {
-                        closeModal('modal-auth');
-                        alert("Logged in successfully with verified email!");
+                        alert("Logged in successfully as Reader!");
                     }
                 })
-                .catch(err => { status.innerText = err.message; });
+                .catch(err => {
+                    // Auto-register Author account if signing in for the first time
+                    if (email === ADMIN_EMAIL && err.code === "auth/user-not-found") {
+                        firebase.auth().createUserWithEmailAndPassword(email, pass)
+                            .then(userCred => {
+                                closeModal('modal-auth');
+                                alert("Author Admin Account initialized successfully!");
+                                switchTab('studio');
+                            })
+                            .catch(createErr => { status.innerText = createErr.message; });
+                    } else {
+                        status.innerText = err.message;
+                    }
+                });
         }
 
         function toggleBookmarkCurrent() {
             if (!currentUser) {
-                alert("Please log in and verify your email address to bookmark comics!");
+                alert("Please log in to bookmark comics!");
                 openAuthModal();
                 return;
             }
-            if (!currentUser.emailVerified) {
+            if (currentUser.email !== ADMIN_EMAIL && !currentUser.emailVerified) {
                 alert("Email verification required! Please open the link sent to your email inbox before bookmarking.");
                 return;
             }
             if (currentComicId) {
                 toggleBookmark(currentComicId);
-                alert("Comic bookmarked! You will receive email notifications for new chapters.");
+                alert("Comic saved to your bookmarks!");
             }
         }
 
@@ -863,7 +888,7 @@
 
             const comic = comics.find(c => c.id === currentComicId);
             comic.comments.unshift({
-                user: userProfile.name,
+                user: (currentUser && currentUser.email === ADMIN_EMAIL) ? "Author (Admin)" : userProfile.name,
                 avatar: userProfile.avatar,
                 text: input.value.trim()
             });
