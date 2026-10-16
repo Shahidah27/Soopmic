@@ -249,7 +249,7 @@
                 </div>
             </div>
 
-            <!-- Character & Lore Section with ALWAYS VISIBLE Add Character Button -->
+            <!-- Character & Lore Section -->
             <div class="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
                 <div class="flex items-center justify-between">
                     <h3 class="text-lg font-bold text-white font-comic flex items-center space-x-2">
@@ -264,7 +264,7 @@
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="detail-characters"></div>
             </div>
 
-            <!-- Released Episodes Section with ALWAYS VISIBLE Upload Episode Button -->
+            <!-- Released Episodes Section -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
                     <div class="flex items-center justify-between">
@@ -558,7 +558,7 @@
         </div>
     </div>
 
-    <!-- MODAL 4: UPLOAD EPISODE WITH PANEL REORDERING SYSTEM -->
+    <!-- MODAL 4: UPLOAD EPISODE (INCLUDES INSTANT PANEL REORDERING) -->
     <div id="modal-upload-ep" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-xl w-full space-y-4 my-8 max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center">
@@ -573,11 +573,11 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-300 mb-1">Select Local File Strip Panels</label>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Select Strip Panel Files</label>
                     <div class="border-2 border-dashed border-brand-border hover:border-brand-500 rounded-xl p-4 bg-brand-dark text-center space-y-1 cursor-pointer relative">
                         <input type="file" id="ep-panel-files" accept="image/*" multiple onchange="handlePanelFilesSelect(this)" class="absolute inset-0 opacity-0 cursor-pointer">
                         <i class="fa-solid fa-images text-brand-500 text-2xl"></i>
-                        <p class="text-xs font-bold text-gray-300" id="ep-panel-status">Click to Select Multiple Image Files</p>
+                        <p class="text-xs font-bold text-gray-300" id="ep-panel-status">Click to Select Panel Images</p>
                     </div>
                 </div>
 
@@ -589,14 +589,14 @@
                     </div>
                 </div>
 
-                <!-- Interactive Reorderable Panels Manager -->
+                <!-- Interactive Reorderable Panels List -->
                 <div class="space-y-2">
                     <div class="flex justify-between items-center">
                         <label class="block text-xs font-bold text-brand-500">MANAGE PANEL SEQUENCE (Top to Bottom)</label>
                         <button onclick="clearAllPanels()" class="text-[10px] text-rose-400 hover:underline">Clear All</button>
                     </div>
                     <div id="panel-reorder-list" class="space-y-2 bg-brand-dark p-3 rounded-xl border border-brand-border max-h-60 overflow-y-auto">
-                        <p class="text-xs text-gray-500 text-center py-4">No panels added yet. Pick files or add URLs above.</p>
+                        <p class="text-xs text-gray-500 text-center py-4">No panels added yet. Select files or paste URLs above.</p>
                     </div>
                 </div>
             </div>
@@ -657,8 +657,6 @@
         let currentReaderMode = 'scroll';
         let uploadedCoverData = "";
         let uploadedCharImageData = "";
-        
-        // Active Panel Reordering State
         let activeEpisodePanels = [];
         let userProfile = JSON.parse(localStorage.getItem('soopmic_profile') || '{"name":"Author","avatar":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80","email":""}');
 
@@ -810,7 +808,7 @@
             }
         }
 
-        /* --- Panel Reordering & Processing System --- */
+        /* --- Reordering Array Logic --- */
         function handlePanelFilesSelect(input) {
             if (input.files && input.files.length > 0) {
                 let loadedFiles = 0;
@@ -845,7 +843,7 @@
             document.getElementById('ep-panel-status').innerText = `${activeEpisodePanels.length} Panel(s) Loaded`;
 
             if (activeEpisodePanels.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No panels added yet. Pick files or add URLs above.</p>`;
+                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No panels added yet. Select files or paste URLs above.</p>`;
                 return;
             }
 
@@ -853,14 +851,14 @@
                 <div class="flex items-center justify-between bg-brand-card p-2 rounded-lg border border-brand-border">
                     <div class="flex items-center space-x-3">
                         <span class="text-xs font-bold text-brand-500 w-5">#${idx + 1}</span>
-                        <img src="${pSrc}" class="w-12 h-12 object-cover rounded border border-brand-border">
-                        <span class="text-[10px] text-gray-400">Panel Panel ${idx + 1}</span>
+                        <img src="${pSrc}" class="w-10 h-10 object-cover rounded border border-brand-border">
+                        <span class="text-[10px] text-gray-400">Panel ${idx + 1}</span>
                     </div>
 
                     <div class="flex items-center space-x-1">
-                        <button onclick="movePanel(${idx}, -1)" class="p-1 px-2 bg-brand-dark hover:bg-brand-border rounded text-xs text-gray-300" ${idx === 0 ? 'disabled class="opacity-30"' : ''} title="Move Up">↑</button>
-                        <button onclick="movePanel(${idx}, 1)" class="p-1 px-2 bg-brand-dark hover:bg-brand-border rounded text-xs text-gray-300" ${idx === activeEpisodePanels.length - 1 ? 'disabled class="opacity-30"' : ''} title="Move Down">↓</button>
-                        <button onclick="removePanel(${idx})" class="p-1 px-2 bg-rose-950/40 hover:bg-rose-900 text-rose-400 rounded text-xs ml-2" title="Delete Panel">✕</button>
+                        <button onclick="movePanel(${idx}, -1)" class="p-1 px-2.5 bg-brand-dark hover:bg-brand-border rounded text-xs text-gray-200 border border-brand-border" ${idx === 0 ? 'disabled style="opacity:0.3"' : ''}>↑ Up</button>
+                        <button onclick="movePanel(${idx}, 1)" class="p-1 px-2.5 bg-brand-dark hover:bg-brand-border rounded text-xs text-gray-200 border border-brand-border" ${idx === activeEpisodePanels.length - 1 ? 'disabled style="opacity:0.3"' : ''}>↓ Down</button>
+                        <button onclick="removePanel(${idx})" class="p-1 px-2.5 bg-rose-950/50 hover:bg-rose-900 text-rose-400 rounded text-xs ml-1 border border-rose-900/50">✕ Delete</button>
                     </div>
                 </div>
             `).join('');
