@@ -84,13 +84,13 @@
             background: rgba(10, 13, 20, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            transition: transform 0.3s ease, opacity 0.3s ease;
         }
 
-        .reader-controls-hidden {
-            transform: translateY(-100%);
-            opacity: 0;
-            pointer-events: none;
+        .hide-header {
+            transform: translateY(-100%) !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
         }
 
         .tab-pane {
@@ -110,60 +110,94 @@
 </head>
 <body class="min-h-screen flex flex-col pb-16 md:pb-0">
 
-    <!-- Top Navigation Header -->
-    <header id="main-header" class="sticky top-0 z-40 glass-nav border-b border-brand-border">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                
-                <!-- Logo & Brand -->
-                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 via-brand-accent to-brand-pink p-0.5 flex items-center justify-center glow-green">
-                        <div class="w-full h-full bg-brand-dark rounded-[10px] flex items-center justify-center">
-                            <i class="fa-solid fa-bolt text-brand-500 text-lg"></i>
+    <!-- Top Navigation Header Container -->
+    <div id="headers-wrapper" class="sticky top-0 z-40 transition-all duration-300">
+        <!-- Main Portal Header -->
+        <header id="main-header" class="glass-nav border-b border-brand-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    
+                    <!-- Logo & Brand -->
+                    <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 via-brand-accent to-brand-pink p-0.5 flex items-center justify-center glow-green">
+                            <div class="w-full h-full bg-brand-dark rounded-[10px] flex items-center justify-center">
+                                <i class="fa-solid fa-bolt text-brand-500 text-lg"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="text-2xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-brand-500 via-emerald-400 to-brand-accent font-comic">SOOPMIC</span>
+                            <span class="hidden sm:inline-block text-[10px] uppercase font-bold tracking-widest text-brand-accent bg-brand-accent/10 px-2 py-0.5 rounded-full border border-brand-accent/20 ml-2">Official Portal</span>
                         </div>
                     </div>
-                    <div>
-                        <span class="text-2xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-brand-500 via-emerald-400 to-brand-accent font-comic">SOOPMIC</span>
-                        <span class="hidden sm:inline-block text-[10px] uppercase font-bold tracking-widest text-brand-accent bg-brand-accent/10 px-2 py-0.5 rounded-full border border-brand-accent/20 ml-2">Official Portal</span>
+
+                    <!-- Desktop Navigation Links -->
+                    <nav class="hidden md:flex items-center space-x-1">
+                        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-brand-500 bg-brand-500/10 border border-brand-500/30 flex items-center space-x-2 transition">
+                            <i class="fa-solid fa-compass"></i>
+                            <span>Explore Comics</span>
+                        </button>
+                        <button onclick="switchTab('bookmarks')" id="nav-bookmarks" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-gray-800/50 flex items-center space-x-2 transition relative">
+                            <i class="fa-solid fa-bookmark"></i>
+                            <span>Bookmarks</span>
+                            <span id="bookmark-badge" class="hidden absolute -top-1 -right-1 bg-brand-500 text-black font-extrabold text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                        </button>
+                        <button onclick="switchTab('likes')" id="nav-likes" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-gray-800/50 flex items-center space-x-2 transition">
+                            <i class="fa-solid fa-heart"></i>
+                            <span>Liked</span>
+                        </button>
+                        <button onclick="switchTab('studio')" id="nav-studio" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-brand-accent hover:text-purple-300 hover:bg-brand-accent/10 flex items-center space-x-2 border border-brand-accent/30 transition ml-2">
+                            <i class="fa-solid fa-feather-pointed text-xs"></i>
+                            <span>Author Studio</span>
+                        </button>
+                    </nav>
+
+                    <!-- Search & Profile Controls -->
+                    <div class="flex items-center space-x-3">
+                        <button onclick="openAuthModal()" id="auth-btn" class="px-3 py-1.5 rounded-xl bg-brand-500 text-black font-bold text-xs glow-green transition">
+                            Log In / Verify Email
+                        </button>
+
+                        <button onclick="switchTab('profile')" id="nav-profile" class="flex items-center space-x-2 p-1.5 rounded-xl border border-brand-border bg-brand-card hover:border-brand-500 transition">
+                            <img id="header-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Profile" class="w-8 h-8 rounded-lg object-cover">
+                            <span class="hidden lg:inline text-xs font-semibold text-gray-300 pr-1" id="header-username">Author</span>
+                        </button>
                     </div>
+
                 </div>
+            </div>
+        </header>
 
-                <!-- Desktop Navigation Links -->
-                <nav class="hidden md:flex items-center space-x-1">
-                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-brand-500 bg-brand-500/10 border border-brand-500/30 flex items-center space-x-2 transition">
-                        <i class="fa-solid fa-compass"></i>
-                        <span>Explore Comics</span>
-                    </button>
-                    <button onclick="switchTab('bookmarks')" id="nav-bookmarks" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-gray-800/50 flex items-center space-x-2 transition relative">
-                        <i class="fa-solid fa-bookmark"></i>
-                        <span>Bookmarks</span>
-                        <span id="bookmark-badge" class="hidden absolute -top-1 -right-1 bg-brand-500 text-black font-extrabold text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
-                    </button>
-                    <button onclick="switchTab('likes')" id="nav-likes" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-gray-800/50 flex items-center space-x-2 transition">
-                        <i class="fa-solid fa-heart"></i>
-                        <span>Liked</span>
-                    </button>
-                    <button onclick="switchTab('studio')" id="nav-studio" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-brand-accent hover:text-purple-300 hover:bg-brand-accent/10 flex items-center space-x-2 border border-brand-accent/30 transition ml-2">
-                        <i class="fa-solid fa-feather-pointed text-xs"></i>
-                        <span>Author Studio</span>
-                    </button>
-                </nav>
+        <!-- Reader Controls Toolbar (Only active when reading) -->
+        <div id="reader-toolbar" class="hidden glass-nav border-b border-brand-border py-3 px-4 flex-wrap items-center justify-between gap-2 shadow-xl">
+            <button onclick="closeReader()" class="text-xs text-gray-400 hover:text-white flex items-center space-x-2">
+                <i class="fa-solid fa-chevron-left"></i>
+                <span>Exit Reader</span>
+            </button>
+            
+            <span id="reader-chapter-title" class="text-xs font-bold text-brand-500 truncate max-w-[180px] sm:max-w-xs">Chapter Title</span>
 
-                <!-- Search & Profile Controls -->
-                <div class="flex items-center space-x-3">
-                    <button onclick="openAuthModal()" id="auth-btn" class="px-3 py-1.5 rounded-xl bg-brand-500 text-black font-bold text-xs glow-green transition">
-                        Log In / Verify Email
-                    </button>
+            <div class="flex items-center bg-brand-card p-1 rounded-xl border border-brand-border">
+                <button id="mode-scroll-btn" onclick="setReaderMode('scroll')" class="px-3 py-1 rounded-lg text-xs font-bold text-white bg-brand-500/20 border border-brand-500/30 flex items-center space-x-1 transition">
+                    <i class="fa-solid fa-arrows-up-down text-[10px]"></i>
+                    <span>Scroll</span>
+                </button>
+                <button id="mode-page-btn" onclick="setReaderMode('page')" class="px-3 py-1 rounded-lg text-xs font-bold text-gray-400 hover:text-white flex items-center space-x-1 transition">
+                    <i class="fa-solid fa-book-open text-[10px]"></i>
+                    <span>Page Mode</span>
+                </button>
+            </div>
 
-                    <button onclick="switchTab('profile')" id="nav-profile" class="flex items-center space-x-2 p-1.5 rounded-xl border border-brand-border bg-brand-card hover:border-brand-500 transition">
-                        <img id="header-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Profile" class="w-8 h-8 rounded-lg object-cover">
-                        <span class="hidden lg:inline text-xs font-semibold text-gray-300 pr-1" id="header-username">Author</span>
-                    </button>
-                </div>
-
+            <div class="flex items-center space-x-2">
+                <button onclick="prevChapter()" class="p-2 bg-brand-card rounded-lg text-xs text-gray-300 hover:text-white" title="Previous Chapter"><i class="fa-solid fa-angles-left"></i></button>
+                <button onclick="nextChapter()" class="p-2 bg-brand-card rounded-lg text-xs text-gray-300 hover:text-white" title="Next Chapter"><i class="fa-solid fa-angles-right"></i></button>
             </div>
         </div>
-    </header>
+
+        <!-- Progress Line Bar -->
+        <div id="reader-progress-bar" class="hidden w-full bg-brand-border h-1">
+            <div id="reading-progress" class="bg-brand-500 h-1 w-0"></div>
+        </div>
+    </div>
 
     <!-- Main Dynamic Content Container -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -288,43 +322,14 @@
             </div>
         </section>
 
-        <!-- ================= PAGE 3: READING MODE (AUTO-HIDE HEADERS) ================= -->
+        <!-- ================= PAGE 3: READING MODE ================= -->
         <section id="page-reader" class="tab-pane">
-            <div id="reader-toolbar" class="sticky top-0 z-30 glass-nav border-b border-brand-border py-3 px-4 flex flex-wrap items-center justify-between gap-2 shadow-xl">
-                <button onclick="closeReader()" class="text-xs text-gray-400 hover:text-white flex items-center space-x-2">
-                    <i class="fa-solid fa-chevron-left"></i>
-                    <span>Exit Reader</span>
-                </button>
-                
-                <span id="reader-chapter-title" class="text-xs font-bold text-brand-500 truncate max-w-[180px] sm:max-w-xs">Chapter Title</span>
-
-                <div class="flex items-center bg-brand-card p-1 rounded-xl border border-brand-border">
-                    <button id="mode-scroll-btn" onclick="setReaderMode('scroll')" class="px-3 py-1 rounded-lg text-xs font-bold text-white bg-brand-500/20 border border-brand-500/30 flex items-center space-x-1 transition">
-                        <i class="fa-solid fa-arrows-up-down text-[10px]"></i>
-                        <span>Scroll</span>
-                    </button>
-                    <button id="mode-page-btn" onclick="setReaderMode('page')" class="px-3 py-1 rounded-lg text-xs font-bold text-gray-400 hover:text-white flex items-center space-x-1 transition">
-                        <i class="fa-solid fa-book-open text-[10px]"></i>
-                        <span>Page Mode</span>
-                    </button>
-                </div>
-
-                <div class="flex items-center space-x-2">
-                    <button onclick="prevChapter()" class="p-2 bg-brand-card rounded-lg text-xs text-gray-300 hover:text-white" title="Previous Chapter"><i class="fa-solid fa-angles-left"></i></button>
-                    <button onclick="nextChapter()" class="p-2 bg-brand-card rounded-lg text-xs text-gray-300 hover:text-white" title="Next Chapter"><i class="fa-solid fa-angles-right"></i></button>
-                </div>
-            </div>
-
-            <div class="w-full bg-brand-border h-1 sticky top-[49px] z-30">
-                <div id="reading-progress" class="bg-brand-500 h-1 w-0"></div>
-            </div>
-
-            <div id="reader-scroll-container" class="max-w-2xl mx-auto py-6 space-y-0 text-center select-none"></div>
+            <div id="reader-scroll-container" class="max-w-2xl mx-auto py-2 space-y-0 text-center cursor-pointer select-none"></div>
 
             <div id="reader-page-container" class="max-w-2xl mx-auto py-6 hidden flex-col items-center space-y-4">
                 <div class="flex items-center justify-between w-full px-4 text-xs text-gray-400">
                     <span id="page-counter">Panel 1 of 1</span>
-                    <span class="text-[10px] text-brand-500">Double Tap Screen to Toggle UI</span>
+                    <span class="text-[10px] text-brand-500">Double Click Screen to Toggle Navigation Bar</span>
                 </div>
 
                 <div class="flex items-center justify-between w-full px-2 gap-2">
@@ -654,18 +659,16 @@
         let activeEpisodePanels = [];
         let userProfile = JSON.parse(localStorage.getItem('soopmic_profile') || '{"name":"Author","avatar":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80","email":""}');
 
-        // Auto-Hide Navigation Variables
-        let lastScrollY = window.scrollY;
-        let headersVisible = true;
-        let lastTapTime = 0;
+        // Navigation Scroll Tracker
+        let prevScrollPos = window.pageYOffset || document.documentElement.scrollTop;
+        let isReaderActive = false;
 
         document.addEventListener("DOMContentLoaded", () => {
             renderComicGrid(comics);
             updateBookmarkBadge();
             loadProfileState();
-            setupScrollListener();
-            setupKeyboardNav();
-            setupDoubleTapToggle();
+            setupScrollManager();
+            setupDoubleTapManager();
 
             if (typeof firebase !== 'undefined' && firebase.auth) {
                 firebase.auth().onAuthStateChanged(user => {
@@ -694,14 +697,26 @@
             const target = document.getElementById(`page-${tabId}`);
             if (target) target.classList.add('active');
 
+            const headersWrapper = document.getElementById('headers-wrapper');
             const mainHeader = document.getElementById('main-header');
+            const readerToolbar = document.getElementById('reader-toolbar');
+            const progressBar = document.getElementById('reader-progress-bar');
             const mobileNav = document.getElementById('mobile-nav');
 
             if (tabId === 'reader') {
-                mainHeader.style.display = 'none'; // Hide main site header in reader view
+                isReaderActive = true;
+                mainHeader.classList.add('hidden');
+                readerToolbar.classList.remove('hidden');
+                readerToolbar.classList.add('flex');
+                progressBar.classList.remove('hidden');
+                headersWrapper.classList.remove('hide-header');
             } else {
-                mainHeader.style.display = 'block';
-                mainHeader.classList.remove('reader-controls-hidden');
+                isReaderActive = false;
+                mainHeader.classList.remove('hidden');
+                readerToolbar.classList.add('hidden');
+                readerToolbar.classList.remove('flex');
+                progressBar.classList.add('hidden');
+                headersWrapper.classList.remove('hide-header');
                 if (mobileNav) mobileNav.style.transform = 'translateY(0)';
             }
 
@@ -710,6 +725,60 @@
             if (tabId === 'studio') renderStudioWorks();
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* --- Scroll & Hide Mechanism --- */
+        function setupScrollManager() {
+            window.onscroll = function() {
+                if (!isReaderActive) return;
+
+                const currentScrollPos = window.pageYOffset || document.documentElement.scrollTop;
+                const headersWrapper = document.getElementById('headers-wrapper');
+                const mobileNav = document.getElementById('mobile-nav');
+
+                if (currentScrollPos > prevScrollPos && currentScrollPos > 50) {
+                    // Hide Header when Scrolling Down
+                    headersWrapper.classList.add('hide-header');
+                    if (mobileNav) mobileNav.style.transform = 'translateY(100%)';
+                } else {
+                    // Show Header when Scrolling Up
+                    headersWrapper.classList.remove('hide-header');
+                    if (mobileNav) mobileNav.style.transform = 'translateY(0)';
+                }
+
+                prevScrollPos = currentScrollPos;
+
+                // Reading Progress Line
+                const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const progressPercent = (currentScrollPos / docHeight) * 100;
+                const progressBarEl = document.getElementById('reading-progress');
+                if (progressBarEl) progressBarEl.style.width = progressPercent + '%';
+            };
+        }
+
+        function setupDoubleTapManager() {
+            const readerArea = document.getElementById('page-reader');
+            let lastClickTime = 0;
+
+            if (readerArea) {
+                readerArea.addEventListener('click', (e) => {
+                    const now = new Date().getTime();
+                    if (now - lastClickTime < 300) {
+                        e.preventDefault();
+                        const headersWrapper = document.getElementById('headers-wrapper');
+                        const mobileNav = document.getElementById('mobile-nav');
+                        
+                        if (headersWrapper.classList.contains('hide-header')) {
+                            headersWrapper.classList.remove('hide-header');
+                            if (mobileNav) mobileNav.style.transform = 'translateY(0)';
+                        } else {
+                            headersWrapper.classList.add('hide-header');
+                            if (mobileNav) mobileNav.style.transform = 'translateY(100%)';
+                        }
+                    }
+                    lastClickTime = now;
+                });
+            }
         }
 
         function renderComicGrid(list) {
@@ -744,74 +813,6 @@
             `).join('');
         }
 
-        /* --- Auto-Hide Header & Double Tap Logic --- */
-        function setupScrollListener() {
-            window.addEventListener('scroll', () => {
-                const readerTab = document.getElementById('page-reader');
-                if (readerTab && readerTab.classList.contains('active')) {
-                    const currentScrollY = window.scrollY;
-
-                    if (currentScrollY > lastScrollY && currentScrollY > 60) {
-                        // Scrolling DOWN -> Hide Header & Reader Bar
-                        hideReaderUI();
-                    } else if (currentScrollY < lastScrollY) {
-                        // Scrolling UP -> Reveal Reader Bar
-                        showReaderUI();
-                    }
-
-                    lastScrollY = currentScrollY;
-
-                    // Update Progress Bar
-                    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                    const scrolled = (currentScrollY / height) * 100;
-                    const progressBar = document.getElementById('reading-progress');
-                    if (progressBar) progressBar.style.width = scrolled + '%';
-                }
-            });
-        }
-
-        function setupDoubleTapToggle() {
-            const readerContainer = document.getElementById('page-reader');
-            if (readerContainer) {
-                readerContainer.addEventListener('click', (e) => {
-                    const currentTime = new Date().getTime();
-                    const tapLength = currentTime - lastTapTime;
-
-                    if (tapLength < 300 && tapLength > 0) {
-                        // Double Tap Triggered
-                        e.preventDefault();
-                        toggleReaderUI();
-                    }
-                    lastTapTime = currentTime;
-                });
-            }
-        }
-
-        function hideReaderUI() {
-            const readerBar = document.getElementById('reader-toolbar');
-            const mobileNav = document.getElementById('mobile-nav');
-            if (readerBar) readerBar.classList.add('reader-controls-hidden');
-            if (mobileNav) mobileNav.style.transform = 'translateY(100%)';
-            headersVisible = false;
-        }
-
-        function showReaderUI() {
-            const readerBar = document.getElementById('reader-toolbar');
-            const mobileNav = document.getElementById('mobile-nav');
-            if (readerBar) readerBar.classList.remove('reader-controls-hidden');
-            if (mobileNav) mobileNav.style.transform = 'translateY(0)';
-            headersVisible = true;
-        }
-
-        function toggleReaderUI() {
-            if (headersVisible) {
-                hideReaderUI();
-            } else {
-                showReaderUI();
-            }
-        }
-
-        /* --- Reader Chapter Logic --- */
         function openReader(comicId, chapterIdx) {
             const comic = comics.find(c => c.id === comicId);
             if (!comic || !comic.episodes || !comic.episodes[chapterIdx]) return;
@@ -829,7 +830,6 @@
 
             applyReaderView();
             switchTab('reader');
-            showReaderUI();
         }
 
         function setReaderMode(mode) {
@@ -916,7 +916,6 @@
             }
         }
 
-        /* --- Reordering Array Logic --- */
         function handlePanelFilesSelect(input) {
             if (input.files && input.files.length > 0) {
                 let loadedFiles = 0;
@@ -1304,19 +1303,6 @@
                 c.desc.toLowerCase().includes(query)
             );
             renderComicGrid(filtered);
-        }
-
-        function setupKeyboardNav() {
-            window.addEventListener('keydown', (e) => {
-                const readerTab = document.getElementById('page-reader');
-                if (readerTab && readerTab.classList.contains('active')) {
-                    if (e.key === 'ArrowRight') {
-                        nextPagePanel();
-                    } else if (e.key === 'ArrowLeft') {
-                        prevPagePanel();
-                    }
-                }
-            });
         }
     </script>
 </body>
