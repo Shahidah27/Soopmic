@@ -37,6 +37,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Chart.js for Character Radar Graph -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -284,8 +286,9 @@
                 </div>
             </div>
 
+            <!-- CHARACTERS & LORE SECTION -->
             <div class="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between flex-wrap gap-2">
                     <h3 class="text-lg font-bold text-white font-comic flex items-center space-x-2">
                         <i class="fa-solid fa-users text-brand-500"></i>
                         <span>CHARACTERS & LORE</span>
@@ -295,7 +298,7 @@
                         <span>+ Add Character Profile</span>
                     </button>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="detail-characters"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="detail-characters"></div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -328,25 +331,19 @@
         <section id="page-reader" class="tab-pane">
             <div id="reader-scroll-container" class="max-w-2xl mx-auto py-2 space-y-0 text-center cursor-pointer select-none"></div>
 
-            <!-- Page Mode Container -->
             <div id="reader-page-container" class="relative w-full py-2 hidden flex-col items-center min-h-[85vh]">
                 <div class="flex items-center justify-between w-full max-w-4xl px-4 text-xs text-gray-400 mb-2">
                     <span id="page-counter">Panel 1 of 1</span>
                     <span class="text-[10px] text-brand-500">Tap Right / Left edge to navigate • Double-tap to toggle menu</span>
                 </div>
 
-                <!-- Webtoon Viewing Canvas with Side Arrow Buttons & Mobile Touch Areas -->
                 <div class="relative w-full flex items-center justify-center min-h-[80vh] bg-black/40 rounded-2xl border border-brand-border p-2 overflow-hidden select-none" id="page-touch-area">
-                    
-                    <!-- Left Arrow Button -->
                     <button onclick="prevPagePanel()" class="absolute left-4 z-30 w-12 h-12 bg-brand-dark/80 hover:bg-brand-500 hover:text-black border border-brand-border rounded-full text-white text-base transition transform hover:scale-110 shadow-2xl hidden sm:flex items-center justify-center">
                         <i class="fa-solid fa-chevron-left"></i>
                     </button>
 
-                    <!-- Webtoon Image Panel (Fits to Page) -->
                     <img id="single-panel-img" src="" class="max-h-[82vh] w-auto max-w-full object-contain rounded-xl shadow-2xl transition duration-200 pointer-events-none" alt="Comic Panel">
 
-                    <!-- Right Arrow Button -->
                     <button onclick="nextPagePanel()" class="absolute right-4 z-30 w-12 h-12 bg-brand-dark/80 hover:bg-brand-500 hover:text-black border border-brand-border rounded-full text-white text-base transition transform hover:scale-110 shadow-2xl hidden sm:flex items-center justify-center">
                         <i class="fa-solid fa-chevron-right"></i>
                     </button>
@@ -536,9 +533,9 @@
         </div>
     </div>
 
-    <!-- MODAL 3: ADD CHARACTER & LORE -->
-    <div id="modal-add-char" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-md w-full space-y-4">
+    <!-- MODAL 3: ADD CHARACTER & LORE WITH GRAPH STATS + LOOKS / ATTRACTIVENESS -->
+    <div id="modal-add-char" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-lg w-full space-y-4 my-8 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white font-comic">ADD CHARACTER PROFILE</h3>
                 <button onclick="closeModal('modal-add-char')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
@@ -550,18 +547,127 @@
                     <input type="text" id="char-name" placeholder="e.g. Kai Vance" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-300 mb-1">Role / Lore Note</label>
-                    <input type="text" id="char-role" placeholder="e.g. Protagonist / Rogue Ninja" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Role / Alignment</label>
+                    <input type="text" id="char-role" placeholder="e.g. Antagonist / Rogue Ninja" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-300 mb-1">Character Avatar Image</label>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Background Description & Lore</label>
+                    <textarea id="char-desc" rows="3" placeholder="Character backstory, abilities, and role in story..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white resize-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Character Image Avatar</label>
                     <input type="file" id="char-img-file" accept="image/*" onchange="previewCharFile(this)" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-accent file:text-white hover:file:bg-purple-600 cursor-pointer">
                     <p class="text-[10px] text-gray-500 my-1 text-center font-bold">OR PASTE IMAGE URL</p>
                     <input type="text" id="char-img-url" placeholder="https://..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
                 </div>
+
+                <!-- SELECTABLE GRAPH STATS INCLUSIVE OF ATTRACTIVENESS / LOOKS -->
+                <div class="pt-2 border-t border-brand-border space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="block text-xs font-bold text-brand-500">CUSTOM STATS GRAPH (Check stats to include)</label>
+                        <span class="text-[10px] text-gray-400">0 - 100 Scale</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 text-xs bg-brand-dark p-3 rounded-xl border border-brand-border">
+                        
+                        <!-- Attractiveness / Looks -->
+                        <div class="space-y-1">
+                            <label class="flex items-center space-x-1.5 cursor-pointer">
+                                <input type="checkbox" id="chk-attractiveness" checked class="rounded border-gray-700 bg-brand-card text-brand-accent focus:ring-0">
+                                <span class="text-pink-400 font-bold text-[11px]"><i class="fa-solid fa-sparkles mr-1"></i>Attractiveness</span>
+                            </label>
+                            <input type="number" id="stat-attractiveness" min="0" max="100" value="95" class="w-full bg-brand-card border border-brand-border rounded-lg p-1.5 text-xs text-white">
+                        </div>
+
+                        <!-- Power -->
+                        <div class="space-y-1">
+                            <label class="flex items-center space-x-1.5 cursor-pointer">
+                                <input type="checkbox" id="chk-power" checked class="rounded border-gray-700 bg-brand-card text-brand-accent focus:ring-0">
+                                <span class="text-rose-400 font-bold text-[11px]">Power</span>
+                            </label>
+                            <input type="number" id="stat-power" min="0" max="100" value="80" class="w-full bg-brand-card border border-brand-border rounded-lg p-1.5 text-xs text-white">
+                        </div>
+
+                        <!-- Speed -->
+                        <div class="space-y-1">
+                            <label class="flex items-center space-x-1.5 cursor-pointer">
+                                <input type="checkbox" id="chk-speed" checked class="rounded border-gray-700 bg-brand-card text-brand-accent focus:ring-0">
+                                <span class="text-amber-400 font-bold text-[11px]">Speed</span>
+                            </label>
+                            <input type="number" id="stat-speed" min="0" max="100" value="75" class="w-full bg-brand-card border border-brand-border rounded-lg p-1.5 text-xs text-white">
+                        </div>
+
+                        <!-- Intelligence -->
+                        <div class="space-y-1">
+                            <label class="flex items-center space-x-1.5 cursor-pointer">
+                                <input type="checkbox" id="chk-intelligence" checked class="rounded border-gray-700 bg-brand-card text-brand-accent focus:ring-0">
+                                <span class="text-blue-400 font-bold text-[11px]">Intelligence</span>
+                            </label>
+                            <input type="number" id="stat-intelligence" min="0" max="100" value="90" class="w-full bg-brand-card border border-brand-border rounded-lg p-1.5 text-xs text-white">
+                        </div>
+
+                        <!-- Technique -->
+                        <div class="space-y-1">
+                            <label class="flex items-center space-x-1.5 cursor-pointer">
+                                <input type="checkbox" id="chk-technique" checked class="rounded border-gray-700 bg-brand-card text-brand-accent focus:ring-0">
+                                <span class="text-purple-400 font-bold text-[11px]">Technique</span>
+                            </label>
+                            <input type="number" id="stat-technique" min="0" max="100" value="85" class="w-full bg-brand-card border border-brand-border rounded-lg p-1.5 text-xs text-white">
+                        </div>
+
+                        <!-- Endurance -->
+                        <div class="space-y-1">
+                            <label class="flex items-center space-x-1.5 cursor-pointer">
+                                <input type="checkbox" id="chk-endurance" checked class="rounded border-gray-700 bg-brand-card text-brand-accent focus:ring-0">
+                                <span class="text-emerald-400 font-bold text-[11px]">Endurance</span>
+                            </label>
+                            <input type="number" id="stat-endurance" min="0" max="100" value="70" class="w-full bg-brand-card border border-brand-border rounded-lg p-1.5 text-xs text-white">
+                        </div>
+
+                        <!-- Agility -->
+                        <div class="space-y-1 col-span-2">
+                            <label class="flex items-center space-x-1.5 cursor-pointer">
+                                <input type="checkbox" id="chk-agility" checked class="rounded border-gray-700 bg-brand-card text-brand-accent focus:ring-0">
+                                <span class="text-teal-400 font-bold text-[11px]">Agility</span>
+                            </label>
+                            <input type="number" id="stat-agility" min="0" max="100" value="88" class="w-full bg-brand-card border border-brand-border rounded-lg p-1.5 text-xs text-white">
+                        </div>
+
+                    </div>
+                </div>
             </div>
 
             <button onclick="saveCharacterProfile()" class="w-full py-3 bg-brand-accent text-white font-bold text-xs rounded-xl glow-purple">Save Character Profile</button>
+        </div>
+    </div>
+
+    <!-- MODAL 3B: CHARACTER DETAIL POP-UP MODAL WITH CHART -->
+    <div id="modal-char-detail" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-xl w-full space-y-6 my-8 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-start">
+                <div class="flex items-center space-x-4">
+                    <img id="pop-char-img" src="" class="w-16 h-16 rounded-2xl object-cover border-2 border-brand-accent shadow-lg">
+                    <div>
+                        <h2 id="pop-char-name" class="text-2xl font-extrabold text-white font-comic">Character Name</h2>
+                        <span id="pop-char-role" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-brand-accent/20 text-brand-accent border border-brand-accent/30">Role</span>
+                    </div>
+                </div>
+                <button onclick="closeModal('modal-char-detail')" class="text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div>
+                <h4 class="text-xs font-bold text-brand-500 uppercase tracking-wider mb-1">Lore & Description</h4>
+                <p id="pop-char-desc" class="text-xs text-gray-300 leading-relaxed bg-brand-dark p-3.5 rounded-xl border border-brand-border">No backstory provided.</p>
+            </div>
+
+            <!-- Radar Graph Display Box -->
+            <div class="bg-brand-dark p-4 rounded-xl border border-brand-border space-y-2">
+                <h4 class="text-xs font-bold text-brand-accent uppercase tracking-wider text-center">CHARACTER ABILITY RADAR GRAPH</h4>
+                <div class="w-full max-w-sm mx-auto aspect-square flex items-center justify-center">
+                    <canvas id="charRadarCanvas"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -618,19 +724,6 @@
         </div>
     </div>
 
-    <!-- MODAL 5: EPISODE LIVE PREVIEW MODAL -->
-    <div id="modal-live-preview" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex flex-col p-4 overflow-y-auto">
-        <div class="flex justify-between items-center bg-brand-card p-4 rounded-xl border border-brand-border mb-4">
-            <div>
-                <span class="text-[10px] font-bold text-brand-500 uppercase tracking-widest">Author Mode</span>
-                <h3 class="text-sm font-bold text-white" id="preview-ep-title">Live Episode Preview</h3>
-            </div>
-            <button onclick="closeModal('modal-live-preview')" class="px-4 py-2 bg-brand-dark border border-brand-border text-xs text-gray-300 rounded-xl hover:text-white">Close Preview</button>
-        </div>
-
-        <div id="preview-panels-box" class="max-w-xl mx-auto w-full space-y-2 py-4"></div>
-    </div>
-
     <!-- Application Script Logic -->
     <script>
         const ADMIN_EMAIL = "idah2667@gmail.com";
@@ -662,9 +755,9 @@
         let uploadedCoverData = "";
         let uploadedCharImageData = "";
         let activeEpisodePanels = [];
+        let radarChartInstance = null;
         let userProfile = JSON.parse(localStorage.getItem('soopmic_profile') || '{"name":"Author","avatar":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80","email":""}');
 
-        // Navigation Scroll Tracker
         let prevScrollPos = window.pageYOffset || document.documentElement.scrollTop;
         let isReaderActive = false;
 
@@ -730,7 +823,200 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        /* --- Mobile Touch Zones for Page Navigation --- */
+        /* --- CHARACTER MODAL & RADAR GRAPH LOGIC --- */
+        function openAddCharacterModal() {
+            uploadedCharImageData = "";
+            document.getElementById('char-name').value = "";
+            document.getElementById('char-role').value = "";
+            document.getElementById('char-desc').value = "";
+            document.getElementById('char-img-url').value = "";
+            
+            document.getElementById('chk-attractiveness').checked = true;
+            document.getElementById('chk-power').checked = true;
+            document.getElementById('chk-speed').checked = true;
+            document.getElementById('chk-intelligence').checked = true;
+            document.getElementById('chk-technique').checked = true;
+            document.getElementById('chk-endurance').checked = true;
+            document.getElementById('chk-agility').checked = true;
+
+            document.getElementById('stat-attractiveness').value = 95;
+            document.getElementById('stat-power').value = 80;
+            document.getElementById('stat-speed').value = 75;
+            document.getElementById('stat-intelligence').value = 90;
+            document.getElementById('stat-technique').value = 85;
+            document.getElementById('stat-endurance').value = 70;
+            document.getElementById('stat-agility').value = 88;
+
+            document.getElementById('modal-add-char').classList.remove('hidden');
+        }
+
+        function previewCharFile(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedCharImageData = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function saveCharacterProfile() {
+            const name = document.getElementById('char-name').value.trim();
+            const role = document.getElementById('char-role').value.trim() || 'Supporting Character';
+            const desc = document.getElementById('char-desc').value.trim() || 'No description provided.';
+            const url = document.getElementById('char-img-url').value.trim();
+
+            if (!name || !currentComicId) {
+                alert("Please fill in the character name.");
+                return;
+            }
+
+            const finalImg = uploadedCharImageData || url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80';
+            
+            // Build customizable stat chart array
+            const customStats = [];
+            
+            if (document.getElementById('chk-attractiveness').checked) {
+                customStats.push({ label: 'Attractiveness', value: parseInt(document.getElementById('stat-attractiveness').value) || 50 });
+            }
+            if (document.getElementById('chk-power').checked) {
+                customStats.push({ label: 'Power', value: parseInt(document.getElementById('stat-power').value) || 50 });
+            }
+            if (document.getElementById('chk-speed').checked) {
+                customStats.push({ label: 'Speed', value: parseInt(document.getElementById('stat-speed').value) || 50 });
+            }
+            if (document.getElementById('chk-intelligence').checked) {
+                customStats.push({ label: 'Intelligence', value: parseInt(document.getElementById('stat-intelligence').value) || 50 });
+            }
+            if (document.getElementById('chk-technique').checked) {
+                customStats.push({ label: 'Technique', value: parseInt(document.getElementById('stat-technique').value) || 50 });
+            }
+            if (document.getElementById('chk-endurance').checked) {
+                customStats.push({ label: 'Endurance', value: parseInt(document.getElementById('stat-endurance').value) || 50 });
+            }
+            if (document.getElementById('chk-agility').checked) {
+                customStats.push({ label: 'Agility', value: parseInt(document.getElementById('stat-agility').value) || 50 });
+            }
+
+            const comic = comics.find(c => c.id === currentComicId);
+
+            if (comic) {
+                if (!comic.characters) comic.characters = [];
+                comic.characters.push({ name, role, desc, img: finalImg, stats: customStats });
+                saveComicsStorage();
+                closeModal('modal-add-char');
+                openComicDetail(currentComicId);
+            }
+        }
+
+        function showCharacterDetailModal(comicId, charIdx) {
+            const comic = comics.find(c => c.id === comicId);
+            if (!comic || !comic.characters || !comic.characters[charIdx]) return;
+
+            const ch = comic.characters[charIdx];
+            document.getElementById('pop-char-img').src = ch.img;
+            document.getElementById('pop-char-name').innerText = ch.name;
+            document.getElementById('pop-char-role').innerText = ch.role;
+            document.getElementById('pop-char-desc').innerText = ch.desc || 'No description available.';
+
+            document.getElementById('modal-char-detail').classList.remove('hidden');
+
+            renderRadarChart(ch.stats);
+        }
+
+        function renderRadarChart(stats) {
+            const ctx = document.getElementById('charRadarCanvas').getContext('2d');
+            
+            if (radarChartInstance) {
+                radarChartInstance.destroy();
+            }
+
+            // Default fallback if older format
+            const labels = (stats && Array.isArray(stats)) ? stats.map(s => s.label) : ['Attractiveness', 'Power', 'Speed', 'Intelligence', 'Technique', 'Agility'];
+            const dataValues = (stats && Array.isArray(stats)) ? stats.map(s => s.value) : [95, 80, 75, 90, 85, 88];
+
+            radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Ability Stats',
+                        data: dataValues,
+                        backgroundColor: 'rgba(236, 72, 153, 0.35)',
+                        borderColor: '#ec4899',
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#ffffff',
+                        pointHoverBackgroundColor: '#ffffff',
+                        pointHoverBorderColor: '#ec4899',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255, 255, 255, 0.15)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.15)' },
+                            pointLabels: {
+                                color: '#f3f4f6',
+                                font: { size: 10, weight: 'bold' }
+                            },
+                            ticks: { display: false, beginAtZero: true, max: 100 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function openComicDetail(comicId) {
+            currentComicId = comicId;
+            const comic = comics.find(c => c.id === comicId);
+            if (!comic) return;
+
+            document.getElementById('detail-cover').src = comic.cover;
+            document.getElementById('detail-title').innerText = comic.title;
+            document.getElementById('detail-genre').innerText = comic.genre;
+            document.getElementById('detail-desc').innerText = comic.desc;
+
+            const charGrid = document.getElementById('detail-characters');
+            if (comic.characters && comic.characters.length > 0) {
+                charGrid.innerHTML = comic.characters.map((ch, idx) => `
+                    <div onclick="showCharacterDetailModal('${comic.id}', ${idx})" class="bg-brand-dark p-3 rounded-xl border border-brand-border hover:border-brand-accent flex items-center space-x-3 cursor-pointer transition transform hover:-translate-y-0.5 shadow-md group">
+                        <img src="${ch.img}" class="w-12 h-12 rounded-xl object-cover border border-brand-border group-hover:border-brand-accent">
+                        <div class="overflow-hidden">
+                            <h4 class="text-xs font-bold text-white group-hover:text-brand-accent truncate">${ch.name}</h4>
+                            <span class="text-[10px] text-gray-400 truncate block">${ch.role}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                charGrid.innerHTML = `<p class="col-span-full text-xs text-gray-500 py-2">No character profiles added yet.</p>`;
+            }
+
+            const epList = document.getElementById('detail-episodes');
+            if (comic.episodes && comic.episodes.length > 0) {
+                epList.innerHTML = comic.episodes.map((ep, idx) => `
+                    <div onclick="openReader('${comic.id}', ${idx})" class="bg-brand-dark p-3 rounded-xl border border-brand-border hover:border-brand-500 flex items-center justify-between cursor-pointer transition">
+                        <div class="flex items-center space-x-3">
+                            <i class="fa-solid fa-play text-brand-500 text-xs"></i>
+                            <span class="text-xs font-bold text-gray-200">${ep.title}</span>
+                        </div>
+                        <span class="text-[10px] text-gray-500">${ep.date || 'Recent'}</span>
+                    </div>
+                `).join('');
+            } else {
+                epList.innerHTML = `<p class="text-xs text-gray-500 py-4 text-center">No episodes released yet.</p>`;
+            }
+
+            renderComments(comic);
+            switchTab('detail');
+        }
+
+        /* --- MOBILE TOUCH AREAS & SCROLL --- */
         function setupMobilePageTouchAreas() {
             const pageTouchArea = document.getElementById('page-touch-area');
             let lastTapTime = 0;
@@ -769,7 +1055,6 @@
             }
         }
 
-        /* --- Scroll & Hide Mechanism --- */
         function setupScrollManager() {
             window.onscroll = function() {
                 if (!isReaderActive) return;
@@ -953,302 +1238,6 @@
             if (currentChapterIndex > 0) {
                 openReader(currentComicId, currentChapterIndex - 1);
             }
-        }
-
-        function handlePanelFilesSelect(input) {
-            if (input.files && input.files.length > 0) {
-                let loadedFiles = 0;
-                const totalFiles = input.files.length;
-                
-                Array.from(input.files).forEach((file) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        activeEpisodePanels.push(e.target.result);
-                        loadedFiles++;
-                        if (loadedFiles === totalFiles) {
-                            renderPanelReorderList();
-                        }
-                    }
-                    reader.readAsDataURL(file);
-                });
-            }
-        }
-
-        function addUrlPanel() {
-            const input = document.getElementById('ep-single-url');
-            const url = input.value.trim();
-            if (url) {
-                activeEpisodePanels.push(url);
-                input.value = "";
-                renderPanelReorderList();
-            }
-        }
-
-        function renderPanelReorderList() {
-            const list = document.getElementById('panel-reorder-list');
-            document.getElementById('ep-panel-status').innerText = `${activeEpisodePanels.length} Panel(s) Loaded`;
-
-            if (activeEpisodePanels.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No panels added yet. Select files or paste URLs above.</p>`;
-                return;
-            }
-
-            list.innerHTML = activeEpisodePanels.map((pSrc, idx) => `
-                <div class="flex items-center justify-between bg-brand-card p-2 rounded-lg border border-brand-border">
-                    <div class="flex items-center space-x-3">
-                        <span class="text-xs font-bold text-brand-500 w-5">#${idx + 1}</span>
-                        <img src="${pSrc}" class="w-10 h-10 object-cover rounded border border-brand-border">
-                        <span class="text-[10px] text-gray-400">Panel ${idx + 1}</span>
-                    </div>
-
-                    <div class="flex items-center space-x-1">
-                        <button onclick="movePanel(${idx}, -1)" class="p-1 px-2.5 bg-brand-dark hover:bg-brand-border rounded text-xs text-gray-200 border border-brand-border" ${idx === 0 ? 'disabled style="opacity:0.3"' : ''}>↑ Up</button>
-                        <button onclick="movePanel(${idx}, 1)" class="p-1 px-2.5 bg-brand-dark hover:bg-brand-border rounded text-xs text-gray-200 border border-brand-border" ${idx === activeEpisodePanels.length - 1 ? 'disabled style="opacity:0.3"' : ''}>↓ Down</button>
-                        <button onclick="removePanel(${idx})" class="p-1 px-2.5 bg-rose-950/50 hover:bg-rose-900 text-rose-400 rounded text-xs ml-1 border border-rose-900/50">✕ Delete</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function movePanel(index, direction) {
-            const targetIndex = index + direction;
-            if (targetIndex >= 0 && targetIndex < activeEpisodePanels.length) {
-                const temp = activeEpisodePanels[index];
-                activeEpisodePanels[index] = activeEpisodePanels[targetIndex];
-                activeEpisodePanels[targetIndex] = temp;
-                renderPanelReorderList();
-            }
-        }
-
-        function removePanel(index) {
-            activeEpisodePanels.splice(index, 1);
-            renderPanelReorderList();
-        }
-
-        function clearAllPanels() {
-            activeEpisodePanels = [];
-            renderPanelReorderList();
-        }
-
-        function openComicDetail(comicId) {
-            currentComicId = comicId;
-            const comic = comics.find(c => c.id === comicId);
-            if (!comic) return;
-
-            document.getElementById('detail-cover').src = comic.cover;
-            document.getElementById('detail-title').innerText = comic.title;
-            document.getElementById('detail-genre').innerText = comic.genre;
-            document.getElementById('detail-desc').innerText = comic.desc;
-
-            const charGrid = document.getElementById('detail-characters');
-            if (comic.characters && comic.characters.length > 0) {
-                charGrid.innerHTML = comic.characters.map(ch => `
-                    <div class="bg-brand-dark p-2.5 rounded-xl border border-brand-border flex items-center space-x-2">
-                        <img src="${ch.img}" class="w-10 h-10 rounded-lg object-cover">
-                        <div>
-                            <h4 class="text-xs font-bold text-white">${ch.name}</h4>
-                            <span class="text-[10px] text-gray-400">${ch.role}</span>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                charGrid.innerHTML = `<p class="col-span-full text-xs text-gray-500 py-2">No character profiles uploaded yet.</p>`;
-            }
-
-            const epList = document.getElementById('detail-episodes');
-            if (comic.episodes && comic.episodes.length > 0) {
-                epList.innerHTML = comic.episodes.map((ep, idx) => `
-                    <div onclick="openReader('${comic.id}', ${idx})" class="bg-brand-dark p-3 rounded-xl border border-brand-border hover:border-brand-500 flex items-center justify-between cursor-pointer transition">
-                        <div class="flex items-center space-x-3">
-                            <i class="fa-solid fa-play text-brand-500 text-xs"></i>
-                            <span class="text-xs font-bold text-gray-200">${ep.title}</span>
-                        </div>
-                        <span class="text-[10px] text-gray-500">${ep.date || 'Recent'}</span>
-                    </div>
-                `).join('');
-            } else {
-                epList.innerHTML = `<p class="text-xs text-gray-500 py-4 text-center">No episodes released yet.</p>`;
-            }
-
-            renderComments(comic);
-            switchTab('detail');
-        }
-
-        function openAddCharacterModal() {
-            uploadedCharImageData = "";
-            document.getElementById('char-name').value = "";
-            document.getElementById('char-role').value = "";
-            document.getElementById('char-img-url').value = "";
-            document.getElementById('modal-add-char').classList.remove('hidden');
-        }
-
-        function saveCharacterProfile() {
-            const name = document.getElementById('char-name').value.trim();
-            const role = document.getElementById('char-role').value.trim();
-            const url = document.getElementById('char-img-url').value.trim();
-
-            if (!name || !currentComicId) return;
-
-            const finalImg = uploadedCharImageData || url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80';
-            const comic = comics.find(c => c.id === currentComicId);
-
-            if (comic) {
-                if (!comic.characters) comic.characters = [];
-                comic.characters.push({ name, role, img: finalImg });
-                saveComicsStorage();
-                closeModal('modal-add-char');
-                openComicDetail(currentComicId);
-            }
-        }
-
-        function openUploadEpisodeModal() {
-            activeEpisodePanels = [];
-            document.getElementById('ep-title').value = "";
-            renderPanelReorderList();
-            document.getElementById('modal-upload-ep').classList.remove('hidden');
-        }
-
-        function previewEpisodeBeforePublish() {
-            const title = document.getElementById('ep-title').value.trim() || 'Untitled Episode Preview';
-
-            if (activeEpisodePanels.length === 0) {
-                alert("Please select or add at least one panel image to preview!");
-                return;
-            }
-
-            document.getElementById('preview-ep-title').innerText = title;
-            document.getElementById('preview-panels-box').innerHTML = activeEpisodePanels.map((pUrl, idx) => `
-                <img src="${pUrl}" class="w-full h-auto object-cover rounded-lg border border-brand-border" alt="Panel ${idx + 1}">
-            `).join('');
-
-            document.getElementById('modal-live-preview').classList.remove('hidden');
-        }
-
-        function saveNewEpisode() {
-            const title = document.getElementById('ep-title').value.trim();
-
-            if (!title || activeEpisodePanels.length === 0 || !currentComicId) {
-                alert("Please fill in the title and ensure at least one panel is added.");
-                return;
-            }
-
-            const comic = comics.find(c => c.id === currentComicId);
-            if (comic) {
-                if (!comic.episodes) comic.episodes = [];
-                const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                comic.episodes.push({ title, date: today, panels: [...activeEpisodePanels] });
-                saveComicsStorage();
-                closeModal('modal-upload-ep');
-                openComicDetail(currentComicId);
-            }
-        }
-
-        function renderComments(comic) {
-            const list = document.getElementById('comment-list');
-            if (!comic.comments || comic.comments.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-500 py-4 text-center">No comments yet.</p>`;
-                return;
-            }
-            list.innerHTML = comic.comments.map(cm => `
-                <div class="bg-brand-dark p-2.5 rounded-xl border border-brand-border space-y-1">
-                    <div class="flex items-center space-x-2">
-                        <img src="${cm.avatar}" class="w-5 h-5 rounded-full object-cover">
-                        <span class="text-[11px] font-bold text-brand-500">${cm.user}</span>
-                    </div>
-                    <p class="text-[11px] text-gray-300">${cm.text}</p>
-                </div>
-            `).join('');
-        }
-
-        function postComment() {
-            const input = document.getElementById('comment-input');
-            if (!input.value.trim() || !currentComicId) return;
-
-            const comic = comics.find(c => c.id === currentComicId);
-            if (!comic.comments) comic.comments = [];
-            
-            comic.comments.unshift({
-                user: userProfile.name,
-                avatar: userProfile.avatar,
-                text: input.value.trim()
-            });
-
-            saveComicsStorage();
-            input.value = '';
-            renderComments(comic);
-        }
-
-        function toggleBookmark(id) {
-            if (bookmarks.includes(id)) {
-                bookmarks = bookmarks.filter(item => item !== id);
-            } else {
-                bookmarks.push(id);
-            }
-            localStorage.setItem('soopmic_bookmarks', JSON.stringify(bookmarks));
-            updateBookmarkBadge();
-        }
-
-        function updateBookmarkBadge() {
-            const badge = document.getElementById('bookmark-badge');
-            if (bookmarks.length > 0) {
-                badge.innerText = bookmarks.length;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-        }
-
-        function renderBookmarks() {
-            const saved = comics.filter(c => bookmarks.includes(c.id));
-            const grid = document.getElementById('bookmark-grid');
-            if (saved.length === 0) {
-                grid.innerHTML = `<p class="col-span-full text-xs text-gray-500 py-8 text-center">No bookmarked comics yet.</p>`;
-            } else {
-                renderComicGridInContainer(saved, grid);
-            }
-        }
-
-        function renderLikes() {
-            const saved = comics.filter(c => likes.includes(c.id));
-            const grid = document.getElementById('likes-grid');
-            if (saved.length === 0) {
-                grid.innerHTML = `<p class="col-span-full text-xs text-gray-500 py-8 text-center">No liked comics yet.</p>`;
-            } else {
-                renderComicGridInContainer(saved, grid);
-            }
-        }
-
-        function renderComicGridInContainer(list, container) {
-            container.innerHTML = list.map(c => `
-                <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden cursor-pointer" onclick="openComicDetail('${c.id}')">
-                    <img src="${c.cover}" class="w-full h-48 object-cover">
-                    <div class="p-3">
-                        <h3 class="font-bold text-xs text-white truncate">${c.title}</h3>
-                        <span class="text-[10px] text-brand-500">${c.genre}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderStudioWorks() {
-            document.getElementById('studio-work-count').innerText = comics.length;
-            const studioList = document.getElementById('studio-comic-list');
-            if (comics.length === 0) {
-                studioList.innerHTML = `<p class="text-xs text-gray-500 py-6 text-center">No works published yet. Click "Publish New Series" above to get started!</p>`;
-                return;
-            }
-            studioList.innerHTML = comics.map(c => `
-                <div class="py-3 flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <img src="${c.cover}" class="w-10 h-10 rounded-lg object-cover">
-                        <div>
-                            <h4 class="text-xs font-bold text-white">${c.title}</h4>
-                            <span class="text-[10px] text-gray-400">${c.episodes ? c.episodes.length : 0} Episodes Published</span>
-                        </div>
-                    </div>
-                    <button onclick="openComicDetail('${c.id}')" class="px-3 py-1 bg-brand-dark hover:bg-brand-border rounded-lg text-xs text-brand-500 border border-brand-border">View</button>
-                </div>
-            `).join('');
         }
 
         function openPublishModal() { document.getElementById('modal-publish').classList.remove('hidden'); }
