@@ -202,7 +202,7 @@
     </div>
 
     <!-- Main Dynamic Content Container -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4">
 
         <!-- ================= PAGE 1: READER DASHBOARD ================= -->
         <section id="page-dashboard" class="tab-pane active space-y-8">
@@ -329,25 +329,25 @@
             <div id="reader-scroll-container" class="max-w-2xl mx-auto py-2 space-y-0 text-center cursor-pointer select-none"></div>
 
             <!-- Page Mode Container -->
-            <div id="reader-page-container" class="max-w-4xl mx-auto py-2 hidden flex-col items-center space-y-3">
-                <div class="flex items-center justify-between w-full px-4 text-xs text-gray-400">
+            <div id="reader-page-container" class="relative w-full py-2 hidden flex-col items-center min-h-[85vh]">
+                <div class="flex items-center justify-between w-full max-w-4xl px-4 text-xs text-gray-400 mb-2">
                     <span id="page-counter">Panel 1 of 1</span>
-                    <span class="text-[10px] text-brand-500">Tap Left / Right half to navigate • Double tap for menu</span>
+                    <span class="text-[10px] text-brand-500">Tap Right / Left edge to navigate • Double-tap to toggle menu</span>
                 </div>
 
-                <!-- Webtoon Viewing Canvas with Side Buttons & Mobile Tap Zones -->
+                <!-- Webtoon Viewing Canvas with Side Arrow Buttons & Mobile Touch Areas -->
                 <div class="relative w-full flex items-center justify-center min-h-[80vh] bg-black/40 rounded-2xl border border-brand-border p-2 overflow-hidden select-none" id="page-touch-area">
                     
-                    <!-- Left Prev Button (Desktop/Tablet) -->
-                    <button onclick="prevPagePanel()" class="absolute left-3 z-20 p-3 bg-brand-dark/80 hover:bg-brand-500 hover:text-black border border-brand-border rounded-full text-white text-sm transition transform hover:scale-110 shadow-lg hidden sm:flex items-center justify-center">
+                    <!-- Left Arrow Button -->
+                    <button onclick="prevPagePanel()" class="absolute left-4 z-30 w-12 h-12 bg-brand-dark/80 hover:bg-brand-500 hover:text-black border border-brand-border rounded-full text-white text-base transition transform hover:scale-110 shadow-2xl hidden sm:flex items-center justify-center">
                         <i class="fa-solid fa-chevron-left"></i>
                     </button>
 
-                    <!-- Webtoon Image Panel (Fits Screen Height) -->
+                    <!-- Webtoon Image Panel (Fits to Page) -->
                     <img id="single-panel-img" src="" class="max-h-[82vh] w-auto max-w-full object-contain rounded-xl shadow-2xl transition duration-200 pointer-events-none" alt="Comic Panel">
 
-                    <!-- Right Next Button (Desktop/Tablet) -->
-                    <button onclick="nextPagePanel()" class="absolute right-3 z-20 p-3 bg-brand-dark/80 hover:bg-brand-500 hover:text-black border border-brand-border rounded-full text-white text-sm transition transform hover:scale-110 shadow-lg hidden sm:flex items-center justify-center">
+                    <!-- Right Arrow Button -->
+                    <button onclick="nextPagePanel()" class="absolute right-4 z-30 w-12 h-12 bg-brand-dark/80 hover:bg-brand-500 hover:text-black border border-brand-border rounded-full text-white text-base transition transform hover:scale-110 shadow-2xl hidden sm:flex items-center justify-center">
                         <i class="fa-solid fa-chevron-right"></i>
                     </button>
                 </div>
@@ -737,7 +737,6 @@
 
             if (pageTouchArea) {
                 pageTouchArea.addEventListener('click', (e) => {
-                    // Ignore clicks on desktop side buttons
                     if (e.target.closest('button')) return;
 
                     const now = new Date().getTime();
@@ -745,7 +744,6 @@
                     lastTapTime = now;
 
                     if (isDoubleTap) {
-                        // Double Tap Toggles UI Header
                         const headersWrapper = document.getElementById('headers-wrapper');
                         const mobileNav = document.getElementById('mobile-nav');
                         
@@ -757,15 +755,14 @@
                             if (mobileNav) mobileNav.style.transform = 'translateY(100%)';
                         }
                     } else {
-                        // Single Tap Left vs Right Navigation
                         const rect = pageTouchArea.getBoundingClientRect();
                         const clickX = e.clientX - rect.left;
                         const width = rect.width;
 
                         if (clickX > width / 2) {
-                            nextPagePanel(); // Touch Right Half -> Next
+                            nextPagePanel();
                         } else {
-                            prevPagePanel(); // Touch Left Half -> Prev
+                            prevPagePanel();
                         }
                     }
                 });
