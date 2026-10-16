@@ -167,35 +167,37 @@
             </div>
         </header>
 
-        <!-- Reader Controls Toolbar (Only active when reading) -->
-        <div id="reader-toolbar" class="hidden glass-nav border-b border-brand-border py-3 px-4 flex-wrap items-center justify-between gap-2 shadow-xl">
-            <button onclick="closeReader()" class="text-xs text-gray-400 hover:text-white flex items-center space-x-2">
-                <i class="fa-solid fa-chevron-left"></i>
-                <span>Exit Reader</span>
-            </button>
-            
-            <span id="reader-chapter-title" class="text-xs font-bold text-brand-500 truncate max-w-[180px] sm:max-w-xs">Chapter Title</span>
+        <!-- Reader Controls Toolbar (Wrapped together with the progress line so it hides as one unit) -->
+        <div id="reader-toolbar" class="hidden glass-nav border-b border-brand-border flex-col shadow-xl">
+            <div class="py-3 px-4 flex flex-wrap items-center justify-between gap-2">
+                <button onclick="closeReader()" class="text-xs text-gray-400 hover:text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-chevron-left"></i>
+                    <span>Exit Reader</span>
+                </button>
+                
+                <span id="reader-chapter-title" class="text-xs font-bold text-brand-500 truncate max-w-[180px] sm:max-w-xs">Chapter Title</span>
 
-            <div class="flex items-center bg-brand-card p-1 rounded-xl border border-brand-border">
-                <button id="mode-scroll-btn" onclick="setReaderMode('scroll')" class="px-3 py-1 rounded-lg text-xs font-bold text-white bg-brand-500/20 border border-brand-500/30 flex items-center space-x-1 transition">
-                    <i class="fa-solid fa-arrows-up-down text-[10px]"></i>
-                    <span>Scroll</span>
-                </button>
-                <button id="mode-page-btn" onclick="setReaderMode('page')" class="px-3 py-1 rounded-lg text-xs font-bold text-gray-400 hover:text-white flex items-center space-x-1 transition">
-                    <i class="fa-solid fa-book-open text-[10px]"></i>
-                    <span>Page Mode</span>
-                </button>
+                <div class="flex items-center bg-brand-card p-1 rounded-xl border border-brand-border">
+                    <button id="mode-scroll-btn" onclick="setReaderMode('scroll')" class="px-3 py-1 rounded-lg text-xs font-bold text-white bg-brand-500/20 border border-brand-500/30 flex items-center space-x-1 transition">
+                        <i class="fa-solid fa-arrows-up-down text-[10px]"></i>
+                        <span>Scroll</span>
+                    </button>
+                    <button id="mode-page-btn" onclick="setReaderMode('page')" class="px-3 py-1 rounded-lg text-xs font-bold text-gray-400 hover:text-white flex items-center space-x-1 transition">
+                        <i class="fa-solid fa-book-open text-[10px]"></i>
+                        <span>Page Mode</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <button onclick="prevChapter()" class="p-2 bg-brand-card rounded-lg text-xs text-gray-300 hover:text-white" title="Previous Chapter"><i class="fa-solid fa-angles-left"></i></button>
+                    <button onclick="nextChapter()" class="p-2 bg-brand-card rounded-lg text-xs text-gray-300 hover:text-white" title="Next Chapter"><i class="fa-solid fa-angles-right"></i></button>
+                </div>
             </div>
 
-            <div class="flex items-center space-x-2">
-                <button onclick="prevChapter()" class="p-2 bg-brand-card rounded-lg text-xs text-gray-300 hover:text-white" title="Previous Chapter"><i class="fa-solid fa-angles-left"></i></button>
-                <button onclick="nextChapter()" class="p-2 bg-brand-card rounded-lg text-xs text-gray-300 hover:text-white" title="Next Chapter"><i class="fa-solid fa-angles-right"></i></button>
+            <!-- Reading Progress Line Bar -->
+            <div id="reader-progress-bar" class="w-full bg-brand-border h-1">
+                <div id="reading-progress" class="bg-brand-500 h-1 w-0"></div>
             </div>
-        </div>
-
-        <!-- Progress Line Bar -->
-        <div id="reader-progress-bar" class="hidden w-full bg-brand-border h-1">
-            <div id="reading-progress" class="bg-brand-500 h-1 w-0"></div>
         </div>
     </div>
 
@@ -700,7 +702,6 @@
             const headersWrapper = document.getElementById('headers-wrapper');
             const mainHeader = document.getElementById('main-header');
             const readerToolbar = document.getElementById('reader-toolbar');
-            const progressBar = document.getElementById('reader-progress-bar');
             const mobileNav = document.getElementById('mobile-nav');
 
             if (tabId === 'reader') {
@@ -708,14 +709,12 @@
                 mainHeader.classList.add('hidden');
                 readerToolbar.classList.remove('hidden');
                 readerToolbar.classList.add('flex');
-                progressBar.classList.remove('hidden');
                 headersWrapper.classList.remove('hide-header');
             } else {
                 isReaderActive = false;
                 mainHeader.classList.remove('hidden');
                 readerToolbar.classList.add('hidden');
                 readerToolbar.classList.remove('flex');
-                progressBar.classList.add('hidden');
                 headersWrapper.classList.remove('hide-header');
                 if (mobileNav) mobileNav.style.transform = 'translateY(0)';
             }
@@ -737,11 +736,11 @@
                 const mobileNav = document.getElementById('mobile-nav');
 
                 if (currentScrollPos > prevScrollPos && currentScrollPos > 50) {
-                    // Hide Header when Scrolling Down
+                    // Hide Header & Progress Bar when Scrolling Down
                     headersWrapper.classList.add('hide-header');
                     if (mobileNav) mobileNav.style.transform = 'translateY(100%)';
                 } else {
-                    // Show Header when Scrolling Up
+                    // Show Header & Progress Bar when Scrolling Up
                     headersWrapper.classList.remove('hide-header');
                     if (mobileNav) mobileNav.style.transform = 'translateY(0)';
                 }
