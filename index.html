@@ -170,23 +170,14 @@
         <section id="page-dashboard" class="tab-pane active space-y-8">
             
             <!-- Hero Spotlight Banner -->
-            <div id="hero-carousel" class="relative rounded-2xl overflow-hidden bg-brand-card border border-brand-border min-h-[320px] md:min-h-[400px] flex items-end p-6 md:p-10 shadow-2xl">
-                <div class="absolute inset-0 bg-cover bg-center transition-all duration-700" id="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&auto=format&fit=crop&q=80');"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/70 to-transparent"></div>
+            <div id="hero-carousel" class="relative rounded-2xl overflow-hidden bg-brand-card border border-brand-border min-h-[280px] md:min-h-[340px] flex items-end p-6 md:p-10 shadow-2xl">
+                <div class="absolute inset-0 bg-cover bg-center opacity-30" id="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&auto=format&fit=crop&q=80');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/80 to-transparent"></div>
                 
-                <div class="relative z-10 max-w-2xl space-y-3">
-                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-brand-500 text-black uppercase tracking-wider glow-green">Featured Masterpiece</span>
-                    <h1 id="hero-title" class="text-3xl sm:text-5xl font-extrabold text-white font-comic tracking-wide drop-shadow-md">SOLO LEVELING: ASCENSION</h1>
-                    <p id="hero-desc" class="text-gray-300 text-xs sm:text-sm line-clamp-2 md:line-clamp-3 leading-relaxed">In a world where hunters awaken magical powers, one weak hunter gains an mysterious system that allows him to level up endlessly alone.</p>
-                    <div class="flex items-center space-x-3 pt-2">
-                        <button onclick="openComicDetail('c1')" class="px-6 py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-black font-extrabold text-sm flex items-center space-x-2 transition glow-green">
-                            <i class="fa-solid fa-play"></i>
-                            <span>Read Now</span>
-                        </button>
-                        <button onclick="toggleBookmark('c1')" class="p-3 rounded-xl bg-brand-dark/80 hover:bg-brand-border text-white border border-brand-border transition">
-                            <i class="fa-regular fa-bookmark"></i>
-                        </button>
-                    </div>
+                <div class="relative z-10 max-w-2xl space-y-3" id="hero-content">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-brand-accent/20 text-brand-accent border border-brand-accent/30 uppercase tracking-wider">Official Webtoon Portal</span>
+                    <h1 id="hero-title" class="text-3xl sm:text-5xl font-extrabold text-white font-comic tracking-wide drop-shadow-md">WELCOME TO SOOPMIC</h1>
+                    <p id="hero-desc" class="text-gray-300 text-xs sm:text-sm leading-relaxed">Official Webtoon hub. New original series, upcoming webtoon chapters, and artwork releases will be published here soon!</p>
                 </div>
             </div>
 
@@ -211,9 +202,9 @@
                 <div class="flex items-center justify-between mb-6">
                     <div>
                         <h2 class="text-2xl font-bold text-white font-comic tracking-wide">MY COMIC CATALOGUE</h2>
-                        <p class="text-xs text-gray-400">All original series created and published by Author</p>
+                        <p class="text-xs text-gray-400">Original series created and published by Author</p>
                     </div>
-                    <span class="text-xs font-semibold text-brand-500 bg-brand-500/10 px-3 py-1 rounded-full border border-brand-500/20" id="comic-count">3 Works</span>
+                    <span class="text-xs font-semibold text-brand-500 bg-brand-500/10 px-3 py-1 rounded-full border border-brand-500/20" id="comic-count">0 Works</span>
                 </div>
 
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6" id="comic-grid">
@@ -262,7 +253,7 @@
                         </button>
                         <button id="detail-bookmark-btn" onclick="toggleBookmarkCurrent()" class="px-5 py-2.5 rounded-xl bg-brand-dark hover:bg-brand-500/10 text-brand-500 border border-brand-500/30 text-xs font-bold flex items-center space-x-2 transition">
                             <i class="fa-regular fa-bookmark"></i>
-                            <span id="detail-bookmark-text">Bookmark (Email Verification Required)</span>
+                            <span id="detail-bookmark-text">Bookmark</span>
                         </button>
                     </div>
                 </div>
@@ -313,7 +304,7 @@
             </div>
         </section>
 
-        <!-- ================= PAGE 3: READING MODE (SCROLL VS PAGE MODES) ================= -->
+        <!-- ================= PAGE 3: READING MODE ================= -->
         <section id="page-reader" class="tab-pane">
             <!-- Reader Control Header Bar -->
             <div class="sticky top-16 z-30 bg-brand-dark/95 border-b border-brand-border py-3 px-4 flex flex-wrap items-center justify-between gap-2">
@@ -353,16 +344,13 @@
                 <!-- Stacked Panel Images dynamically loaded -->
             </div>
 
-            <!-- VIEW 2: PAGE-BY-PAGE CLICK / ARROW MODE CONTAINER -->
+            <!-- VIEW 2: PAGE MODE CONTAINER -->
             <div id="reader-page-container" class="max-w-2xl mx-auto py-6 hidden flex-col items-center space-y-4">
-                
-                <!-- Page Progress Indicator -->
                 <div class="flex items-center justify-between w-full px-4 text-xs text-gray-400">
                     <span id="page-counter">Panel 1 of 1</span>
                     <span class="text-[10px] text-brand-500">Use ← → Keyboard Arrows or Click Buttons</span>
                 </div>
 
-                <!-- Upper Navigation Buttons -->
                 <div class="flex items-center justify-between w-full px-2 gap-2">
                     <button onclick="prevPagePanel()" class="flex-1 py-2 bg-brand-card hover:bg-brand-border border border-brand-border rounded-xl text-xs font-bold text-gray-300 hover:text-white transition flex items-center justify-center space-x-1">
                         <i class="fa-solid fa-arrow-left"></i>
@@ -374,10 +362,8 @@
                     </button>
                 </div>
 
-                <!-- Page Panel Frame -->
                 <div class="relative w-full rounded-xl overflow-hidden border border-brand-border bg-black group shadow-2xl">
                     <img id="single-panel-img" src="" class="w-full h-auto object-contain max-h-[75vh]" alt="Comic Panel">
-                    
                     <div onclick="prevPagePanel()" class="absolute left-0 top-0 bottom-0 w-1/4 bg-gradient-to-r from-black/40 to-transparent opacity-0 group-hover:opacity-100 cursor-pointer flex items-center justify-start pl-4 transition">
                         <i class="fa-solid fa-chevron-left text-2xl text-white drop-shadow"></i>
                     </div>
@@ -386,7 +372,6 @@
                     </div>
                 </div>
 
-                <!-- Lower Navigation Buttons -->
                 <div class="flex items-center justify-between w-full px-2 gap-2 pt-2">
                     <button onclick="prevPagePanel()" class="flex-1 py-2.5 bg-brand-card hover:bg-brand-border border border-brand-border rounded-xl text-xs font-bold text-gray-300 hover:text-white transition flex items-center justify-center space-x-2">
                         <i class="fa-solid fa-arrow-left"></i>
@@ -397,7 +382,6 @@
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
-
             </div>
 
             <!-- End of Chapter Footer -->
@@ -446,7 +430,7 @@
                     <div class="space-y-2">
                         <span class="px-3 py-1 rounded-full text-[10px] font-bold bg-brand-accent text-white uppercase tracking-wider">Solo Creator Space</span>
                         <h1 class="text-3xl font-extrabold text-white font-comic">AUTHOR'S CREATIVE STUDIO</h1>
-                        <p class="text-gray-300 text-xs max-w-xl">Publish new comics, add vertical strip episodes, and track your reader analytics directly.</p>
+                        <p class="text-gray-300 text-xs max-w-xl">Publish your original webtoons, add vertical strip episodes, and manage your releases.</p>
                     </div>
                     <button onclick="openPublishModal()" class="px-6 py-3 rounded-xl bg-brand-accent hover:bg-purple-600 text-white font-bold text-xs flex items-center space-x-2 transition glow-purple">
                         <i class="fa-solid fa-plus"></i>
@@ -457,19 +441,19 @@
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <div class="bg-brand-card border border-brand-border p-4 rounded-xl space-y-1">
                         <span class="text-xs text-gray-400 font-semibold">Total Views</span>
-                        <p class="text-2xl font-bold text-brand-500 font-comic">128.4K</p>
+                        <p class="text-2xl font-bold text-brand-500 font-comic">0</p>
                     </div>
                     <div class="bg-brand-card border border-brand-border p-4 rounded-xl space-y-1">
                         <span class="text-xs text-gray-400 font-semibold">Total Likes</span>
-                        <p class="text-2xl font-bold text-brand-pink font-comic">42.1K</p>
+                        <p class="text-2xl font-bold text-brand-pink font-comic">0</p>
                     </div>
                     <div class="bg-brand-card border border-brand-border p-4 rounded-xl space-y-1">
                         <span class="text-xs text-gray-400 font-semibold">Subscribers</span>
-                        <p class="text-2xl font-bold text-brand-accent font-comic">8.9K</p>
+                        <p class="text-2xl font-bold text-brand-accent font-comic">0</p>
                     </div>
                     <div class="bg-brand-card border border-brand-border p-4 rounded-xl space-y-1">
                         <span class="text-xs text-gray-400 font-semibold">Published Works</span>
-                        <p class="text-2xl font-bold text-white font-comic" id="studio-work-count">3</p>
+                        <p class="text-2xl font-bold text-white font-comic" id="studio-work-count">0</p>
                     </div>
                 </div>
 
@@ -594,10 +578,11 @@
 
     <!-- Application Script Logic -->
     <script>
-        // Configured AUTHOR/ADMIN email address
+        // Configured AUTHOR/ADMIN email address & Password
         const ADMIN_EMAIL = "idah2667@gmail.com";
+        const ADMIN_PASSWORD = "soop123!";
 
-        // YOUR FIREBASE CONFIGURATION INTEGRATED
+        // FIREBASE CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyAzxh8Y5boz4uezZOMb2bwxJtagaAcwbgI",
             authDomain: "soopmic-16076.firebaseapp.com",
@@ -614,57 +599,7 @@
         }
 
         let currentUser = null;
-        let comics = [
-            {
-                id: 'c1',
-                title: 'SOLO LEVELING: ASCENSION',
-                genre: 'Fantasy',
-                cover: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop&q=80',
-                desc: 'In a world where gates opened connecting monsters and humans, weak hunter Jinwoo awakens an exclusive quest log system allowing him to level up without limits.',
-                likes: 1420,
-                characters: [
-                    { name: 'Jinwoo', role: 'Protagonist', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80' },
-                    { name: 'Cha Hae-In', role: 'S-Rank Hunter', img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80' }
-                ],
-                episodes: [
-                    { id: 'c1-e1', title: 'Chapter 1: The Double Dungeon', date: 'Oct 10, 2026', panels: ['https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80', 'https://images.unsplash.com/photo-1563089145-599997674d42?w=800&auto=format&fit=crop&q=80'] },
-                    { id: 'c1-e2', title: 'Chapter 2: Awakening System', date: 'Oct 14, 2026', panels: ['https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=800&auto=format&fit=crop&q=80'] }
-                ],
-                comments: [
-                    { user: 'Kael', text: 'The art quality is insane! Author did amazing!', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80' }
-                ]
-            },
-            {
-                id: 'c2',
-                title: 'NEON RUNNER 2099',
-                genre: 'Sci-Fi',
-                cover: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600&auto=format&fit=crop&q=80',
-                desc: 'A cybernetically enhanced courier uncovers a mega-corp conspiracy in the neon-drenched streets of future Tokyo.',
-                likes: 890,
-                characters: [
-                    { name: 'Ryn', role: 'Cyber Courier', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' }
-                ],
-                episodes: [
-                    { id: 'c2-e1', title: 'Chapter 1: High Speed Delivery', date: 'Sep 28, 2026', panels: ['https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80'] }
-                ],
-                comments: []
-            },
-            {
-                id: 'c3',
-                title: 'FLAMES OF ELDORIA',
-                genre: 'Action',
-                cover: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=80',
-                desc: 'An exiled prince masters elemental flame alchemy to reclaim his stolen dragon kingdom.',
-                likes: 2150,
-                characters: [
-                    { name: 'Ignis', role: 'Flame Prince', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80' }
-                ],
-                episodes: [
-                    { id: 'c3-e1', title: 'Chapter 1: The Ashen Exile', date: 'Aug 15, 2026', panels: ['https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&auto=format&fit=crop&q=80'] }
-                ],
-                comments: []
-            }
-        ];
+        let comics = JSON.parse(localStorage.getItem('soopmic_published_comics') || '[]');
 
         let bookmarks = JSON.parse(localStorage.getItem('soopmic_bookmarks') || '[]');
         let likes = JSON.parse(localStorage.getItem('soopmic_likes') || '[]');
@@ -773,15 +708,17 @@
                     }
                 })
                 .catch(err => {
-                    // Auto-register Author account if signing in for the first time
-                    if (email === ADMIN_EMAIL && err.code === "auth/user-not-found") {
-                        firebase.auth().createUserWithEmailAndPassword(email, pass)
+                    // Auto-register Author account with soop123! if signing in for the first time
+                    if (email === ADMIN_EMAIL && (err.code === "auth/user-not-found" || err.code === "auth/invalid-credential")) {
+                        firebase.auth().createUserWithEmailAndPassword(email, ADMIN_PASSWORD)
                             .then(userCred => {
                                 closeModal('modal-auth');
                                 alert("Author Admin Account initialized successfully!");
                                 switchTab('studio');
                             })
-                            .catch(createErr => { status.innerText = createErr.message; });
+                            .catch(createErr => { 
+                                status.innerText = (pass !== ADMIN_PASSWORD) ? "Incorrect password for Author Admin account." : createErr.message; 
+                            });
                     } else {
                         status.innerText = err.message;
                     }
@@ -819,6 +756,18 @@
         function renderComicGrid(list) {
             const grid = document.getElementById('comic-grid');
             document.getElementById('comic-count').innerText = `${list.length} Works`;
+            
+            if (list.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-16 text-center space-y-3 bg-brand-card/50 rounded-2xl border border-brand-border/50">
+                        <i class="fa-solid fa-layer-group text-3xl text-gray-600"></i>
+                        <h3 class="text-sm font-bold text-gray-300">No Webtoons Published Yet</h3>
+                        <p class="text-xs text-gray-500 max-w-sm mx-auto">The author has not uploaded any works yet. Stay tuned for exciting new releases!</p>
+                    </div>
+                `;
+                return;
+            }
+
             grid.innerHTML = list.map(c => `
                 <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden group hover:border-brand-500/50 transition duration-300 cursor-pointer flex flex-col" onclick="openComicDetail('${c.id}')">
                     <div class="relative aspect-[3/4] overflow-hidden">
@@ -828,8 +777,8 @@
                     <div class="p-3 flex-grow flex flex-col justify-between space-y-2">
                         <h3 class="font-bold text-xs sm:text-sm text-white group-hover:text-brand-500 transition line-clamp-1">${c.title}</h3>
                         <div class="flex items-center justify-between text-[10px] text-gray-400">
-                            <span><i class="fa-solid fa-heart text-rose-500 mr-1"></i>${c.likes}</span>
-                            <span>${c.episodes.length} Ch</span>
+                            <span><i class="fa-solid fa-heart text-rose-500 mr-1"></i>${c.likes || 0}</span>
+                            <span>${c.episodes ? c.episodes.length : 0} Ch</span>
                         </div>
                     </div>
                 </div>
@@ -846,32 +795,47 @@
             document.getElementById('detail-genre').innerText = comic.genre;
             document.getElementById('detail-desc').innerText = comic.desc;
 
-            document.getElementById('detail-characters').innerHTML = comic.characters.map(ch => `
-                <div class="bg-brand-dark p-2.5 rounded-xl border border-brand-border flex items-center space-x-2">
-                    <img src="${ch.img}" class="w-10 h-10 rounded-lg object-cover">
-                    <div>
-                        <h4 class="text-xs font-bold text-white">${ch.name}</h4>
-                        <span class="text-[10px] text-gray-400">${ch.role}</span>
+            const charGrid = document.getElementById('detail-characters');
+            if (comic.characters && comic.characters.length > 0) {
+                charGrid.innerHTML = comic.characters.map(ch => `
+                    <div class="bg-brand-dark p-2.5 rounded-xl border border-brand-border flex items-center space-x-2">
+                        <img src="${ch.img}" class="w-10 h-10 rounded-lg object-cover">
+                        <div>
+                            <h4 class="text-xs font-bold text-white">${ch.name}</h4>
+                            <span class="text-[10px] text-gray-400">${ch.role}</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            } else {
+                charGrid.innerHTML = `<p class="col-span-full text-xs text-gray-500 py-2">No character profiles uploaded yet.</p>`;
+            }
 
-            document.getElementById('detail-episodes').innerHTML = comic.episodes.map((ep, idx) => `
-                <div onclick="openReader('${comic.id}', ${idx})" class="bg-brand-dark p-3 rounded-xl border border-brand-border hover:border-brand-500 flex items-center justify-between cursor-pointer transition">
-                    <div class="flex items-center space-x-3">
-                        <i class="fa-solid fa-play text-brand-500 text-xs"></i>
-                        <span class="text-xs font-bold text-gray-200">${ep.title}</span>
+            const epList = document.getElementById('detail-episodes');
+            if (comic.episodes && comic.episodes.length > 0) {
+                epList.innerHTML = comic.episodes.map((ep, idx) => `
+                    <div onclick="openReader('${comic.id}', ${idx})" class="bg-brand-dark p-3 rounded-xl border border-brand-border hover:border-brand-500 flex items-center justify-between cursor-pointer transition">
+                        <div class="flex items-center space-x-3">
+                            <i class="fa-solid fa-play text-brand-500 text-xs"></i>
+                            <span class="text-xs font-bold text-gray-200">${ep.title}</span>
+                        </div>
+                        <span class="text-[10px] text-gray-500">${ep.date}</span>
                     </div>
-                    <span class="text-[10px] text-gray-500">${ep.date}</span>
-                </div>
-            `).join('');
+                `).join('');
+            } else {
+                epList.innerHTML = `<p class="text-xs text-gray-500 py-4 text-center">No episodes released yet.</p>`;
+            }
 
             renderComments(comic);
             switchTab('detail');
         }
 
         function renderComments(comic) {
-            document.getElementById('comment-list').innerHTML = comic.comments.map(cm => `
+            const list = document.getElementById('comment-list');
+            if (!comic.comments || comic.comments.length === 0) {
+                list.innerHTML = `<p class="text-xs text-gray-500 py-4 text-center">No comments yet. Be the first to start the discussion!</p>`;
+                return;
+            }
+            list.innerHTML = comic.comments.map(cm => `
                 <div class="bg-brand-dark p-2.5 rounded-xl border border-brand-border space-y-1">
                     <div class="flex items-center space-x-2">
                         <img src="${cm.avatar}" class="w-5 h-5 rounded-full object-cover">
@@ -887,19 +851,22 @@
             if (!input.value.trim() || !currentComicId) return;
 
             const comic = comics.find(c => c.id === currentComicId);
+            if (!comic.comments) comic.comments = [];
+            
             comic.comments.unshift({
                 user: (currentUser && currentUser.email === ADMIN_EMAIL) ? "Author (Admin)" : userProfile.name,
                 avatar: userProfile.avatar,
                 text: input.value.trim()
             });
 
+            saveComicsStorage();
             input.value = '';
             renderComments(comic);
         }
 
         function openReader(comicId, chapterIdx) {
             const comic = comics.find(c => c.id === comicId);
-            if (!comic || !comic.episodes[chapterIdx]) return;
+            if (!comic || !comic.episodes || !comic.episodes[chapterIdx]) return;
 
             currentComicId = comicId;
             currentChapterIndex = chapterIdx;
@@ -950,7 +917,7 @@
 
         function updatePagePanelDisplay() {
             const comic = comics.find(c => c.id === currentComicId);
-            if (!comic || !comic.episodes[currentChapterIndex]) return;
+            if (!comic || !comic.episodes || !comic.episodes[currentChapterIndex]) return;
 
             const panels = comic.episodes[currentChapterIndex].panels;
             if (currentPanelIndex >= panels.length) currentPanelIndex = panels.length - 1;
@@ -965,7 +932,7 @@
 
         function nextPagePanel() {
             const comic = comics.find(c => c.id === currentComicId);
-            if (!comic || !comic.episodes[currentChapterIndex]) return;
+            if (!comic || !comic.episodes || !comic.episodes[currentChapterIndex]) return;
 
             const panels = comic.episodes[currentChapterIndex].panels;
             if (currentPanelIndex < panels.length - 1) {
@@ -989,7 +956,7 @@
 
         function nextChapter() {
             const comic = comics.find(c => c.id === currentComicId);
-            if (comic && currentChapterIndex < comic.episodes.length - 1) {
+            if (comic && comic.episodes && currentChapterIndex < comic.episodes.length - 1) {
                 openReader(currentComicId, currentChapterIndex + 1);
             }
         }
@@ -1054,13 +1021,18 @@
 
         function renderStudioWorks() {
             document.getElementById('studio-work-count').innerText = comics.length;
-            document.getElementById('studio-comic-list').innerHTML = comics.map(c => `
+            const studioList = document.getElementById('studio-comic-list');
+            if (comics.length === 0) {
+                studioList.innerHTML = `<p class="text-xs text-gray-500 py-6 text-center">No works published yet. Click "Publish New Series" above to get started!</p>`;
+                return;
+            }
+            studioList.innerHTML = comics.map(c => `
                 <div class="py-3 flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                         <img src="${c.cover}" class="w-10 h-10 rounded-lg object-cover">
                         <div>
                             <h4 class="text-xs font-bold text-white">${c.title}</h4>
-                            <span class="text-[10px] text-gray-400">${c.episodes.length} Episodes Published</span>
+                            <span class="text-[10px] text-gray-400">${c.episodes ? c.episodes.length : 0} Episodes Published</span>
                         </div>
                     </div>
                     <button onclick="openComicDetail('${c.id}')" class="px-3 py-1 bg-brand-dark hover:bg-brand-border rounded-lg text-xs text-brand-500 border border-brand-border">View</button>
@@ -1093,9 +1065,14 @@
             };
 
             comics.unshift(newComic);
+            saveComicsStorage();
             closeModal('modal-publish');
             renderComicGrid(comics);
             switchTab('dashboard');
+        }
+
+        function saveComicsStorage() {
+            localStorage.setItem('soopmic_published_comics', JSON.stringify(comics));
         }
 
         function loadProfileState() {
