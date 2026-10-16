@@ -873,7 +873,6 @@
 
             const finalImg = uploadedCharImageData || url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80';
             
-            // Build customizable stat chart array
             const customStats = [];
             
             if (document.getElementById('chk-attractiveness').checked) {
@@ -914,10 +913,10 @@
             if (!comic || !comic.characters || !comic.characters[charIdx]) return;
 
             const ch = comic.characters[charIdx];
-            document.getElementById('pop-char-img').src = ch.img;
-            document.getElementById('pop-char-name').innerText = ch.name;
-            document.getElementById('pop-char-role').innerText = ch.role;
-            document.getElementById('pop-char-desc').innerText = ch.desc || 'No description available.';
+            document.getElementById('pop-char-img').src = ch.img || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80';
+            document.getElementById('pop-char-name').innerText = ch.name || 'Character Name';
+            document.getElementById('pop-char-role').innerText = ch.role || 'Role';
+            document.getElementById('pop-char-desc').innerText = ch.desc || 'No backstory description provided yet.';
 
             document.getElementById('modal-char-detail').classList.remove('hidden');
 
@@ -931,9 +930,13 @@
                 radarChartInstance.destroy();
             }
 
-            // Default fallback if older format
-            const labels = (stats && Array.isArray(stats)) ? stats.map(s => s.label) : ['Attractiveness', 'Power', 'Speed', 'Intelligence', 'Technique', 'Agility'];
-            const dataValues = (stats && Array.isArray(stats)) ? stats.map(s => s.value) : [95, 80, 75, 90, 85, 88];
+            let labels = ['Attractiveness', 'Power', 'Speed', 'Intelligence', 'Technique', 'Agility'];
+            let dataValues = [95, 80, 75, 90, 85, 88];
+
+            if (stats && Array.isArray(stats) && stats.length > 0) {
+                labels = stats.map(s => s.label);
+                dataValues = stats.map(s => s.value);
+            }
 
             radarChartInstance = new Chart(ctx, {
                 type: 'radar',
@@ -1222,21 +1225,6 @@
                 updatePagePanelDisplay();
             } else {
                 prevChapter();
-            }
-        }
-
-        function closeReader() { switchTab('detail'); }
-
-        function nextChapter() {
-            const comic = comics.find(c => c.id === currentComicId);
-            if (comic && comic.episodes && currentChapterIndex < comic.episodes.length - 1) {
-                openReader(currentComicId, currentChapterIndex + 1);
-            }
-        }
-
-        function prevChapter() {
-            if (currentChapterIndex > 0) {
-                openReader(currentComicId, currentChapterIndex - 1);
             }
         }
 
