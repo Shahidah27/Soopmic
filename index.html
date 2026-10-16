@@ -137,7 +137,7 @@
                         <span>Liked</span>
                     </button>
                     <button onclick="switchTab('studio')" id="nav-studio" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-brand-accent hover:text-purple-300 hover:bg-brand-accent/10 flex items-center space-x-2 border border-brand-accent/30 transition ml-2">
-                        <i class="fa-solid fa-lock text-xs"></i>
+                        <i class="fa-solid fa-feather-pointed text-xs"></i>
                         <span>Author Studio</span>
                     </button>
                 </nav>
@@ -150,7 +150,7 @@
 
                     <button onclick="switchTab('profile')" id="nav-profile" class="flex items-center space-x-2 p-1.5 rounded-xl border border-brand-border bg-brand-card hover:border-brand-500 transition">
                         <img id="header-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Profile" class="w-8 h-8 rounded-lg object-cover">
-                        <span class="hidden lg:inline text-xs font-semibold text-gray-300 pr-1" id="header-username">Guest</span>
+                        <span class="hidden lg:inline text-xs font-semibold text-gray-300 pr-1" id="header-username">Author</span>
                     </button>
                 </div>
 
@@ -249,29 +249,29 @@
                 </div>
             </div>
 
-            <!-- Character & Lore Section with Add Character Button -->
+            <!-- Character & Lore Section with ALWAYS VISIBLE Add Character Button -->
             <div class="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
                 <div class="flex items-center justify-between">
                     <h3 class="text-lg font-bold text-white font-comic flex items-center space-x-2">
                         <i class="fa-solid fa-users text-brand-500"></i>
                         <span>CHARACTERS & LORE</span>
                     </h3>
-                    <button id="author-add-char-btn" onclick="openAddCharacterModal()" class="hidden px-3 py-1.5 rounded-xl bg-brand-accent hover:bg-purple-600 text-white font-bold text-xs flex items-center space-x-1 transition glow-purple">
-                        <i class="fa-solid fa-plus text-[10px]"></i>
-                        <span>Add Character Profile</span>
+                    <button id="author-add-char-btn" onclick="openAddCharacterModal()" class="px-4 py-2 rounded-xl bg-brand-accent hover:bg-purple-600 text-white font-bold text-xs flex items-center space-x-1.5 transition glow-purple">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>+ Add Character Profile</span>
                     </button>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="detail-characters"></div>
             </div>
 
-            <!-- Released Episodes Section with Upload Episode Button -->
+            <!-- Released Episodes Section with ALWAYS VISIBLE Upload Episode Button -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-bold text-white font-comic">RELEASED EPISODES</h3>
-                        <button id="author-upload-ep-btn" onclick="openUploadEpisodeModal()" class="hidden px-3 py-1.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-black font-extrabold text-xs flex items-center space-x-1 transition glow-green">
-                            <i class="fa-solid fa-upload text-[10px]"></i>
-                            <span>Upload Episode</span>
+                        <button id="author-upload-ep-btn" onclick="openUploadEpisodeModal()" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-black font-extrabold text-xs flex items-center space-x-1.5 transition glow-green">
+                            <i class="fa-solid fa-upload text-xs"></i>
+                            <span>+ Upload Episode</span>
                         </button>
                     </div>
                     <div class="space-y-3" id="detail-episodes"></div>
@@ -367,14 +367,7 @@
 
         <!-- ================= PAGE 6: AUTHOR CREATOR STUDIO ================= -->
         <section id="page-studio" class="tab-pane space-y-8">
-            <div id="admin-lock-screen" class="p-8 bg-brand-card border border-brand-border rounded-2xl text-center space-y-4">
-                <i class="fa-solid fa-lock text-4xl text-brand-accent"></i>
-                <h2 class="text-2xl font-bold text-white font-comic">AUTHOR ACCESS RESTRICTED</h2>
-                <p class="text-xs text-gray-400">Only the platform author account can publish comics and access creator studio tools.</p>
-                <button onclick="openAuthModal()" class="px-6 py-2.5 bg-brand-accent text-white font-bold text-xs rounded-xl glow-purple">Sign In as Admin Author</button>
-            </div>
-
-            <div id="admin-studio-content" class="hidden space-y-6">
+            <div id="admin-studio-content" class="space-y-6">
                 <div class="bg-gradient-to-r from-brand-accent/20 via-purple-900/10 to-brand-card p-6 md:p-8 rounded-2xl border border-brand-accent/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div class="space-y-2">
                         <span class="px-3 py-1 rounded-full text-[10px] font-bold bg-brand-accent text-white uppercase tracking-wider">Solo Creator Space</span>
@@ -431,7 +424,7 @@
                 <div class="space-y-4 pt-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-300 mb-1">Display Name</label>
-                        <input type="text" id="profile-name-input" value="Reader" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-500">
+                        <input type="text" id="profile-name-input" value="Author" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-500">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-300 mb-1">Email Address</label>
@@ -652,7 +645,7 @@
         let uploadedCoverData = "";
         let uploadedCharImageData = "";
         let uploadedEpisodePanelData = [];
-        let userProfile = JSON.parse(localStorage.getItem('soopmic_profile') || '{"name":"Reader","avatar":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80","email":""}');
+        let userProfile = JSON.parse(localStorage.getItem('soopmic_profile') || '{"name":"Author","avatar":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80","email":""}');
 
         document.addEventListener("DOMContentLoaded", () => {
             renderComicGrid(comics);
@@ -673,32 +666,13 @@
         function updateUserUI() {
             const authBtn = document.getElementById('auth-btn');
             const usernameSpan = document.getElementById('header-username');
-            const adminLock = document.getElementById('admin-lock-screen');
-            const adminContent = document.getElementById('admin-studio-content');
 
             if (currentUser) {
-                const isAdmin = (currentUser.email === ADMIN_EMAIL);
-
-                if (!currentUser.emailVerified && !isAdmin) {
-                    authBtn.innerText = "Email Unverified (Click)";
-                    usernameSpan.innerText = currentUser.email + " (Unverified)";
-                } else {
-                    authBtn.innerText = "Log Out";
-                    usernameSpan.innerText = isAdmin ? "Author (Admin)" : currentUser.email;
-                }
-
-                if (isAdmin) {
-                    adminLock.classList.add('hidden');
-                    adminContent.classList.remove('hidden');
-                } else {
-                    adminLock.classList.remove('hidden');
-                    adminContent.classList.add('hidden');
-                }
+                authBtn.innerText = "Log Out";
+                usernameSpan.innerText = currentUser.email;
             } else {
                 authBtn.innerText = "Log In / Verify Email";
-                usernameSpan.innerText = "Guest";
-                adminLock.classList.remove('hidden');
-                adminContent.classList.add('hidden');
+                usernameSpan.innerText = "Author";
             }
         }
 
@@ -745,27 +719,10 @@
             firebase.auth().signInWithEmailAndPassword(email, pass)
                 .then(userCredential => {
                     closeModal('modal-auth');
-                    if (userCredential.user.email === ADMIN_EMAIL) {
-                        alert("Welcome back, Author! Creator Studio Unlocked.");
-                        switchTab('studio');
-                    } else {
-                        alert("Logged in successfully as Reader!");
-                    }
+                    alert("Logged in successfully!");
                 })
                 .catch(err => {
-                    if (email === ADMIN_EMAIL && (err.code === "auth/user-not-found" || err.code === "auth/invalid-credential")) {
-                        firebase.auth().createUserWithEmailAndPassword(email, ADMIN_PASSWORD)
-                            .then(userCred => {
-                                closeModal('modal-auth');
-                                alert("Author Admin Account initialized!");
-                                switchTab('studio');
-                            })
-                            .catch(createErr => { 
-                                status.innerText = (pass !== ADMIN_PASSWORD) ? "Incorrect password for Author Admin account." : createErr.message; 
-                            });
-                    } else {
-                        status.innerText = err.message;
-                    }
+                    status.innerText = err.message;
                 });
         }
 
@@ -790,7 +747,7 @@
                     <div class="col-span-full py-16 text-center space-y-3 bg-brand-card/50 rounded-2xl border border-brand-border/50">
                         <i class="fa-solid fa-layer-group text-3xl text-gray-600"></i>
                         <h3 class="text-sm font-bold text-gray-300">No Webtoons Published Yet</h3>
-                        <p class="text-xs text-gray-500 max-w-sm mx-auto">The author has not uploaded any works yet. Stay tuned for exciting new releases!</p>
+                        <p class="text-xs text-gray-500 max-w-sm mx-auto">Click Author Studio above to publish your first work!</p>
                     </div>
                 `;
                 return;
@@ -865,19 +822,6 @@
             document.getElementById('detail-title').innerText = comic.title;
             document.getElementById('detail-genre').innerText = comic.genre;
             document.getElementById('detail-desc').innerText = comic.desc;
-
-            // Toggle Author Add Buttons visibility
-            const isAuthor = (currentUser && currentUser.email === ADMIN_EMAIL);
-            const addCharBtn = document.getElementById('author-add-char-btn');
-            const uploadEpBtn = document.getElementById('author-upload-ep-btn');
-
-            if (isAuthor) {
-                if (addCharBtn) addCharBtn.classList.remove('hidden');
-                if (uploadEpBtn) uploadEpBtn.classList.remove('hidden');
-            } else {
-                if (addCharBtn) addCharBtn.classList.add('hidden');
-                if (uploadEpBtn) uploadEpBtn.classList.add('hidden');
-            }
 
             const charGrid = document.getElementById('detail-characters');
             if (comic.characters && comic.characters.length > 0) {
@@ -1016,7 +960,7 @@
             if (!comic.comments) comic.comments = [];
             
             comic.comments.unshift({
-                user: (currentUser && currentUser.email === ADMIN_EMAIL) ? "Author (Admin)" : userProfile.name,
+                user: userProfile.name,
                 avatar: userProfile.avatar,
                 text: input.value.trim()
             });
@@ -1249,7 +1193,7 @@
         }
 
         function saveProfile() {
-            userProfile.name = document.getElementById('profile-name-input').value.trim() || 'Reader';
+            userProfile.name = document.getElementById('profile-name-input').value.trim() || 'Author';
             userProfile.email = document.getElementById('profile-email-input').value.trim();
             localStorage.setItem('soopmic_profile', JSON.stringify(userProfile));
             loadProfileState();
