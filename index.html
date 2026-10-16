@@ -249,20 +249,31 @@
                 </div>
             </div>
 
+            <!-- Character & Lore Section with Add Character Button -->
             <div class="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
-                <h3 class="text-lg font-bold text-white font-comic flex items-center space-x-2">
-                    <i class="fa-solid fa-users text-brand-500"></i>
-                    <span>CHARACTERS & LORE</span>
-                </h3>
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-white font-comic flex items-center space-x-2">
+                        <i class="fa-solid fa-users text-brand-500"></i>
+                        <span>CHARACTERS & LORE</span>
+                    </h3>
+                    <button id="author-add-char-btn" onclick="openAddCharacterModal()" class="hidden px-3 py-1.5 rounded-xl bg-brand-accent hover:bg-purple-600 text-white font-bold text-xs flex items-center space-x-1 transition glow-purple">
+                        <i class="fa-solid fa-plus text-[10px]"></i>
+                        <span>Add Character Profile</span>
+                    </button>
+                </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="detail-characters"></div>
             </div>
 
+            <!-- Released Episodes Section with Upload Episode Button -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
-                    <h3 class="text-lg font-bold text-white font-comic flex items-center justify-between">
-                        <span>RELEASED EPISODES</span>
-                        <span class="text-xs font-normal text-gray-400">Vertical Webtoon & Page Mode</span>
-                    </h3>
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-bold text-white font-comic">RELEASED EPISODES</h3>
+                        <button id="author-upload-ep-btn" onclick="openUploadEpisodeModal()" class="hidden px-3 py-1.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-black font-extrabold text-xs flex items-center space-x-1 transition glow-green">
+                            <i class="fa-solid fa-upload text-[10px]"></i>
+                            <span>Upload Episode</span>
+                        </button>
+                    </div>
                     <div class="space-y-3" id="detail-episodes"></div>
                 </div>
 
@@ -500,8 +511,6 @@
                         <option>Slice of Life</option>
                     </select>
                 </div>
-                
-                <!-- Updated Cover Image Input: File Upload or Link -->
                 <div>
                     <label class="block text-xs font-bold text-gray-300 mb-1">Cover Image</label>
                     <div class="space-y-2">
@@ -524,6 +533,91 @@
                 </div>
             </div>
             <button onclick="publishNewComic()" class="w-full py-3 bg-brand-accent text-white font-bold text-xs rounded-xl glow-purple">Publish Comic Series</button>
+        </div>
+    </div>
+
+    <!-- MODAL 3: ADD CHARACTER & LORE -->
+    <div id="modal-add-char" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-md w-full space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold text-white font-comic">ADD CHARACTER PROFILE</h3>
+                <button onclick="closeModal('modal-add-char')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Character Name</label>
+                    <input type="text" id="char-name" placeholder="e.g. Kai Vance" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Role / Lore Note</label>
+                    <input type="text" id="char-role" placeholder="e.g. Protagonist / Rogue Ninja" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Character Avatar Image</label>
+                    <input type="file" id="char-img-file" accept="image/*" onchange="previewCharFile(this)" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-accent file:text-white hover:file:bg-purple-600 cursor-pointer">
+                    <p class="text-[10px] text-gray-500 my-1 text-center font-bold">OR PASTE IMAGE URL</p>
+                    <input type="text" id="char-img-url" placeholder="https://..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
+                </div>
+            </div>
+
+            <button onclick="saveCharacterProfile()" class="w-full py-3 bg-brand-accent text-white font-bold text-xs rounded-xl glow-purple">Save Character Profile</button>
+        </div>
+    </div>
+
+    <!-- MODAL 4: UPLOAD EPISODE / CHAPTER -->
+    <div id="modal-upload-ep" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-lg w-full space-y-4 my-8">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold text-white font-comic">UPLOAD NEW EPISODE</h3>
+                <button onclick="closeModal('modal-upload-ep')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Episode Title</label>
+                    <input type="text" id="ep-title" placeholder="e.g. Episode 1 - The Awakening" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Upload Vertical Webtoon Strip Panels</label>
+                    <div class="border-2 border-dashed border-brand-border hover:border-brand-500 rounded-xl p-4 bg-brand-dark text-center space-y-2 cursor-pointer relative">
+                        <input type="file" id="ep-panel-files" accept="image/*" multiple onchange="previewEpisodePanels(this)" class="absolute inset-0 opacity-0 cursor-pointer">
+                        <i class="fa-solid fa-images text-brand-500 text-2xl"></i>
+                        <p class="text-xs font-bold text-gray-300" id="ep-panel-status">Click or Drag Multiple Image Files Here</p>
+                        <p class="text-[10px] text-gray-500">Supports selecting multiple strip images at once</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Or Paste Image Panel URLs (One per line)</label>
+                    <textarea id="ep-panel-urls" rows="3" placeholder="https://image1.jpg&#10;https://image2.jpg" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white resize-none"></textarea>
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="previewEpisodeBeforePublish()" class="flex-1 py-3 bg-brand-dark border border-brand-border text-brand-500 font-bold text-xs rounded-xl hover:bg-brand-border transition">
+                    <i class="fa-solid fa-eye mr-1"></i> Live Reader Preview
+                </button>
+                <button onclick="saveNewEpisode()" class="flex-1 py-3 bg-brand-500 text-black font-extrabold text-xs rounded-xl glow-green">
+                    Publish Episode
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: EPISODE LIVE PREVIEW MODAL -->
+    <div id="modal-live-preview" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex flex-col p-4 overflow-y-auto">
+        <div class="flex justify-between items-center bg-brand-card p-4 rounded-xl border border-brand-border mb-4">
+            <div>
+                <span class="text-[10px] font-bold text-brand-500 uppercase tracking-widest">Author Mode</span>
+                <h3 class="text-sm font-bold text-white" id="preview-ep-title">Live Episode Preview</h3>
+            </div>
+            <button onclick="closeModal('modal-live-preview')" class="px-4 py-2 bg-brand-dark border border-brand-border text-xs text-gray-300 rounded-xl hover:text-white">Close Preview</button>
+        </div>
+
+        <div id="preview-panels-box" class="max-w-xl mx-auto w-full space-y-2 py-4">
+            <!-- Panels dynamically rendered -->
         </div>
     </div>
 
@@ -556,6 +650,8 @@
         let currentPanelIndex = 0;
         let currentReaderMode = 'scroll';
         let uploadedCoverData = "";
+        let uploadedCharImageData = "";
+        let uploadedEpisodePanelData = [];
         let userProfile = JSON.parse(localStorage.getItem('soopmic_profile') || '{"name":"Reader","avatar":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80","email":""}');
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -569,6 +665,7 @@
                 firebase.auth().onAuthStateChanged(user => {
                     currentUser = user;
                     updateUserUI();
+                    if (currentComicId) openComicDetail(currentComicId);
                 });
             }
         });
@@ -731,6 +828,34 @@
             }
         }
 
+        function previewCharFile(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedCharImageData = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function previewEpisodePanels(input) {
+            uploadedEpisodePanelData = [];
+            if (input.files && input.files.length > 0) {
+                let loadedCount = 0;
+                Array.from(input.files).forEach((file, idx) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        uploadedEpisodePanelData[idx] = e.target.result;
+                        loadedCount++;
+                        if (loadedCount === input.files.length) {
+                            document.getElementById('ep-panel-status').innerText = `${loadedCount} Image Panel(s) Loaded!`;
+                        }
+                    }
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
         function openComicDetail(comicId) {
             currentComicId = comicId;
             const comic = comics.find(c => c.id === comicId);
@@ -740,6 +865,19 @@
             document.getElementById('detail-title').innerText = comic.title;
             document.getElementById('detail-genre').innerText = comic.genre;
             document.getElementById('detail-desc').innerText = comic.desc;
+
+            // Toggle Author Add Buttons visibility
+            const isAuthor = (currentUser && currentUser.email === ADMIN_EMAIL);
+            const addCharBtn = document.getElementById('author-add-char-btn');
+            const uploadEpBtn = document.getElementById('author-upload-ep-btn');
+
+            if (isAuthor) {
+                if (addCharBtn) addCharBtn.classList.remove('hidden');
+                if (uploadEpBtn) uploadEpBtn.classList.remove('hidden');
+            } else {
+                if (addCharBtn) addCharBtn.classList.add('hidden');
+                if (uploadEpBtn) uploadEpBtn.classList.add('hidden');
+            }
 
             const charGrid = document.getElementById('detail-characters');
             if (comic.characters && comic.characters.length > 0) {
@@ -764,7 +902,7 @@
                             <i class="fa-solid fa-play text-brand-500 text-xs"></i>
                             <span class="text-xs font-bold text-gray-200">${ep.title}</span>
                         </div>
-                        <span class="text-[10px] text-gray-500">${ep.date}</span>
+                        <span class="text-[10px] text-gray-500">${ep.date || 'Recent'}</span>
                     </div>
                 `).join('');
             } else {
@@ -773,6 +911,84 @@
 
             renderComments(comic);
             switchTab('detail');
+        }
+
+        function openAddCharacterModal() {
+            uploadedCharImageData = "";
+            document.getElementById('char-name').value = "";
+            document.getElementById('char-role').value = "";
+            document.getElementById('char-img-url').value = "";
+            document.getElementById('modal-add-char').classList.remove('hidden');
+        }
+
+        function saveCharacterProfile() {
+            const name = document.getElementById('char-name').value.trim();
+            const role = document.getElementById('char-role').value.trim();
+            const url = document.getElementById('char-img-url').value.trim();
+
+            if (!name || !currentComicId) return;
+
+            const finalImg = uploadedCharImageData || url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80';
+            const comic = comics.find(c => c.id === currentComicId);
+
+            if (comic) {
+                if (!comic.characters) comic.characters = [];
+                comic.characters.push({ name, role, img: finalImg });
+                saveComicsStorage();
+                closeModal('modal-add-char');
+                openComicDetail(currentComicId);
+            }
+        }
+
+        function openUploadEpisodeModal() {
+            uploadedEpisodePanelData = [];
+            document.getElementById('ep-title').value = "";
+            document.getElementById('ep-panel-urls').value = "";
+            document.getElementById('ep-panel-status').innerText = "Click or Drag Multiple Image Files Here";
+            document.getElementById('modal-upload-ep').classList.remove('hidden');
+        }
+
+        function getEpisodePanelsList() {
+            const rawUrls = document.getElementById('ep-panel-urls').value.trim();
+            const urlList = rawUrls ? rawUrls.split('\n').map(u => u.trim()).filter(u => u) : [];
+            return uploadedEpisodePanelData.concat(urlList);
+        }
+
+        function previewEpisodeBeforePublish() {
+            const title = document.getElementById('ep-title').value.trim() || 'Untitled Episode Preview';
+            const panels = getEpisodePanelsList();
+
+            if (panels.length === 0) {
+                alert("Please select or paste at least one panel image to preview!");
+                return;
+            }
+
+            document.getElementById('preview-ep-title').innerText = title;
+            document.getElementById('preview-panels-box').innerHTML = panels.map(pUrl => `
+                <img src="${pUrl}" class="w-full h-auto object-cover rounded-lg border border-brand-border" alt="Panel Preview">
+            `).join('');
+
+            document.getElementById('modal-live-preview').classList.remove('hidden');
+        }
+
+        function saveNewEpisode() {
+            const title = document.getElementById('ep-title').value.trim();
+            const panels = getEpisodePanelsList();
+
+            if (!title || panels.length === 0 || !currentComicId) {
+                alert("Please fill in the title and select at least one panel image.");
+                return;
+            }
+
+            const comic = comics.find(c => c.id === currentComicId);
+            if (comic) {
+                if (!comic.episodes) comic.episodes = [];
+                const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                comic.episodes.push({ title, date: today, panels });
+                saveComicsStorage();
+                closeModal('modal-upload-ep');
+                openComicDetail(currentComicId);
+            }
         }
 
         function renderComments(comic) {
@@ -1017,7 +1233,7 @@
             closeModal('modal-publish');
             uploadedCoverData = "";
             renderComicGrid(comics);
-            switchTab('dashboard');
+            openComicDetail(newComic.id);
         }
 
         function saveComicsStorage() {
