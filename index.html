@@ -38,7 +38,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- Firebase SDKs (Compatibility Libraries for Direct Web Browser Loading) -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
@@ -51,7 +51,6 @@
             overflow-x: hidden;
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -67,7 +66,6 @@
             background: #10b981;
         }
 
-        /* Neon Glow Effects */
         .glow-green {
             box-shadow: 0 0 15px rgba(16, 185, 129, 0.35);
         }
@@ -78,7 +76,6 @@
             box-shadow: 0 0 15px rgba(236, 72, 153, 0.35);
         }
 
-        /* Webtoon Panel Stack Animation */
         .panel-glow:hover {
             filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.4));
         }
@@ -89,7 +86,6 @@
             -webkit-backdrop-filter: blur(12px);
         }
 
-        /* Smooth tab transition */
         .tab-pane {
             display: none;
             opacity: 0;
@@ -100,7 +96,6 @@
             opacity: 1;
         }
 
-        /* Reading Progress Bar */
         #reading-progress {
             transition: width 0.1s ease-out;
         }
@@ -169,15 +164,12 @@
         <!-- ================= PAGE 1: READER DASHBOARD ================= -->
         <section id="page-dashboard" class="tab-pane active space-y-8">
             
-            <!-- Hero Spotlight Banner -->
-            <div id="hero-carousel" class="relative rounded-2xl overflow-hidden bg-brand-card border border-brand-border min-h-[280px] md:min-h-[340px] flex items-end p-6 md:p-10 shadow-2xl">
-                <div class="absolute inset-0 bg-cover bg-center opacity-30" id="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&auto=format&fit=crop&q=80');"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/80 to-transparent"></div>
-                
+            <!-- Hero Banner (Only displays when comics are published) -->
+            <div id="hero-carousel" class="relative rounded-2xl overflow-hidden bg-brand-card border border-brand-border p-6 md:p-10 shadow-2xl">
                 <div class="relative z-10 max-w-2xl space-y-3" id="hero-content">
                     <span class="px-3 py-1 rounded-full text-xs font-bold bg-brand-accent/20 text-brand-accent border border-brand-accent/30 uppercase tracking-wider">Official Webtoon Portal</span>
                     <h1 id="hero-title" class="text-3xl sm:text-5xl font-extrabold text-white font-comic tracking-wide drop-shadow-md">WELCOME TO SOOPMIC</h1>
-                    <p id="hero-desc" class="text-gray-300 text-xs sm:text-sm leading-relaxed">Official Webtoon hub. New original series, upcoming webtoon chapters, and artwork releases will be published here soon!</p>
+                    <p id="hero-desc" class="text-gray-300 text-xs sm:text-sm leading-relaxed">Official Webtoon hub. Original webtoon series and artwork releases will appear here once published by the author!</p>
                 </div>
             </div>
 
@@ -208,13 +200,13 @@
                 </div>
 
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6" id="comic-grid">
-                    <!-- Populated Dynamically JS -->
+                    <!-- Dynamic Works List -->
                 </div>
             </div>
 
         </section>
 
-        <!-- ================= PAGE 2: COMIC DETAIL & CHAPTERS MODAL/VIEW ================= -->
+        <!-- ================= PAGE 2: COMIC DETAIL & CHAPTERS ================= -->
         <section id="page-detail" class="tab-pane space-y-6">
             <button onclick="switchTab('dashboard')" class="text-xs text-gray-400 hover:text-brand-500 flex items-center space-x-2 transition mb-4">
                 <i class="fa-solid fa-arrow-left"></i>
@@ -232,9 +224,8 @@
                     </div>
 
                     <h1 id="detail-title" class="text-3xl md:text-4xl font-extrabold text-white font-comic">Comic Title</h1>
-                    <p id="detail-desc" class="text-gray-300 text-sm leading-relaxed">Comic Description goes here...</p>
+                    <p id="detail-desc" class="text-gray-300 text-sm leading-relaxed">Comic Description...</p>
                     
-                    <!-- Creator Badge -->
                     <div class="flex items-center space-x-3 p-3 bg-brand-dark rounded-xl border border-brand-border w-fit">
                         <div class="w-8 h-8 rounded-full bg-brand-accent/20 flex items-center justify-center text-brand-accent text-xs font-bold">
                             <i class="fa-solid fa-pen-nib"></i>
@@ -245,7 +236,6 @@
                         </div>
                     </div>
 
-                    <!-- Action Buttons -->
                     <div class="flex items-center space-x-4 pt-2">
                         <button id="detail-like-btn" onclick="toggleLikeCurrent()" class="px-5 py-2.5 rounded-xl bg-brand-dark hover:bg-rose-950/30 text-rose-500 border border-rose-500/30 text-xs font-bold flex items-center space-x-2 transition">
                             <i class="fa-regular fa-heart"></i>
@@ -259,54 +249,39 @@
                 </div>
             </div>
 
-            <!-- Cast & Character Section -->
             <div class="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
                 <h3 class="text-lg font-bold text-white font-comic flex items-center space-x-2">
                     <i class="fa-solid fa-users text-brand-500"></i>
                     <span>CHARACTERS & LORE</span>
                 </h3>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="detail-characters">
-                    <!-- Dynamic Character Cards -->
-                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="detail-characters"></div>
             </div>
 
-            <!-- Chapter List & Discussion -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Episode Selector -->
                 <div class="lg:col-span-2 bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
                     <h3 class="text-lg font-bold text-white font-comic flex items-center justify-between">
                         <span>RELEASED EPISODES</span>
                         <span class="text-xs font-normal text-gray-400">Vertical Webtoon & Page Mode</span>
                     </h3>
-                    <div class="space-y-3" id="detail-episodes">
-                        <!-- Dynamic Chapters -->
-                    </div>
+                    <div class="space-y-3" id="detail-episodes"></div>
                 </div>
 
-                <!-- Comment Section -->
                 <div class="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
                     <h3 class="text-lg font-bold text-white font-comic flex items-center space-x-2">
                         <i class="fa-solid fa-comments text-brand-accent"></i>
                         <span>READER DISCUSSION</span>
                     </h3>
-                    
-                    <!-- Comment Input Box -->
                     <div class="space-y-2">
-                        <textarea id="comment-input" rows="3" placeholder="Share your thoughts on this chapter..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-gray-200 focus:outline-none focus:border-brand-500 transition resize-none"></textarea>
+                        <textarea id="comment-input" rows="3" placeholder="Share your thoughts..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-gray-200 focus:outline-none focus:border-brand-500 transition resize-none"></textarea>
                         <button onclick="postComment()" class="w-full py-2 bg-brand-500 hover:bg-brand-600 text-black font-extrabold text-xs rounded-xl transition glow-green">Post Comment</button>
                     </div>
-
-                    <!-- Comment List -->
-                    <div class="space-y-3 max-h-80 overflow-y-auto pr-1" id="comment-list">
-                        <!-- Dynamic Comments -->
-                    </div>
+                    <div class="space-y-3 max-h-80 overflow-y-auto pr-1" id="comment-list"></div>
                 </div>
             </div>
         </section>
 
         <!-- ================= PAGE 3: READING MODE ================= -->
         <section id="page-reader" class="tab-pane">
-            <!-- Reader Control Header Bar -->
             <div class="sticky top-16 z-30 bg-brand-dark/95 border-b border-brand-border py-3 px-4 flex flex-wrap items-center justify-between gap-2">
                 <button onclick="closeReader()" class="text-xs text-gray-400 hover:text-white flex items-center space-x-2">
                     <i class="fa-solid fa-chevron-left"></i>
@@ -315,7 +290,6 @@
                 
                 <span id="reader-chapter-title" class="text-xs font-bold text-brand-500 truncate max-w-[180px] sm:max-w-xs">Chapter Title</span>
 
-                <!-- Mode Toggle -->
                 <div class="flex items-center bg-brand-card p-1 rounded-xl border border-brand-border">
                     <button id="mode-scroll-btn" onclick="setReaderMode('scroll')" class="px-3 py-1 rounded-lg text-xs font-bold text-white bg-brand-500/20 border border-brand-500/30 flex items-center space-x-1 transition">
                         <i class="fa-solid fa-arrows-up-down text-[10px]"></i>
@@ -327,28 +301,22 @@
                     </button>
                 </div>
 
-                <!-- Navigation Controls for Reader -->
                 <div class="flex items-center space-x-2">
                     <button onclick="prevChapter()" class="p-2 bg-brand-card rounded-lg text-xs text-gray-300 hover:text-white" title="Previous Chapter"><i class="fa-solid fa-angles-left"></i></button>
                     <button onclick="nextChapter()" class="p-2 bg-brand-card rounded-lg text-xs text-gray-300 hover:text-white" title="Next Chapter"><i class="fa-solid fa-angles-right"></i></button>
                 </div>
             </div>
 
-            <!-- Reading Progress bar -->
             <div class="w-full bg-brand-border h-1 sticky top-[113px] z-30">
                 <div id="reading-progress" class="bg-brand-500 h-1 w-0"></div>
             </div>
 
-            <!-- VIEW 1: SCROLL MODE CONTAINER -->
-            <div id="reader-scroll-container" class="max-w-2xl mx-auto py-6 space-y-0 text-center">
-                <!-- Stacked Panel Images dynamically loaded -->
-            </div>
+            <div id="reader-scroll-container" class="max-w-2xl mx-auto py-6 space-y-0 text-center"></div>
 
-            <!-- VIEW 2: PAGE MODE CONTAINER -->
             <div id="reader-page-container" class="max-w-2xl mx-auto py-6 hidden flex-col items-center space-y-4">
                 <div class="flex items-center justify-between w-full px-4 text-xs text-gray-400">
                     <span id="page-counter">Panel 1 of 1</span>
-                    <span class="text-[10px] text-brand-500">Use ← → Keyboard Arrows or Click Buttons</span>
+                    <span class="text-[10px] text-brand-500">Use ← → Keyboard Arrows</span>
                 </div>
 
                 <div class="flex items-center justify-between w-full px-2 gap-2">
@@ -364,32 +332,6 @@
 
                 <div class="relative w-full rounded-xl overflow-hidden border border-brand-border bg-black group shadow-2xl">
                     <img id="single-panel-img" src="" class="w-full h-auto object-contain max-h-[75vh]" alt="Comic Panel">
-                    <div onclick="prevPagePanel()" class="absolute left-0 top-0 bottom-0 w-1/4 bg-gradient-to-r from-black/40 to-transparent opacity-0 group-hover:opacity-100 cursor-pointer flex items-center justify-start pl-4 transition">
-                        <i class="fa-solid fa-chevron-left text-2xl text-white drop-shadow"></i>
-                    </div>
-                    <div onclick="nextPagePanel()" class="absolute right-0 top-0 bottom-0 w-1/4 bg-gradient-to-l from-black/40 to-transparent opacity-0 group-hover:opacity-100 cursor-pointer flex items-center justify-end pr-4 transition">
-                        <i class="fa-solid fa-chevron-right text-2xl text-white drop-shadow"></i>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between w-full px-2 gap-2 pt-2">
-                    <button onclick="prevPagePanel()" class="flex-1 py-2.5 bg-brand-card hover:bg-brand-border border border-brand-border rounded-xl text-xs font-bold text-gray-300 hover:text-white transition flex items-center justify-center space-x-2">
-                        <i class="fa-solid fa-arrow-left"></i>
-                        <span>Previous Panel</span>
-                    </button>
-                    <button onclick="nextPagePanel()" class="flex-1 py-2.5 bg-brand-500 hover:bg-brand-600 rounded-xl text-xs font-extrabold text-black transition glow-green flex items-center justify-center space-x-2">
-                        <span>Next Panel</span>
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- End of Chapter Footer -->
-            <div class="max-w-2xl mx-auto py-10 px-4 text-center space-y-4 border-t border-brand-border mt-8">
-                <h4 class="text-lg font-bold text-white font-comic">You reached the end of this chapter!</h4>
-                <div class="flex justify-center space-x-4">
-                    <button onclick="prevChapter()" class="px-6 py-2.5 rounded-xl bg-brand-card hover:bg-brand-border text-xs font-bold text-white transition">Previous Episode</button>
-                    <button onclick="nextChapter()" class="px-6 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-xs font-extrabold text-black transition glow-green">Next Episode</button>
                 </div>
             </div>
         </section>
@@ -400,9 +342,7 @@
                 <h2 class="text-2xl font-bold text-white font-comic">MY BOOKMARKED COMICS</h2>
                 <p class="text-xs text-gray-400">Series saved for quick reading access</p>
             </div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6" id="bookmark-grid">
-                <!-- Dynamic Bookmarks -->
-            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6" id="bookmark-grid"></div>
         </section>
 
         <!-- ================= PAGE 5: LIKED COMICS ================= -->
@@ -411,12 +351,10 @@
                 <h2 class="text-2xl font-bold text-white font-comic">LIKED SERIES</h2>
                 <p class="text-xs text-gray-400">Comics you have given love and appreciation</p>
             </div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6" id="likes-grid">
-                <!-- Dynamic Likes -->
-            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6" id="likes-grid"></div>
         </section>
 
-        <!-- ================= PAGE 6: AUTHOR CREATOR STUDIO (ADMIN ONLY) ================= -->
+        <!-- ================= PAGE 6: AUTHOR CREATOR STUDIO ================= -->
         <section id="page-studio" class="tab-pane space-y-8">
             <div id="admin-lock-screen" class="p-8 bg-brand-card border border-brand-border rounded-2xl text-center space-y-4">
                 <i class="fa-solid fa-lock text-4xl text-brand-accent"></i>
@@ -477,7 +415,6 @@
                             <input type="file" id="avatar-input" accept="image/*" class="hidden" onchange="updateProfileAvatar(this)">
                         </label>
                     </div>
-                    <p class="text-[11px] text-gray-400">Supports PNG, JPG, or PDF previews</p>
                 </div>
 
                 <div class="space-y-4 pt-4">
@@ -486,7 +423,7 @@
                         <input type="text" id="profile-name-input" value="Reader" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-300 mb-1">Email Address (For Chapter Alerts)</label>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Email Address</label>
                         <input type="email" id="profile-email-input" placeholder="user@example.com" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-500">
                     </div>
                     <button onclick="saveProfile()" class="w-full py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-black font-extrabold text-xs transition glow-green">Save Profile Changes</button>
@@ -520,7 +457,7 @@
         </button>
     </div>
 
-    <!-- MODAL 1: AUTHENTICATION & EMAIL VERIFICATION -->
+    <!-- MODAL 1: AUTHENTICATION -->
     <div id="modal-auth" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-md w-full space-y-4">
             <div class="flex justify-between items-center">
@@ -528,7 +465,7 @@
                 <button onclick="closeModal('modal-auth')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
-            <p class="text-xs text-gray-300">To bookmark series or receive email chapter notifications, please create an account and click the verification link sent to your inbox.</p>
+            <p class="text-xs text-gray-300">Log in or register your account to bookmark comics and receive updates.</p>
             
             <input type="email" id="auth-email" placeholder="Your Email Address" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-500">
             <input type="password" id="auth-pass" placeholder="Password" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-500">
@@ -551,7 +488,7 @@
             <div class="space-y-3">
                 <div>
                     <label class="block text-xs font-bold text-gray-300 mb-1">Comic Title</label>
-                    <input type="text" id="pub-title" placeholder="e.g. Cyberpunk Ninja" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
+                    <input type="text" id="pub-title" placeholder="e.g. My Original Webtoon" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-300 mb-1">Genre</label>
@@ -578,11 +515,9 @@
 
     <!-- Application Script Logic -->
     <script>
-        // Configured AUTHOR/ADMIN email address & Password
         const ADMIN_EMAIL = "idah2667@gmail.com";
         const ADMIN_PASSWORD = "soop123!";
 
-        // FIREBASE CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyAzxh8Y5boz4uezZOMb2bwxJtagaAcwbgI",
             authDomain: "soopmic-16076.firebaseapp.com",
@@ -593,7 +528,6 @@
             measurementId: "G-QS04G4KP35"
         };
 
-        // Initialize Firebase
         if (typeof firebase !== 'undefined' && firebase.apps && !firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
@@ -641,7 +575,6 @@
                     usernameSpan.innerText = isAdmin ? "Author (Admin)" : currentUser.email;
                 }
 
-                // Unlock Author Studio for ADMIN_EMAIL
                 if (isAdmin) {
                     adminLock.classList.add('hidden');
                     adminContent.classList.remove('hidden');
@@ -672,7 +605,7 @@
                     return userCredential.user.sendEmailVerification();
                 })
                 .then(() => {
-                    status.innerText = "Verification link sent! Please check your email inbox and click the verification link.";
+                    status.innerText = "Verification link sent! Please check your inbox.";
                 })
                 .catch(err => {
                     status.innerText = err.message;
@@ -701,19 +634,18 @@
                 .then(userCredential => {
                     closeModal('modal-auth');
                     if (userCredential.user.email === ADMIN_EMAIL) {
-                        alert("Welcome back, Author! Studio Access Unlocked.");
+                        alert("Welcome back, Author! Creator Studio Unlocked.");
                         switchTab('studio');
                     } else {
                         alert("Logged in successfully as Reader!");
                     }
                 })
                 .catch(err => {
-                    // Auto-register Author account with soop123! if signing in for the first time
                     if (email === ADMIN_EMAIL && (err.code === "auth/user-not-found" || err.code === "auth/invalid-credential")) {
                         firebase.auth().createUserWithEmailAndPassword(email, ADMIN_PASSWORD)
                             .then(userCred => {
                                 closeModal('modal-auth');
-                                alert("Author Admin Account initialized successfully!");
+                                alert("Author Admin Account initialized!");
                                 switchTab('studio');
                             })
                             .catch(createErr => { 
@@ -723,22 +655,6 @@
                         status.innerText = err.message;
                     }
                 });
-        }
-
-        function toggleBookmarkCurrent() {
-            if (!currentUser) {
-                alert("Please log in to bookmark comics!");
-                openAuthModal();
-                return;
-            }
-            if (currentUser.email !== ADMIN_EMAIL && !currentUser.emailVerified) {
-                alert("Email verification required! Please open the link sent to your email inbox before bookmarking.");
-                return;
-            }
-            if (currentComicId) {
-                toggleBookmark(currentComicId);
-                alert("Comic saved to your bookmarks!");
-            }
         }
 
         function switchTab(tabId) {
@@ -832,7 +748,7 @@
         function renderComments(comic) {
             const list = document.getElementById('comment-list');
             if (!comic.comments || comic.comments.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-500 py-4 text-center">No comments yet. Be the first to start the discussion!</p>`;
+                list.innerHTML = `<p class="text-xs text-gray-500 py-4 text-center">No comments yet.</p>`;
                 return;
             }
             list.innerHTML = comic.comments.map(cm => `
