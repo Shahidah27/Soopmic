@@ -167,7 +167,7 @@
             </div>
         </header>
 
-        <!-- Reader Controls Toolbar (Wrapped together with the progress line so it hides as one unit) -->
+        <!-- Reader Controls Toolbar -->
         <div id="reader-toolbar" class="hidden glass-nav border-b border-brand-border flex-col shadow-xl">
             <div class="py-3 px-4 flex flex-wrap items-center justify-between gap-2">
                 <button onclick="closeReader()" class="text-xs text-gray-400 hover:text-white flex items-center space-x-2">
@@ -328,25 +328,28 @@
         <section id="page-reader" class="tab-pane">
             <div id="reader-scroll-container" class="max-w-2xl mx-auto py-2 space-y-0 text-center cursor-pointer select-none"></div>
 
-            <div id="reader-page-container" class="max-w-2xl mx-auto py-6 hidden flex-col items-center space-y-4">
+            <!-- Page Mode Container -->
+            <div id="reader-page-container" class="max-w-4xl mx-auto py-2 hidden flex-col items-center space-y-3">
                 <div class="flex items-center justify-between w-full px-4 text-xs text-gray-400">
                     <span id="page-counter">Panel 1 of 1</span>
-                    <span class="text-[10px] text-brand-500">Double Click Screen to Toggle Navigation Bar</span>
+                    <span class="text-[10px] text-brand-500">Tap Left / Right half to navigate • Double tap for menu</span>
                 </div>
 
-                <div class="flex items-center justify-between w-full px-2 gap-2">
-                    <button onclick="prevPagePanel()" class="flex-1 py-2 bg-brand-card hover:bg-brand-border border border-brand-border rounded-xl text-xs font-bold text-gray-300 hover:text-white transition flex items-center justify-center space-x-1">
-                        <i class="fa-solid fa-arrow-left"></i>
-                        <span>Prev Panel</span>
+                <!-- Webtoon Viewing Canvas with Side Buttons & Mobile Tap Zones -->
+                <div class="relative w-full flex items-center justify-center min-h-[80vh] bg-black/40 rounded-2xl border border-brand-border p-2 overflow-hidden select-none" id="page-touch-area">
+                    
+                    <!-- Left Prev Button (Desktop/Tablet) -->
+                    <button onclick="prevPagePanel()" class="absolute left-3 z-20 p-3 bg-brand-dark/80 hover:bg-brand-500 hover:text-black border border-brand-border rounded-full text-white text-sm transition transform hover:scale-110 shadow-lg hidden sm:flex items-center justify-center">
+                        <i class="fa-solid fa-chevron-left"></i>
                     </button>
-                    <button onclick="nextPagePanel()" class="flex-1 py-2 bg-brand-500 hover:bg-brand-600 rounded-xl text-xs font-extrabold text-black transition glow-green flex items-center justify-center space-x-1">
-                        <span>Next Panel</span>
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                </div>
 
-                <div class="relative w-full rounded-xl overflow-hidden border border-brand-border bg-black group shadow-2xl">
-                    <img id="single-panel-img" src="" class="w-full h-auto object-contain max-h-[75vh]" alt="Comic Panel">
+                    <!-- Webtoon Image Panel (Fits Screen Height) -->
+                    <img id="single-panel-img" src="" class="max-h-[82vh] w-auto max-w-full object-contain rounded-xl shadow-2xl transition duration-200 pointer-events-none" alt="Comic Panel">
+
+                    <!-- Right Next Button (Desktop/Tablet) -->
+                    <button onclick="nextPagePanel()" class="absolute right-3 z-20 p-3 bg-brand-dark/80 hover:bg-brand-500 hover:text-black border border-brand-border rounded-full text-white text-sm transition transform hover:scale-110 shadow-lg hidden sm:flex items-center justify-center">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
                 </div>
             </div>
         </section>
@@ -671,6 +674,7 @@
             loadProfileState();
             setupScrollManager();
             setupDoubleTapManager();
+            setupMobilePageTouchAreas();
 
             if (typeof firebase !== 'undefined' && firebase.auth) {
                 firebase.auth().onAuthStateChanged(user => {
@@ -726,6 +730,48 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        /* --- Mobile Touch Zones for Page Navigation --- */
+        function setupMobilePageTouchAreas() {
+            const pageTouchArea = document.getElementById('page-touch-area');
+            let lastTapTime = 0;
+
+            if (pageTouchArea) {
+                pageTouchArea.addEventListener('click', (e) => {
+                    // Ignore clicks on desktop side buttons
+                    if (e.target.closest('button')) return;
+
+                    const now = new Date().getTime();
+                    const isDoubleTap = (now - lastTapTime < 300);
+                    lastTapTime = now;
+
+                    if (isDoubleTap) {
+                        // Double Tap Toggles UI Header
+                        const headersWrapper = document.getElementById('headers-wrapper');
+                        const mobileNav = document.getElementById('mobile-nav');
+                        
+                        if (headersWrapper.classList.contains('hide-header')) {
+                            headersWrapper.classList.remove('hide-header');
+                            if (mobileNav) mobileNav.style.transform = 'translateY(0)';
+                        } else {
+                            headersWrapper.classList.add('hide-header');
+                            if (mobileNav) mobileNav.style.transform = 'translateY(100%)';
+                        }
+                    } else {
+                        // Single Tap Left vs Right Navigation
+                        const rect = pageTouchArea.getBoundingClientRect();
+                        const clickX = e.clientX - rect.left;
+                        const width = rect.width;
+
+                        if (clickX > width / 2) {
+                            nextPagePanel(); // Touch Right Half -> Next
+                        } else {
+                            prevPagePanel(); // Touch Left Half -> Prev
+                        }
+                    }
+                });
+            }
+        }
+
         /* --- Scroll & Hide Mechanism --- */
         function setupScrollManager() {
             window.onscroll = function() {
@@ -736,18 +782,15 @@
                 const mobileNav = document.getElementById('mobile-nav');
 
                 if (currentScrollPos > prevScrollPos && currentScrollPos > 50) {
-                    // Hide Header & Progress Bar when Scrolling Down
                     headersWrapper.classList.add('hide-header');
                     if (mobileNav) mobileNav.style.transform = 'translateY(100%)';
                 } else {
-                    // Show Header & Progress Bar when Scrolling Up
                     headersWrapper.classList.remove('hide-header');
                     if (mobileNav) mobileNav.style.transform = 'translateY(0)';
                 }
 
                 prevScrollPos = currentScrollPos;
 
-                // Reading Progress Line
                 const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                 const progressPercent = (currentScrollPos / docHeight) * 100;
                 const progressBarEl = document.getElementById('reading-progress');
@@ -756,11 +799,11 @@
         }
 
         function setupDoubleTapManager() {
-            const readerArea = document.getElementById('page-reader');
+            const scrollArea = document.getElementById('reader-scroll-container');
             let lastClickTime = 0;
 
-            if (readerArea) {
-                readerArea.addEventListener('click', (e) => {
+            if (scrollArea) {
+                scrollArea.addEventListener('click', (e) => {
                     const now = new Date().getTime();
                     if (now - lastClickTime < 300) {
                         e.preventDefault();
