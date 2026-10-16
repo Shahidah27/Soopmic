@@ -84,6 +84,13 @@
             background: rgba(10, 13, 20, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+
+        .reader-controls-hidden {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
         }
 
         .tab-pane {
@@ -104,7 +111,7 @@
 <body class="min-h-screen flex flex-col pb-16 md:pb-0">
 
     <!-- Top Navigation Header -->
-    <header class="sticky top-0 z-40 glass-nav border-b border-brand-border">
+    <header id="main-header" class="sticky top-0 z-40 glass-nav border-b border-brand-border">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 
@@ -163,8 +170,6 @@
 
         <!-- ================= PAGE 1: READER DASHBOARD ================= -->
         <section id="page-dashboard" class="tab-pane active space-y-8">
-            
-            <!-- Hero Banner -->
             <div id="hero-carousel" class="relative rounded-2xl overflow-hidden bg-brand-card border border-brand-border p-6 md:p-10 shadow-2xl">
                 <div class="relative z-10 max-w-2xl space-y-3" id="hero-content">
                     <span class="px-3 py-1 rounded-full text-xs font-bold bg-brand-accent/20 text-brand-accent border border-brand-accent/30 uppercase tracking-wider">Official Webtoon Portal</span>
@@ -173,7 +178,6 @@
                 </div>
             </div>
 
-            <!-- Search & Filter Bar -->
             <div class="flex flex-col md:flex-row items-center justify-between gap-4 bg-brand-card p-4 rounded-2xl border border-brand-border">
                 <div class="relative w-full md:w-96">
                     <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
@@ -189,7 +193,6 @@
                 </div>
             </div>
 
-            <!-- Author's Showcase Gallery Grid -->
             <div>
                 <div class="flex items-center justify-between mb-6">
                     <div>
@@ -199,11 +202,8 @@
                     <span class="text-xs font-semibold text-brand-500 bg-brand-500/10 px-3 py-1 rounded-full border border-brand-500/20" id="comic-count">0 Works</span>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6" id="comic-grid">
-                    <!-- Dynamic Works List -->
-                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6" id="comic-grid"></div>
             </div>
-
         </section>
 
         <!-- ================= PAGE 2: COMIC DETAIL & CHAPTERS ================= -->
@@ -213,7 +213,6 @@
                 <span>Back to Catalogue</span>
             </button>
 
-            <!-- Detail Header -->
             <div class="bg-brand-card border border-brand-border rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-8">
                 <img id="detail-cover" src="" alt="Cover" class="w-full md:w-64 h-80 object-cover rounded-xl border border-brand-border shadow-xl">
                 
@@ -249,7 +248,6 @@
                 </div>
             </div>
 
-            <!-- Character & Lore Section -->
             <div class="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
                 <div class="flex items-center justify-between">
                     <h3 class="text-lg font-bold text-white font-comic flex items-center space-x-2">
@@ -264,7 +262,6 @@
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="detail-characters"></div>
             </div>
 
-            <!-- Released Episodes Section -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
                     <div class="flex items-center justify-between">
@@ -291,9 +288,9 @@
             </div>
         </section>
 
-        <!-- ================= PAGE 3: READING MODE ================= -->
+        <!-- ================= PAGE 3: READING MODE (AUTO-HIDE HEADERS) ================= -->
         <section id="page-reader" class="tab-pane">
-            <div class="sticky top-16 z-30 bg-brand-dark/95 border-b border-brand-border py-3 px-4 flex flex-wrap items-center justify-between gap-2">
+            <div id="reader-toolbar" class="sticky top-0 z-30 glass-nav border-b border-brand-border py-3 px-4 flex flex-wrap items-center justify-between gap-2 shadow-xl">
                 <button onclick="closeReader()" class="text-xs text-gray-400 hover:text-white flex items-center space-x-2">
                     <i class="fa-solid fa-chevron-left"></i>
                     <span>Exit Reader</span>
@@ -318,16 +315,16 @@
                 </div>
             </div>
 
-            <div class="w-full bg-brand-border h-1 sticky top-[113px] z-30">
+            <div class="w-full bg-brand-border h-1 sticky top-[49px] z-30">
                 <div id="reading-progress" class="bg-brand-500 h-1 w-0"></div>
             </div>
 
-            <div id="reader-scroll-container" class="max-w-2xl mx-auto py-6 space-y-0 text-center"></div>
+            <div id="reader-scroll-container" class="max-w-2xl mx-auto py-6 space-y-0 text-center select-none"></div>
 
             <div id="reader-page-container" class="max-w-2xl mx-auto py-6 hidden flex-col items-center space-y-4">
                 <div class="flex items-center justify-between w-full px-4 text-xs text-gray-400">
                     <span id="page-counter">Panel 1 of 1</span>
-                    <span class="text-[10px] text-brand-500">Use ← → Keyboard Arrows</span>
+                    <span class="text-[10px] text-brand-500">Double Tap Screen to Toggle UI</span>
                 </div>
 
                 <div class="flex items-center justify-between w-full px-2 gap-2">
@@ -438,7 +435,7 @@
     </main>
 
     <!-- Bottom Touch Nav Bar for Mobile -->
-    <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-brand-dark/95 border-t border-brand-border py-2 px-4 flex justify-around items-center backdrop-blur-md">
+    <div id="mobile-nav" class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-brand-dark/95 border-t border-brand-border py-2 px-4 flex justify-around items-center backdrop-blur-md transition-transform duration-300">
         <button onclick="switchTab('dashboard')" class="flex flex-col items-center space-y-1 text-brand-500">
             <i class="fa-solid fa-compass text-base"></i>
             <span class="text-[10px]">Explore</span>
@@ -558,7 +555,7 @@
         </div>
     </div>
 
-    <!-- MODAL 4: UPLOAD EPISODE (INCLUDES INSTANT PANEL REORDERING) -->
+    <!-- MODAL 4: UPLOAD EPISODE -->
     <div id="modal-upload-ep" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-xl w-full space-y-4 my-8 max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center">
@@ -589,7 +586,6 @@
                     </div>
                 </div>
 
-                <!-- Interactive Reorderable Panels List -->
                 <div class="space-y-2">
                     <div class="flex justify-between items-center">
                         <label class="block text-xs font-bold text-brand-500">MANAGE PANEL SEQUENCE (Top to Bottom)</label>
@@ -622,9 +618,7 @@
             <button onclick="closeModal('modal-live-preview')" class="px-4 py-2 bg-brand-dark border border-brand-border text-xs text-gray-300 rounded-xl hover:text-white">Close Preview</button>
         </div>
 
-        <div id="preview-panels-box" class="max-w-xl mx-auto w-full space-y-2 py-4">
-            <!-- Panels dynamically rendered -->
-        </div>
+        <div id="preview-panels-box" class="max-w-xl mx-auto w-full space-y-2 py-4"></div>
     </div>
 
     <!-- Application Script Logic -->
@@ -660,12 +654,18 @@
         let activeEpisodePanels = [];
         let userProfile = JSON.parse(localStorage.getItem('soopmic_profile') || '{"name":"Author","avatar":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80","email":""}');
 
+        // Auto-Hide Navigation Variables
+        let lastScrollY = window.scrollY;
+        let headersVisible = true;
+        let lastTapTime = 0;
+
         document.addEventListener("DOMContentLoaded", () => {
             renderComicGrid(comics);
             updateBookmarkBadge();
             loadProfileState();
             setupScrollListener();
             setupKeyboardNav();
+            setupDoubleTapToggle();
 
             if (typeof firebase !== 'undefined' && firebase.auth) {
                 firebase.auth().onAuthStateChanged(user => {
@@ -689,60 +689,21 @@
             }
         }
 
-        function handleRegister() {
-            const email = document.getElementById('auth-email').value.trim();
-            const pass = document.getElementById('auth-pass').value.trim();
-            const status = document.getElementById('auth-status');
-
-            if (!email || !pass) {
-                status.innerText = "Please enter an email and password.";
-                return;
-            }
-
-            firebase.auth().createUserWithEmailAndPassword(email, pass)
-                .then(userCredential => {
-                    return userCredential.user.sendEmailVerification();
-                })
-                .then(() => {
-                    status.innerText = "Verification link sent! Please check your inbox.";
-                })
-                .catch(err => {
-                    status.innerText = err.message;
-                });
-        }
-
-        function handleLogin() {
-            const email = document.getElementById('auth-email').value.trim();
-            const pass = document.getElementById('auth-pass').value.trim();
-            const status = document.getElementById('auth-status');
-
-            if (!email || !pass) {
-                status.innerText = "Please enter your email and password.";
-                return;
-            }
-
-            if (currentUser) {
-                firebase.auth().signOut().then(() => {
-                    status.innerText = "Logged out successfully.";
-                    updateUserUI();
-                });
-                return;
-            }
-
-            firebase.auth().signInWithEmailAndPassword(email, pass)
-                .then(userCredential => {
-                    closeModal('modal-auth');
-                    alert("Logged in successfully!");
-                })
-                .catch(err => {
-                    status.innerText = err.message;
-                });
-        }
-
         function switchTab(tabId) {
             document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
             const target = document.getElementById(`page-${tabId}`);
             if (target) target.classList.add('active');
+
+            const mainHeader = document.getElementById('main-header');
+            const mobileNav = document.getElementById('mobile-nav');
+
+            if (tabId === 'reader') {
+                mainHeader.style.display = 'none'; // Hide main site header in reader view
+            } else {
+                mainHeader.style.display = 'block';
+                mainHeader.classList.remove('reader-controls-hidden');
+                if (mobileNav) mobileNav.style.transform = 'translateY(0)';
+            }
 
             if (tabId === 'bookmarks') renderBookmarks();
             if (tabId === 'likes') renderLikes();
@@ -783,28 +744,175 @@
             `).join('');
         }
 
-        function previewCoverFile(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedCoverData = e.target.result;
-                    document.getElementById('pub-cover-placeholder').innerHTML = `
-                        <i class="fa-solid fa-circle-check text-brand-500 text-2xl"></i>
-                        <p class="text-xs font-bold text-brand-500">Image Selected Successfully!</p>
-                        <p class="text-[10px] text-gray-400">${input.files[0].name}</p>
-                    `;
+        /* --- Auto-Hide Header & Double Tap Logic --- */
+        function setupScrollListener() {
+            window.addEventListener('scroll', () => {
+                const readerTab = document.getElementById('page-reader');
+                if (readerTab && readerTab.classList.contains('active')) {
+                    const currentScrollY = window.scrollY;
+
+                    if (currentScrollY > lastScrollY && currentScrollY > 60) {
+                        // Scrolling DOWN -> Hide Header & Reader Bar
+                        hideReaderUI();
+                    } else if (currentScrollY < lastScrollY) {
+                        // Scrolling UP -> Reveal Reader Bar
+                        showReaderUI();
+                    }
+
+                    lastScrollY = currentScrollY;
+
+                    // Update Progress Bar
+                    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                    const scrolled = (currentScrollY / height) * 100;
+                    const progressBar = document.getElementById('reading-progress');
+                    if (progressBar) progressBar.style.width = scrolled + '%';
                 }
-                reader.readAsDataURL(input.files[0]);
+            });
+        }
+
+        function setupDoubleTapToggle() {
+            const readerContainer = document.getElementById('page-reader');
+            if (readerContainer) {
+                readerContainer.addEventListener('click', (e) => {
+                    const currentTime = new Date().getTime();
+                    const tapLength = currentTime - lastTapTime;
+
+                    if (tapLength < 300 && tapLength > 0) {
+                        // Double Tap Triggered
+                        e.preventDefault();
+                        toggleReaderUI();
+                    }
+                    lastTapTime = currentTime;
+                });
             }
         }
 
-        function previewCharFile(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedCharImageData = e.target.result;
-                }
-                reader.readAsDataURL(input.files[0]);
+        function hideReaderUI() {
+            const readerBar = document.getElementById('reader-toolbar');
+            const mobileNav = document.getElementById('mobile-nav');
+            if (readerBar) readerBar.classList.add('reader-controls-hidden');
+            if (mobileNav) mobileNav.style.transform = 'translateY(100%)';
+            headersVisible = false;
+        }
+
+        function showReaderUI() {
+            const readerBar = document.getElementById('reader-toolbar');
+            const mobileNav = document.getElementById('mobile-nav');
+            if (readerBar) readerBar.classList.remove('reader-controls-hidden');
+            if (mobileNav) mobileNav.style.transform = 'translateY(0)';
+            headersVisible = true;
+        }
+
+        function toggleReaderUI() {
+            if (headersVisible) {
+                hideReaderUI();
+            } else {
+                showReaderUI();
+            }
+        }
+
+        /* --- Reader Chapter Logic --- */
+        function openReader(comicId, chapterIdx) {
+            const comic = comics.find(c => c.id === comicId);
+            if (!comic || !comic.episodes || !comic.episodes[chapterIdx]) return;
+
+            currentComicId = comicId;
+            currentChapterIndex = chapterIdx;
+            currentPanelIndex = 0;
+            const chapter = comic.episodes[chapterIdx];
+
+            document.getElementById('reader-chapter-title').innerText = `${comic.title} - ${chapter.title}`;
+            
+            document.getElementById('reader-scroll-container').innerHTML = chapter.panels.map(pUrl => `
+                <img src="${pUrl}" class="w-full h-auto object-cover rounded-md panel-glow mb-2" alt="Webtoon Panel">
+            `).join('');
+
+            applyReaderView();
+            switchTab('reader');
+            showReaderUI();
+        }
+
+        function setReaderMode(mode) {
+            currentReaderMode = mode;
+            const scrollBtn = document.getElementById('mode-scroll-btn');
+            const pageBtn = document.getElementById('mode-page-btn');
+
+            if (mode === 'scroll') {
+                scrollBtn.className = "px-3 py-1 rounded-lg text-xs font-bold text-white bg-brand-500/20 border border-brand-500/30 flex items-center space-x-1 transition";
+                pageBtn.className = "px-3 py-1 rounded-lg text-xs font-bold text-gray-400 hover:text-white flex items-center space-x-1 transition";
+            } else {
+                pageBtn.className = "px-3 py-1 rounded-lg text-xs font-bold text-white bg-brand-500/20 border border-brand-500/30 flex items-center space-x-1 transition";
+                scrollBtn.className = "px-3 py-1 rounded-lg text-xs font-bold text-gray-400 hover:text-white flex items-center space-x-1 transition";
+            }
+
+            applyReaderView();
+        }
+
+        function applyReaderView() {
+            const scrollBox = document.getElementById('reader-scroll-container');
+            const pageBox = document.getElementById('reader-page-container');
+
+            if (currentReaderMode === 'scroll') {
+                scrollBox.classList.remove('hidden');
+                pageBox.classList.add('hidden');
+                pageBox.classList.remove('flex');
+            } else {
+                scrollBox.classList.add('hidden');
+                pageBox.classList.remove('hidden');
+                pageBox.classList.add('flex');
+                updatePagePanelDisplay();
+            }
+        }
+
+        function updatePagePanelDisplay() {
+            const comic = comics.find(c => c.id === currentComicId);
+            if (!comic || !comic.episodes || !comic.episodes[currentChapterIndex]) return;
+
+            const panels = comic.episodes[currentChapterIndex].panels;
+            if (currentPanelIndex >= panels.length) currentPanelIndex = panels.length - 1;
+            if (currentPanelIndex < 0) currentPanelIndex = 0;
+
+            document.getElementById('single-panel-img').src = panels[currentPanelIndex];
+            document.getElementById('page-counter').innerText = `Panel ${currentPanelIndex + 1} of ${panels.length}`;
+
+            const progress = ((currentPanelIndex + 1) / panels.length) * 100;
+            document.getElementById('reading-progress').style.width = progress + '%';
+        }
+
+        function nextPagePanel() {
+            const comic = comics.find(c => c.id === currentComicId);
+            if (!comic || !comic.episodes || !comic.episodes[currentChapterIndex]) return;
+
+            const panels = comic.episodes[currentChapterIndex].panels;
+            if (currentPanelIndex < panels.length - 1) {
+                currentPanelIndex++;
+                updatePagePanelDisplay();
+            } else {
+                nextChapter();
+            }
+        }
+
+        function prevPagePanel() {
+            if (currentPanelIndex > 0) {
+                currentPanelIndex--;
+                updatePagePanelDisplay();
+            } else {
+                prevChapter();
+            }
+        }
+
+        function closeReader() { switchTab('detail'); }
+
+        function nextChapter() {
+            const comic = comics.find(c => c.id === currentComicId);
+            if (comic && comic.episodes && currentChapterIndex < comic.episodes.length - 1) {
+                openReader(currentComicId, currentChapterIndex + 1);
+            }
+        }
+
+        function prevChapter() {
+            if (currentChapterIndex > 0) {
+                openReader(currentComicId, currentChapterIndex - 1);
             }
         }
 
@@ -1032,109 +1140,6 @@
             renderComments(comic);
         }
 
-        function openReader(comicId, chapterIdx) {
-            const comic = comics.find(c => c.id === comicId);
-            if (!comic || !comic.episodes || !comic.episodes[chapterIdx]) return;
-
-            currentComicId = comicId;
-            currentChapterIndex = chapterIdx;
-            currentPanelIndex = 0;
-            const chapter = comic.episodes[chapterIdx];
-
-            document.getElementById('reader-chapter-title').innerText = `${comic.title} - ${chapter.title}`;
-            
-            document.getElementById('reader-scroll-container').innerHTML = chapter.panels.map(pUrl => `
-                <img src="${pUrl}" class="w-full h-auto object-cover rounded-md panel-glow mb-2" alt="Webtoon Panel">
-            `).join('');
-
-            applyReaderView();
-            switchTab('reader');
-        }
-
-        function setReaderMode(mode) {
-            currentReaderMode = mode;
-            const scrollBtn = document.getElementById('mode-scroll-btn');
-            const pageBtn = document.getElementById('mode-page-btn');
-
-            if (mode === 'scroll') {
-                scrollBtn.className = "px-3 py-1 rounded-lg text-xs font-bold text-white bg-brand-500/20 border border-brand-500/30 flex items-center space-x-1 transition";
-                pageBtn.className = "px-3 py-1 rounded-lg text-xs font-bold text-gray-400 hover:text-white flex items-center space-x-1 transition";
-            } else {
-                pageBtn.className = "px-3 py-1 rounded-lg text-xs font-bold text-white bg-brand-500/20 border border-brand-500/30 flex items-center space-x-1 transition";
-                scrollBtn.className = "px-3 py-1 rounded-lg text-xs font-bold text-gray-400 hover:text-white flex items-center space-x-1 transition";
-            }
-
-            applyReaderView();
-        }
-
-        function applyReaderView() {
-            const scrollBox = document.getElementById('reader-scroll-container');
-            const pageBox = document.getElementById('reader-page-container');
-
-            if (currentReaderMode === 'scroll') {
-                scrollBox.classList.remove('hidden');
-                pageBox.classList.add('hidden');
-                pageBox.classList.remove('flex');
-            } else {
-                scrollBox.classList.add('hidden');
-                pageBox.classList.remove('hidden');
-                pageBox.classList.add('flex');
-                updatePagePanelDisplay();
-            }
-        }
-
-        function updatePagePanelDisplay() {
-            const comic = comics.find(c => c.id === currentComicId);
-            if (!comic || !comic.episodes || !comic.episodes[currentChapterIndex]) return;
-
-            const panels = comic.episodes[currentChapterIndex].panels;
-            if (currentPanelIndex >= panels.length) currentPanelIndex = panels.length - 1;
-            if (currentPanelIndex < 0) currentPanelIndex = 0;
-
-            document.getElementById('single-panel-img').src = panels[currentPanelIndex];
-            document.getElementById('page-counter').innerText = `Panel ${currentPanelIndex + 1} of ${panels.length}`;
-
-            const progress = ((currentPanelIndex + 1) / panels.length) * 100;
-            document.getElementById('reading-progress').style.width = progress + '%';
-        }
-
-        function nextPagePanel() {
-            const comic = comics.find(c => c.id === currentComicId);
-            if (!comic || !comic.episodes || !comic.episodes[currentChapterIndex]) return;
-
-            const panels = comic.episodes[currentChapterIndex].panels;
-            if (currentPanelIndex < panels.length - 1) {
-                currentPanelIndex++;
-                updatePagePanelDisplay();
-            } else {
-                nextChapter();
-            }
-        }
-
-        function prevPagePanel() {
-            if (currentPanelIndex > 0) {
-                currentPanelIndex--;
-                updatePagePanelDisplay();
-            } else {
-                prevChapter();
-            }
-        }
-
-        function closeReader() { switchTab('detail'); }
-
-        function nextChapter() {
-            const comic = comics.find(c => c.id === currentComicId);
-            if (comic && comic.episodes && currentChapterIndex < comic.episodes.length - 1) {
-                openReader(currentComicId, currentChapterIndex + 1);
-            }
-        }
-
-        function prevChapter() {
-            if (currentChapterIndex > 0) {
-                openReader(currentComicId, currentChapterIndex - 1);
-            }
-        }
-
         function toggleBookmark(id) {
             if (bookmarks.includes(id)) {
                 bookmarks = bookmarks.filter(item => item !== id);
@@ -1299,18 +1304,6 @@
                 c.desc.toLowerCase().includes(query)
             );
             renderComicGrid(filtered);
-        }
-
-        function setupScrollListener() {
-            window.addEventListener('scroll', () => {
-                if (currentReaderMode === 'scroll') {
-                    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-                    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                    const scrolled = (winScroll / height) * 100;
-                    const progressBar = document.getElementById('reading-progress');
-                    if (progressBar) progressBar.style.width = scrolled + '%';
-                }
-            });
         }
 
         function setupKeyboardNav() {
