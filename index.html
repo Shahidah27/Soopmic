@@ -164,7 +164,7 @@
         <!-- ================= PAGE 1: READER DASHBOARD ================= -->
         <section id="page-dashboard" class="tab-pane active space-y-8">
             
-            <!-- Hero Banner (Only displays when comics are published) -->
+            <!-- Hero Banner -->
             <div id="hero-carousel" class="relative rounded-2xl overflow-hidden bg-brand-card border border-brand-border p-6 md:p-10 shadow-2xl">
                 <div class="relative z-10 max-w-2xl space-y-3" id="hero-content">
                     <span class="px-3 py-1 rounded-full text-xs font-bold bg-brand-accent/20 text-brand-accent border border-brand-accent/30 uppercase tracking-wider">Official Webtoon Portal</span>
@@ -500,10 +500,24 @@
                         <option>Slice of Life</option>
                     </select>
                 </div>
+                
+                <!-- Updated Cover Image Input: Supports File Upload or URL -->
                 <div>
-                    <label class="block text-xs font-bold text-gray-300 mb-1">Cover Image URL</label>
-                    <input type="text" id="pub-cover" placeholder="https://..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Cover Image</label>
+                    <div class="space-y-2">
+                        <div class="relative flex items-center justify-center border-2 border-dashed border-brand-border hover:border-brand-accent rounded-xl p-4 bg-brand-dark cursor-pointer transition">
+                            <input type="file" id="pub-cover-file" accept="image/*" onchange="previewCoverFile(this)" class="absolute inset-0 opacity-0 cursor-pointer">
+                            <div class="text-center space-y-1" id="pub-cover-placeholder">
+                                <i class="fa-solid fa-cloud-arrow-up text-brand-accent text-2xl"></i>
+                                <p class="text-xs font-semibold text-gray-300">Click to upload cover image file</p>
+                                <p class="text-[10px] text-gray-500">PNG, JPG, WEBP, or GIF</p>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-gray-500 text-center font-bold">OR PASTE EXTERNAL URL</p>
+                        <input type="text" id="pub-cover" placeholder="https://..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
+                    </div>
                 </div>
+
                 <div>
                     <label class="block text-xs font-bold text-gray-300 mb-1">Description</label>
                     <textarea id="pub-desc" rows="3" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white resize-none"></textarea>
@@ -541,6 +555,7 @@
         let currentChapterIndex = 0;
         let currentPanelIndex = 0;
         let currentReaderMode = 'scroll';
+        let uploadedCoverData = "";
         let userProfile = JSON.parse(localStorage.getItem('soopmic_profile') || '{"name":"Reader","avatar":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80","email":""}');
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -699,6 +714,21 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        function previewCoverFile(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedCoverData = e.target.result;
+                    document.getElementById('pub-cover-placeholder').innerHTML = `
+                        <i class="fa-solid fa-circle-check text-brand-500 text-2xl"></i>
+                        <p class="text-xs font-bold text-brand-500">Image Selected Successfully!</p>
+                        <p class="text-[10px] text-gray-400">${input.files[0].name}</p>
+                    `;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
         }
 
         function openComicDetail(comicId) {
@@ -963,8 +993,10 @@
         function publishNewComic() {
             const title = document.getElementById('pub-title').value.trim();
             const genre = document.getElementById('pub-genre').value;
-            const cover = document.getElementById('pub-cover').value.trim() || 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop&q=80';
+            const coverUrl = document.getElementById('pub-cover').value.trim();
             const desc = document.getElementById('pub-desc').value.trim();
+
+            const finalCover = uploadedCoverData || coverUrl || 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop&q=80';
 
             if (!title) return;
 
@@ -972,7 +1004,7 @@
                 id: 'c' + (comics.length + 1),
                 title,
                 genre,
-                cover,
+                cover: finalCover,
                 desc,
                 likes: 0,
                 characters: [],
@@ -983,6 +1015,7 @@
             comics.unshift(newComic);
             saveComicsStorage();
             closeModal('modal-publish');
+            uploadedCoverData = "";
             renderComicGrid(comics);
             switchTab('dashboard');
         }
