@@ -533,7 +533,7 @@
         </div>
     </div>
 
-    <!-- MODAL 3: ADD CHARACTER & LORE WITH GRAPH STATS + LOOKS / ATTRACTIVENESS -->
+    <!-- MODAL 3: ADD CHARACTER & LORE WITH GRAPH STATS -->
     <div id="modal-add-char" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-lg w-full space-y-4 my-8 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
@@ -562,78 +562,33 @@
                     <input type="text" id="char-img-url" placeholder="https://..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
                 </div>
 
-                <!-- SELECTABLE GRAPH STATS INCLUSIVE OF ATTRACTIVENESS / LOOKS -->
-                <div class="pt-2 border-t border-brand-border space-y-2">
-                    <div class="flex justify-between items-center">
-                        <label class="block text-xs font-bold text-brand-500">CUSTOM STATS GRAPH (Check stats to include)</label>
-                        <span class="text-[10px] text-gray-400">0 - 100 Scale</span>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3 text-xs bg-brand-dark p-3 rounded-xl border border-brand-border">
-                        
-                        <!-- Attractiveness / Looks -->
-                        <div class="space-y-1">
-                            <label class="flex items-center space-x-1.5 cursor-pointer">
-                                <input type="checkbox" id="chk-attractiveness" checked class="rounded border-gray-700 bg-brand-card text-brand-accent focus:ring-0">
-                                <span class="text-pink-400 font-bold text-[11px]"><i class="fa-solid fa-sparkles mr-1"></i>Attractiveness</span>
-                            </label>
-                            <input type="number" id="stat-attractiveness" min="0" max="100" value="95" class="w-full bg-brand-card border border-brand-border rounded-lg p-1.5 text-xs text-white">
+                <div class="pt-2 border-t border-brand-border">
+                    <label class="block text-xs font-bold text-brand-500 mb-2">CHARACTER STATS GRAPH (0 - 100 Scale)</label>
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                            <span class="text-gray-400 text-[10px]">Power:</span>
+                            <input type="number" id="stat-power" min="0" max="100" value="80" class="w-full bg-brand-dark border border-brand-border rounded-lg p-2 text-white">
                         </div>
-
-                        <!-- Power -->
-                        <div class="space-y-1">
-                            <label class="flex items-center space-x-1.5 cursor-pointer">
-                                <input type="checkbox" id="chk-power" checked class="rounded border-gray-700 bg-brand-card text-brand-accent focus:ring-0">
-                                <span class="text-rose-400 font-bold text-[11px]">Power</span>
-                            </label>
-                            <input type="number" id="stat-power" min="0" max="100" value="80" class="w-full bg-brand-card border border-brand-border rounded-lg p-1.5 text-xs text-white">
+                        <div>
+                            <span class="text-gray-400 text-[10px]">Speed:</span>
+                            <input type="number" id="stat-speed" min="0" max="100" value="75" class="w-full bg-brand-dark border border-brand-border rounded-lg p-2 text-white">
                         </div>
-
-                        <!-- Speed -->
-                        <div class="space-y-1">
-                            <label class="flex items-center space-x-1.5 cursor-pointer">
-                                <input type="checkbox" id="chk-speed" checked class="rounded border-gray-700 bg-brand-card text-brand-accent focus:ring-0">
-                                <span class="text-amber-400 font-bold text-[11px]">Speed</span>
-                            </label>
-                            <input type="number" id="stat-speed" min="0" max="100" value="75" class="w-full bg-brand-card border border-brand-border rounded-lg p-1.5 text-xs text-white">
+                        <div>
+                            <span class="text-gray-400 text-[10px]">Intelligence:</span>
+                            <input type="number" id="stat-intelligence" min="0" max="100" value="90" class="w-full bg-brand-dark border border-brand-border rounded-lg p-2 text-white">
                         </div>
-
-                        <!-- Intelligence -->
-                        <div class="space-y-1">
-                            <label class="flex items-center space-x-1.5 cursor-pointer">
-                                <input type="checkbox" id="chk-intelligence" checked class="rounded border-gray-700 bg-brand-card text-brand-accent focus:ring-0">
-                                <span class="text-blue-400 font-bold text-[11px]">Intelligence</span>
-                            </label>
-                            <input type="number" id="stat-intelligence" min="0" max="100" value="90" class="w-full bg-brand-card border border-brand-border rounded-lg p-1.5 text-xs text-white">
+                        <div>
+                            <span class="text-gray-400 text-[10px]">Technique:</span>
+                            <input type="number" id="stat-technique" min="0" max="100" value="85" class="w-full bg-brand-dark border border-brand-border rounded-lg p-2 text-white">
                         </div>
-
-                        <!-- Technique -->
-                        <div class="space-y-1">
-                            <label class="flex items-center space-x-1.5 cursor-pointer">
-                                <input type="checkbox" id="chk-technique" checked class="rounded border-gray-700 bg-brand-card text-brand-accent focus:ring-0">
-                                <span class="text-purple-400 font-bold text-[11px]">Technique</span>
-                            </label>
-                            <input type="number" id="stat-technique" min="0" max="100" value="85" class="w-full bg-brand-card border border-brand-border rounded-lg p-1.5 text-xs text-white">
+                        <div>
+                            <span class="text-gray-400 text-[10px]">Endurance:</span>
+                            <input type="number" id="stat-endurance" min="0" max="100" value="70" class="w-full bg-brand-dark border border-brand-border rounded-lg p-2 text-white">
                         </div>
-
-                        <!-- Endurance -->
-                        <div class="space-y-1">
-                            <label class="flex items-center space-x-1.5 cursor-pointer">
-                                <input type="checkbox" id="chk-endurance" checked class="rounded border-gray-700 bg-brand-card text-brand-accent focus:ring-0">
-                                <span class="text-emerald-400 font-bold text-[11px]">Endurance</span>
-                            </label>
-                            <input type="number" id="stat-endurance" min="0" max="100" value="70" class="w-full bg-brand-card border border-brand-border rounded-lg p-1.5 text-xs text-white">
+                        <div>
+                            <span class="text-gray-400 text-[10px]">Agility:</span>
+                            <input type="number" id="stat-agility" min="0" max="100" value="88" class="w-full bg-brand-dark border border-brand-border rounded-lg p-2 text-white">
                         </div>
-
-                        <!-- Agility -->
-                        <div class="space-y-1 col-span-2">
-                            <label class="flex items-center space-x-1.5 cursor-pointer">
-                                <input type="checkbox" id="chk-agility" checked class="rounded border-gray-700 bg-brand-card text-brand-accent focus:ring-0">
-                                <span class="text-teal-400 font-bold text-[11px]">Agility</span>
-                            </label>
-                            <input type="number" id="stat-agility" min="0" max="100" value="88" class="w-full bg-brand-card border border-brand-border rounded-lg p-1.5 text-xs text-white">
-                        </div>
-
                     </div>
                 </div>
             </div>
@@ -831,15 +786,6 @@
             document.getElementById('char-desc').value = "";
             document.getElementById('char-img-url').value = "";
             
-            document.getElementById('chk-attractiveness').checked = true;
-            document.getElementById('chk-power').checked = true;
-            document.getElementById('chk-speed').checked = true;
-            document.getElementById('chk-intelligence').checked = true;
-            document.getElementById('chk-technique').checked = true;
-            document.getElementById('chk-endurance').checked = true;
-            document.getElementById('chk-agility').checked = true;
-
-            document.getElementById('stat-attractiveness').value = 95;
             document.getElementById('stat-power').value = 80;
             document.getElementById('stat-speed').value = 75;
             document.getElementById('stat-intelligence').value = 90;
@@ -872,36 +818,20 @@
             }
 
             const finalImg = uploadedCharImageData || url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80';
-            
-            const customStats = [];
-            
-            if (document.getElementById('chk-attractiveness').checked) {
-                customStats.push({ label: 'Attractiveness', value: parseInt(document.getElementById('stat-attractiveness').value) || 50 });
-            }
-            if (document.getElementById('chk-power').checked) {
-                customStats.push({ label: 'Power', value: parseInt(document.getElementById('stat-power').value) || 50 });
-            }
-            if (document.getElementById('chk-speed').checked) {
-                customStats.push({ label: 'Speed', value: parseInt(document.getElementById('stat-speed').value) || 50 });
-            }
-            if (document.getElementById('chk-intelligence').checked) {
-                customStats.push({ label: 'Intelligence', value: parseInt(document.getElementById('stat-intelligence').value) || 50 });
-            }
-            if (document.getElementById('chk-technique').checked) {
-                customStats.push({ label: 'Technique', value: parseInt(document.getElementById('stat-technique').value) || 50 });
-            }
-            if (document.getElementById('chk-endurance').checked) {
-                customStats.push({ label: 'Endurance', value: parseInt(document.getElementById('stat-endurance').value) || 50 });
-            }
-            if (document.getElementById('chk-agility').checked) {
-                customStats.push({ label: 'Agility', value: parseInt(document.getElementById('stat-agility').value) || 50 });
-            }
+            const stats = {
+                power: parseInt(document.getElementById('stat-power').value) || 50,
+                speed: parseInt(document.getElementById('stat-speed').value) || 50,
+                intelligence: parseInt(document.getElementById('stat-intelligence').value) || 50,
+                technique: parseInt(document.getElementById('stat-technique').value) || 50,
+                endurance: parseInt(document.getElementById('stat-endurance').value) || 50,
+                agility: parseInt(document.getElementById('stat-agility').value) || 50
+            };
 
             const comic = comics.find(c => c.id === currentComicId);
 
             if (comic) {
                 if (!comic.characters) comic.characters = [];
-                comic.characters.push({ name, role, desc, img: finalImg, stats: customStats });
+                comic.characters.push({ name, role, desc, img: finalImg, stats });
                 saveComicsStorage();
                 closeModal('modal-add-char');
                 openComicDetail(currentComicId);
@@ -913,14 +843,14 @@
             if (!comic || !comic.characters || !comic.characters[charIdx]) return;
 
             const ch = comic.characters[charIdx];
-            document.getElementById('pop-char-img').src = ch.img || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80';
-            document.getElementById('pop-char-name').innerText = ch.name || 'Character Name';
-            document.getElementById('pop-char-role').innerText = ch.role || 'Role';
-            document.getElementById('pop-char-desc').innerText = ch.desc || 'No backstory description provided yet.';
+            document.getElementById('pop-char-img').src = ch.img;
+            document.getElementById('pop-char-name').innerText = ch.name;
+            document.getElementById('pop-char-role').innerText = ch.role;
+            document.getElementById('pop-char-desc').innerText = ch.desc || 'No description available.';
 
             document.getElementById('modal-char-detail').classList.remove('hidden');
 
-            renderRadarChart(ch.stats);
+            renderRadarChart(ch.stats || { power: 80, speed: 75, intelligence: 90, technique: 85, endurance: 70, agility: 88 });
         }
 
         function renderRadarChart(stats) {
@@ -930,21 +860,13 @@
                 radarChartInstance.destroy();
             }
 
-            let labels = ['Attractiveness', 'Power', 'Speed', 'Intelligence', 'Technique', 'Agility'];
-            let dataValues = [95, 80, 75, 90, 85, 88];
-
-            if (stats && Array.isArray(stats) && stats.length > 0) {
-                labels = stats.map(s => s.label);
-                dataValues = stats.map(s => s.value);
-            }
-
             radarChartInstance = new Chart(ctx, {
                 type: 'radar',
                 data: {
-                    labels: labels,
+                    labels: ['Power', 'Speed', 'Intelligence', 'Technique', 'Endurance', 'Agility'],
                     datasets: [{
                         label: 'Ability Stats',
-                        data: dataValues,
+                        data: [stats.power, stats.speed, stats.intelligence, stats.technique, stats.endurance, stats.agility],
                         backgroundColor: 'rgba(236, 72, 153, 0.35)',
                         borderColor: '#ec4899',
                         pointBackgroundColor: '#10b981',
@@ -1226,6 +1148,96 @@
             } else {
                 prevChapter();
             }
+        }
+
+        function closeReader() { switchTab('detail'); }
+
+        function nextChapter() {
+            const comic = comics.find(c => c.id === currentComicId);
+            if (comic && comic.episodes && currentChapterIndex < comic.episodes.length - 1) {
+                openReader(currentComicId, currentChapterIndex + 1);
+            }
+        }
+
+        function prevChapter() {
+            if (currentChapterIndex > 0) {
+                openReader(currentComicId, currentChapterIndex - 1);
+            }
+        }
+
+        function handlePanelFilesSelect(input) {
+            if (input.files && input.files.length > 0) {
+                let loadedFiles = 0;
+                const totalFiles = input.files.length;
+                
+                Array.from(input.files).forEach((file) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        activeEpisodePanels.push(e.target.result);
+                        loadedFiles++;
+                        if (loadedFiles === totalFiles) {
+                            renderPanelReorderList();
+                        }
+                    }
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
+        function addUrlPanel() {
+            const input = document.getElementById('ep-single-url');
+            const url = input.value.trim();
+            if (url) {
+                activeEpisodePanels.push(url);
+                input.value = "";
+                renderPanelReorderList();
+            }
+        }
+
+        function renderPanelReorderList() {
+            const list = document.getElementById('panel-reorder-list');
+            document.getElementById('ep-panel-status').innerText = `${activeEpisodePanels.length} Panel(s) Loaded`;
+
+            if (activeEpisodePanels.length === 0) {
+                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No panels added yet. Select files or paste URLs above.</p>`;
+                return;
+            }
+
+            list.innerHTML = activeEpisodePanels.map((pSrc, idx) => `
+                <div class="flex items-center justify-between bg-brand-card p-2 rounded-lg border border-brand-border">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xs font-bold text-brand-500 w-5">#${idx + 1}</span>
+                        <img src="${pSrc}" class="w-10 h-10 object-cover rounded border border-brand-border">
+                        <span class="text-[10px] text-gray-400">Panel ${idx + 1}</span>
+                    </div>
+
+                    <div class="flex items-center space-x-1">
+                        <button onclick="movePanel(${idx}, -1)" class="p-1 px-2.5 bg-brand-dark hover:bg-brand-border rounded text-xs text-gray-200 border border-brand-border" ${idx === 0 ? 'disabled style="opacity:0.3"' : ''}>↑ Up</button>
+                        <button onclick="movePanel(${idx}, 1)" class="p-1 px-2.5 bg-brand-dark hover:bg-brand-border rounded text-xs text-gray-200 border border-brand-border" ${idx === activeEpisodePanels.length - 1 ? 'disabled style="opacity:0.3"' : ''}>↓ Down</button>
+                        <button onclick="removePanel(${idx})" class="p-1 px-2.5 bg-rose-950/50 hover:bg-rose-900 text-rose-400 rounded text-xs ml-1 border border-rose-900/50">✕ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function movePanel(index, direction) {
+            const targetIndex = index + direction;
+            if (targetIndex >= 0 && targetIndex < activeEpisodePanels.length) {
+                const temp = activeEpisodePanels[index];
+                activeEpisodePanels[index] = activeEpisodePanels[targetIndex];
+                activeEpisodePanels[targetIndex] = temp;
+                renderPanelReorderList();
+            }
+        }
+
+        function removePanel(index) {
+            activeEpisodePanels.splice(index, 1);
+            renderPanelReorderList();
+        }
+
+        function clearAllPanels() {
+            activeEpisodePanels = [];
+            renderPanelReorderList();
         }
 
         function openPublishModal() { document.getElementById('modal-publish').classList.remove('hidden'); }
