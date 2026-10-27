@@ -188,7 +188,7 @@
                 <span id="reader-chapter-title" class="text-xs font-bold text-brand-500 truncate max-w-[180px] sm:max-w-xs">Chapter Title</span>
 
                 <!-- Top Toolbar Zoom Controls -->
-                <div class="hidden sm:flex items-center bg-brand-dark p-1 rounded-xl border border-brand-border space-x-1">
+                <div class="flex items-center bg-brand-dark p-1 rounded-xl border border-brand-border space-x-1">
                     <button onclick="changeZoom(-10)" class="px-2.5 py-1 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-brand-card transition" title="Zoom Out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
                     <span id="zoom-percentage-header" class="text-[11px] font-extrabold text-brand-500 px-1">100%</span>
                     <button onclick="changeZoom(10)" class="px-2.5 py-1 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-brand-card transition" title="Zoom In"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
@@ -680,7 +680,7 @@
         let currentChapterIndex = 0;
         let currentPanelIndex = 0;
         let currentReaderMode = 'scroll';
-        let currentZoomLevel = 100; // Default Zoom percentage
+        let currentZoomLevel = 100;
         let uploadedCoverData = "";
         let uploadedCharImageData = "";
         let activeEpisodePanels = [];
@@ -715,6 +715,7 @@
                 readerToolbar.classList.remove('hidden');
                 readerToolbar.classList.add('flex');
                 headersWrapper.classList.remove('hide-header');
+                
                 if (floatZoom) {
                     floatZoom.classList.remove('hidden');
                     floatZoom.classList.remove('hide-zoom-controls');
@@ -725,6 +726,7 @@
                 readerToolbar.classList.add('hidden');
                 readerToolbar.classList.remove('flex');
                 headersWrapper.classList.remove('hide-header');
+                
                 if (mobileNav) mobileNav.style.transform = 'translateY(0)';
                 if (floatZoom) floatZoom.classList.add('hidden');
             }
@@ -755,7 +757,7 @@
 
             const scrollContainer = document.getElementById('reader-scroll-container');
             if (scrollContainer) {
-                const baseWidth = 42;
+                const baseWidth = 42; // base rem size for scroll view
                 scrollContainer.style.maxWidth = `${(baseWidth * currentZoomLevel) / 100}rem`;
             }
 
@@ -1272,4 +1274,93 @@
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
         function publishNewComic() {
-            const title = document.
+            const title = document.getElementById('pub-title').value.trim();
+            const genre = document.getElementById('pub-genre').value;
+            const coverUrl = document.getElementById('pub-cover').value.trim();
+            const desc = document.getElementById('pub-desc').value.trim();
+
+            const finalCover = uploadedCoverData || coverUrl || 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop&q=80';
+
+            if (!title) return;
+
+            const newComic = {
+                id: 'c' + (comics.length + 1),
+                title,
+                genre,
+                cover: finalCover,
+                desc,
+                likes: 0,
+                characters: [],
+                episodes: [],
+                comments: []
+            };
+
+            comics.unshift(newComic);
+            saveComicsStorage();
+            closeModal('modal-publish');
+            uploadedCoverData = "";
+            renderComicGrid(comics);
+            openComicDetail(newComic.id);
+        }
+
+        function saveComicsStorage() {
+            localStorage.setItem('soopmic_published_comics', JSON.stringify(comics));
+        }
+
+        function loadProfileState() {
+            document.getElementById('header-avatar').src = userProfile.avatar;
+            document.getElementById('profile-avatar-preview').src = userProfile.avatar;
+            document.getElementById('header-username').innerText = userProfile.name;
+            document.getElementById('profile-name-input').value = userProfile.name;
+            document.getElementById('profile-email-input').value = userProfile.email || '';
+        }
+
+        function saveProfile() {
+            userProfile.name = document.getElementById('profile-name-input').value.trim() || 'Author';
+            userProfile.email = document.getElementById('profile-email-input').value.trim();
+            localStorage.setItem('soopmic_profile', JSON.stringify(userProfile));
+            loadProfileState();
+            alert('Profile saved successfully!');
+        }
+
+        function updateProfileAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    userProfile.avatar = e.target.result;
+                    document.getElementById('profile-avatar-preview').src = e.target.result;
+                    document.getElementById('header-avatar').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function filterGenre(genre) {
+            document.querySelectorAll('.genre-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-500', 'text-black');
+                btn.classList.add('bg-brand-dark', 'text-gray-400');
+            });
+            if (event && event.target) {
+                event.target.classList.remove('bg-brand-dark', 'text-gray-400');
+                event.target.classList.add('bg-brand-500', 'text-black');
+            }
+
+            if (genre === 'All') {
+                renderComicGrid(comics);
+            } else {
+                renderComicGrid(comics.filter(c => c.genre === genre));
+            }
+        }
+
+        function filterComics() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = comics.filter(c => 
+                c.title.toLowerCase().includes(query) || 
+                c.genre.toLowerCase().includes(query) ||
+                c.desc.toLowerCase().includes(query)
+            );
+            renderComicGrid(filtered);
+        }
+    </script>
+</body>
+</html>
