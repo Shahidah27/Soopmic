@@ -688,10 +688,11 @@
         </div>
     </div>
 
-    <!-- MODAL 5: CHARACTER DETAIL VIEW (POP-UP FOR READERS WITH EDIT BUTTON) -->
+    <!-- MODAL 5: CHARACTER DETAIL VIEW (UPDATED: PICTURE ON TOP, DESCRIPTION BELOW, DOWNWARD SCROLL ONLY) -->
     <div id="modal-view-char" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-lg w-full space-y-6 my-8 relative">
             
+            <!-- TOP CONTROLS: EDIT & CLOSE -->
             <div class="flex items-center justify-between border-b border-brand-border/60 pb-3">
                 <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Character Overview</span>
                 <div class="flex items-center space-x-2">
@@ -703,13 +704,20 @@
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-                <img id="view-char-img" src="" class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl object-cover border-2 border-brand-accent shadow-xl flex-shrink-0">
+            <!-- PICTURE TOP, DESCRIPTION BELOW -->
+            <div class="flex flex-col items-center space-y-4 text-center">
+                <img id="view-char-img" src="" class="w-32 h-32 sm:w-36 sm:h-36 rounded-2xl object-cover border-2 border-brand-accent shadow-xl flex-shrink-0">
                 
-                <div class="space-y-2 text-center sm:text-left">
-                    <span id="view-char-role" class="px-3 py-1 rounded-full text-[10px] font-bold bg-brand-accent/20 text-brand-accent border border-brand-accent/30 uppercase tracking-wider">Role</span>
+                <div class="space-y-2 w-full">
+                    <div>
+                        <span id="view-char-role" class="px-3 py-1 rounded-full text-[10px] font-bold bg-brand-accent/20 text-brand-accent border border-brand-accent/30 uppercase tracking-wider inline-block">Role</span>
+                    </div>
                     <h2 id="view-char-name" class="text-2xl font-extrabold text-white font-comic">Character Name</h2>
-                    <p id="view-char-desc" class="text-xs text-gray-300 leading-relaxed max-h-32 overflow-y-auto pr-1">Character backstory details will appear here...</p>
+                    
+                    <!-- DESCRIPTION CONTAINER: VERTICAL DOWNWARD SCROLLING ONLY -->
+                    <div class="w-full bg-brand-dark/50 p-3 rounded-xl border border-brand-border/60 text-left">
+                        <p id="view-char-desc" class="text-xs text-gray-300 leading-relaxed max-h-32 overflow-y-auto overflow-x-hidden break-words pr-1">Character backstory details will appear here...</p>
+                    </div>
                 </div>
             </div>
 
@@ -777,10 +785,10 @@
                 likes: 12,
                 characters: [
                     {
-                        name: 'Kai',
+                        name: 'Kal',
                         role: 'Antagonist',
-                        desc: 'A ruthless commander who leads the rebel suppression unit.',
-                        stats: { influence: 85, attractiveness: 70, power: 90, intelligence: 80 },
+                        desc: 'No detailed backstory provided by author.',
+                        stats: { influence: 50, attractiveness: 50, power: 50, intelligence: 50 },
                         img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'
                     }
                 ],
