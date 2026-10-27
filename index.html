@@ -564,11 +564,11 @@
         </div>
     </div>
 
-    <!-- MODAL 3: ADD CHARACTER & LORE WITH STAT SLIDERS -->
+    <!-- MODAL 3: ADD / EDIT CHARACTER & LORE -->
     <div id="modal-add-char" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-md w-full space-y-4 my-8 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
-                <h3 class="text-lg font-bold text-white font-comic">ADD CHARACTER PROFILE</h3>
+                <h3 id="modal-char-title" class="text-lg font-bold text-white font-comic">ADD CHARACTER PROFILE</h3>
                 <button onclick="closeModal('modal-add-char')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
@@ -691,9 +691,17 @@
     <!-- MODAL 5: CHARACTER DETAIL VIEW (POP-UP FOR READERS) -->
     <div id="modal-view-char" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-lg w-full space-y-6 my-8 relative">
-            <button onclick="closeModal('modal-view-char')" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            
+            <!-- TOP CONTROLS: EDIT & CLOSE -->
+            <div class="absolute top-4 right-4 flex items-center space-x-2">
+                <button id="view-char-edit-btn" class="text-xs text-brand-accent hover:text-purple-300 bg-brand-accent/10 px-3 py-1 rounded-lg border border-brand-accent/30 font-bold flex items-center space-x-1 transition">
+                    <i class="fa-solid fa-pen-to-square text-xs"></i>
+                    <span>Edit Profile</span>
+                </button>
+                <button onclick="closeModal('modal-view-char')" class="text-gray-400 hover:text-white text-lg p-1"><i class="fa-solid fa-xmark"></i></button>
+            </div>
 
-            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 pt-2">
                 <img id="view-char-img" src="" class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl object-cover border-2 border-brand-accent shadow-xl flex-shrink-0">
                 
                 <div class="space-y-2 text-center sm:text-left">
@@ -799,6 +807,7 @@
         let currentPanelIndex = 0;
         let currentReaderMode = 'scroll';
         let currentZoomLevel = 100;
+        let editingCharIndex = null; // Tracks whether creating new (-1) or editing existing character index
         let uploadedCoverData = "";
         let uploadedCharImageData = "";
         let activeEpisodePanels = [];
@@ -1139,10 +1148,15 @@
                             </div>
                         </div>
 
-                        <!-- ALWAYS VISIBLE DELETE BUTTON -->
-                        <button onclick="deleteCharacterProfile(event, '${comic.id}', ${idx})" class="text-gray-400 hover:text-rose-400 p-2 transition flex-shrink-0 ml-2" title="Delete Character">
-                            <i class="fa-solid fa-trash-can text-sm"></i>
-                        </button>
+                        <!-- EDIT & DELETE BUTTONS -->
+                        <div class="flex items-center space-x-1 flex-shrink-0 ml-2">
+                            <button onclick="editCharacterProfile(event, '${comic.id}', ${idx})" class="text-gray-400 hover:text-brand-accent p-1.5 transition" title="Edit Character">
+                                <i class="fa-solid fa-pen-to-square text-xs"></i>
+                            </button>
+                            <button onclick="deleteCharacterProfile(event, '${comic.id}', ${idx})" class="text-gray-400 hover:text-rose-400 p-1.5 transition" title="Delete Character">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </div>
                     </div>
                 `).join('');
             } else {
@@ -1194,12 +1208,52 @@
             document.getElementById('graph-intelligence-text').innerText = `${stats.intelligence || 0}%`;
             document.getElementById('graph-intelligence-bar').style.width = `${stats.intelligence || 0}%`;
 
+            // Attach Edit Action to Top Modal Edit Button
+            const editBtn = document.getElementById('view-char-edit-btn');
+            editBtn.onclick = (e) => {
+                closeModal('modal-view-char');
+                editCharacterProfile(e, comicId, charIndex);
+            };
+
             document.getElementById('modal-view-char').classList.remove('hidden');
+        }
+
+        /* --- EDIT CHARACTER PROFILE --- */
+        function editCharacterProfile(event, comicId, charIndex) {
+            if (event) event.stopPropagation();
+
+            const comic = comics.find(c => c.id === comicId);
+            if (!comic || !comic.characters || !comic.characters[charIndex]) return;
+
+            const ch = comic.characters[charIndex];
+            const stats = ch.stats || { influence: 50, attractiveness: 50, power: 50, intelligence: 50 };
+
+            editingCharIndex = charIndex;
+            uploadedCharImageData = ch.img;
+
+            document.getElementById('modal-char-title').innerText = "EDIT CHARACTER PROFILE";
+            document.getElementById('char-name').value = ch.name || "";
+            document.getElementById('char-role').value = ch.role || "";
+            document.getElementById('char-desc').value = ch.desc || "";
+            document.getElementById('char-img-url').value = ch.img.startsWith('http') ? ch.img : "";
+
+            // Populate sliders with existing character attributes
+            document.getElementById('stat-influence').value = stats.influence;
+            document.getElementById('stat-attractiveness').value = stats.attractiveness;
+            document.getElementById('stat-power').value = stats.power;
+            document.getElementById('stat-intelligence').value = stats.intelligence;
+
+            document.getElementById('val-influence').innerText = `${stats.influence}%`;
+            document.getElementById('val-attractiveness').innerText = `${stats.attractiveness}%`;
+            document.getElementById('val-power').innerText = `${stats.power}%`;
+            document.getElementById('val-intelligence').innerText = `${stats.intelligence}%`;
+
+            document.getElementById('modal-add-char').classList.remove('hidden');
         }
 
         /* --- DELETE CHARACTER PROFILE --- */
         function deleteCharacterProfile(event, comicId, charIndex) {
-            event.stopPropagation(); // Prevents opening character detail modal when clicking delete
+            if (event) event.stopPropagation();
             
             if (confirm("Are you sure you want to remove this character profile?")) {
                 const comic = comics.find(c => c.id === comicId);
@@ -1212,7 +1266,9 @@
         }
 
         function openAddCharacterModal() {
+            editingCharIndex = null; // Reset to creation mode
             uploadedCharImageData = "";
+            document.getElementById('modal-char-title').innerText = "ADD CHARACTER PROFILE";
             document.getElementById('char-name').value = "";
             document.getElementById('char-role').value = "";
             document.getElementById('char-desc').value = "";
@@ -1247,18 +1303,30 @@
                 return;
             }
 
-            const finalImg = uploadedCharImageData || url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80';
             const comic = comics.find(c => c.id === currentComicId);
 
             if (comic) {
                 if (!comic.characters) comic.characters = [];
-                comic.characters.push({
+
+                const existingImg = (editingCharIndex !== null && comic.characters[editingCharIndex]) ? comic.characters[editingCharIndex].img : '';
+                const finalImg = uploadedCharImageData || url || existingImg || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80';
+
+                const charData = {
                     name,
                     role,
                     desc,
                     img: finalImg,
                     stats: { influence, attractiveness, power, intelligence }
-                });
+                };
+
+                if (editingCharIndex !== null && editingCharIndex >= 0) {
+                    // Update existing character
+                    comic.characters[editingCharIndex] = charData;
+                } else {
+                    // Add new character
+                    comic.characters.push(charData);
+                }
+
                 saveComicsStorage();
                 closeModal('modal-add-char');
                 openComicDetail(currentComicId);
