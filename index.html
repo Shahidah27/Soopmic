@@ -93,6 +93,12 @@
             pointer-events: none !important;
         }
 
+        .hide-zoom-controls {
+            transform: translateY(150%) !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
         .tab-pane {
             display: none;
             opacity: 0;
@@ -105,6 +111,10 @@
 
         #reading-progress {
             transition: width 0.1s ease-out;
+        }
+
+        .zoom-transition {
+            transition: max-width 0.25s ease-out, transform 0.25s ease-out;
         }
     </style>
 </head>
@@ -177,6 +187,14 @@
                 
                 <span id="reader-chapter-title" class="text-xs font-bold text-brand-500 truncate max-w-[180px] sm:max-w-xs">Chapter Title</span>
 
+                <!-- Top Toolbar Zoom Controls -->
+                <div class="hidden sm:flex items-center bg-brand-dark p-1 rounded-xl border border-brand-border space-x-1">
+                    <button onclick="changeZoom(-10)" class="px-2.5 py-1 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-brand-card transition" title="Zoom Out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                    <span id="zoom-percentage-header" class="text-[11px] font-extrabold text-brand-500 px-1">100%</span>
+                    <button onclick="changeZoom(10)" class="px-2.5 py-1 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-brand-card transition" title="Zoom In"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                    <button onclick="resetZoom()" class="px-2 py-1 rounded-lg text-[10px] font-bold text-gray-400 hover:text-white hover:bg-brand-card transition">Reset</button>
+                </div>
+
                 <div class="flex items-center bg-brand-card p-1 rounded-xl border border-brand-border">
                     <button id="mode-scroll-btn" onclick="setReaderMode('scroll')" class="px-3 py-1 rounded-lg text-xs font-bold text-white bg-brand-500/20 border border-brand-500/30 flex items-center space-x-1 transition">
                         <i class="fa-solid fa-arrows-up-down text-[10px]"></i>
@@ -199,6 +217,20 @@
                 <div id="reading-progress" class="bg-brand-500 h-1 w-0"></div>
             </div>
         </div>
+    </div>
+
+    <!-- Floating Reader Zoom Controls (Auto-hides on Scroll) -->
+    <div id="floating-zoom-controls" class="hidden fixed bottom-6 right-6 z-50 bg-brand-dark/90 backdrop-blur-md border border-brand-border rounded-2xl p-2 shadow-2xl transition-all duration-300 flex items-center space-x-2">
+        <button onclick="changeZoom(-10)" class="w-9 h-9 rounded-xl bg-brand-card hover:bg-brand-500 hover:text-black text-gray-200 border border-brand-border flex items-center justify-center transition shadow-md active:scale-95" title="Zoom Out">
+            <i class="fa-solid fa-minus text-xs"></i>
+        </button>
+        <span id="floating-zoom-text" class="text-xs font-extrabold text-brand-500 px-1 min-w-[42px] text-center">100%</span>
+        <button onclick="changeZoom(10)" class="w-9 h-9 rounded-xl bg-brand-card hover:bg-brand-500 hover:text-black text-gray-200 border border-brand-border flex items-center justify-center transition shadow-md active:scale-95" title="Zoom In">
+            <i class="fa-solid fa-plus text-xs"></i>
+        </button>
+        <button onclick="resetZoom()" class="w-9 h-9 rounded-xl bg-brand-card hover:bg-gray-800 text-gray-400 hover:text-white border border-brand-border flex items-center justify-center transition shadow-md active:scale-95 text-[10px] font-bold" title="Reset Zoom">
+            1:1
+        </button>
     </div>
 
     <!-- Main Dynamic Content Container -->
@@ -326,7 +358,7 @@
 
         <!-- ================= PAGE 3: READING MODE ================= -->
         <section id="page-reader" class="tab-pane">
-            <div id="reader-scroll-container" class="max-w-2xl mx-auto py-2 space-y-0 text-center cursor-pointer select-none"></div>
+            <div id="reader-scroll-container" class="max-w-2xl mx-auto py-2 space-y-0 text-center cursor-pointer select-none zoom-transition"></div>
 
             <!-- Page Mode Container -->
             <div id="reader-page-container" class="relative w-full py-2 hidden flex-col items-center min-h-[85vh]">
@@ -335,18 +367,14 @@
                     <span class="text-[10px] text-brand-500">Tap Right / Left edge to navigate • Double-tap to toggle menu</span>
                 </div>
 
-                <!-- Webtoon Viewing Canvas with Side Arrow Buttons & Mobile Touch Areas -->
+                <!-- Webtoon Viewing Canvas -->
                 <div class="relative w-full flex items-center justify-center min-h-[80vh] bg-black/40 rounded-2xl border border-brand-border p-2 overflow-hidden select-none" id="page-touch-area">
-                    
-                    <!-- Left Arrow Button -->
                     <button onclick="prevPagePanel()" class="absolute left-4 z-30 w-12 h-12 bg-brand-dark/80 hover:bg-brand-500 hover:text-black border border-brand-border rounded-full text-white text-base transition transform hover:scale-110 shadow-2xl hidden sm:flex items-center justify-center">
                         <i class="fa-solid fa-chevron-left"></i>
                     </button>
 
-                    <!-- Webtoon Image Panel (Fits to Page) -->
-                    <img id="single-panel-img" src="" class="max-h-[82vh] w-auto max-w-full object-contain rounded-xl shadow-2xl transition duration-200 pointer-events-none" alt="Comic Panel">
+                    <img id="single-panel-img" src="" class="max-h-[82vh] w-auto max-w-full object-contain rounded-xl shadow-2xl transition duration-200 pointer-events-none zoom-transition" alt="Comic Panel">
 
-                    <!-- Right Arrow Button -->
                     <button onclick="nextPagePanel()" class="absolute right-4 z-30 w-12 h-12 bg-brand-dark/80 hover:bg-brand-500 hover:text-black border border-brand-border rounded-full text-white text-base transition transform hover:scale-110 shadow-2xl hidden sm:flex items-center justify-center">
                         <i class="fa-solid fa-chevron-right"></i>
                     </button>
@@ -618,40 +646,33 @@
         </div>
     </div>
 
-    <!-- MODAL 5: EPISODE LIVE PREVIEW MODAL -->
-    <div id="modal-live-preview" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex flex-col p-4 overflow-y-auto">
-        <div class="flex justify-between items-center bg-brand-card p-4 rounded-xl border border-brand-border mb-4">
-            <div>
-                <span class="text-[10px] font-bold text-brand-500 uppercase tracking-widest">Author Mode</span>
-                <h3 class="text-sm font-bold text-white" id="preview-ep-title">Live Episode Preview</h3>
-            </div>
-            <button onclick="closeModal('modal-live-preview')" class="px-4 py-2 bg-brand-dark border border-brand-border text-xs text-gray-300 rounded-xl hover:text-white">Close Preview</button>
-        </div>
-
-        <div id="preview-panels-box" class="max-w-xl mx-auto w-full space-y-2 py-4"></div>
-    </div>
-
     <!-- Application Script Logic -->
     <script>
-        const ADMIN_EMAIL = "idah2667@gmail.com";
-        const ADMIN_PASSWORD = "soop123!";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAzxh8Y5boz4uezZOMb2bwxJtagaAcwbgI",
-            authDomain: "soopmic-16076.firebaseapp.com",
-            projectId: "soopmic-16076",
-            storageBucket: "soopmic-16076.firebasestorage.app",
-            messagingSenderId: "1038536806743",
-            appId: "1:1038536806743:web:a2c6e61f9e51c9b562ee12",
-            measurementId: "G-QS04G4KP35"
-        };
-
-        if (typeof firebase !== 'undefined' && firebase.apps && !firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        const DEFAULT_SEED_COMICS = [
+            {
+                id: 'c_revolt',
+                title: 'Revolt',
+                genre: 'Action',
+                cover: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop&q=80',
+                desc: 'An epic tale of rebellion and survival created by Soop.',
+                likes: 12,
+                characters: [],
+                episodes: [
+                    {
+                        title: 'testing 2',
+                        date: 'Oct 20, 2026',
+                        panels: [
+                            'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&auto=format&fit=crop&q=80'
+                        ]
+                    }
+                ],
+                comments: []
+            }
+        ];
 
         let currentUser = null;
-        let comics = JSON.parse(localStorage.getItem('soopmic_published_comics') || '[]');
+        let storedComics = JSON.parse(localStorage.getItem('soopmic_published_comics') || '[]');
+        let comics = storedComics.length > 0 ? storedComics : DEFAULT_SEED_COMICS;
 
         let bookmarks = JSON.parse(localStorage.getItem('soopmic_bookmarks') || '[]');
         let likes = JSON.parse(localStorage.getItem('soopmic_likes') || '[]');
@@ -659,12 +680,12 @@
         let currentChapterIndex = 0;
         let currentPanelIndex = 0;
         let currentReaderMode = 'scroll';
+        let currentZoomLevel = 100; // Default Zoom percentage
         let uploadedCoverData = "";
         let uploadedCharImageData = "";
         let activeEpisodePanels = [];
         let userProfile = JSON.parse(localStorage.getItem('soopmic_profile') || '{"name":"Author","avatar":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80","email":""}');
 
-        // Navigation Scroll Tracker
         let prevScrollPos = window.pageYOffset || document.documentElement.scrollTop;
         let isReaderActive = false;
 
@@ -675,28 +696,7 @@
             setupScrollManager();
             setupDoubleTapManager();
             setupMobilePageTouchAreas();
-
-            if (typeof firebase !== 'undefined' && firebase.auth) {
-                firebase.auth().onAuthStateChanged(user => {
-                    currentUser = user;
-                    updateUserUI();
-                    if (currentComicId) openComicDetail(currentComicId);
-                });
-            }
         });
-
-        function updateUserUI() {
-            const authBtn = document.getElementById('auth-btn');
-            const usernameSpan = document.getElementById('header-username');
-
-            if (currentUser) {
-                authBtn.innerText = "Log Out";
-                usernameSpan.innerText = currentUser.email;
-            } else {
-                authBtn.innerText = "Log In / Verify Email";
-                usernameSpan.innerText = "Author";
-            }
-        }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
@@ -707,6 +707,7 @@
             const mainHeader = document.getElementById('main-header');
             const readerToolbar = document.getElementById('reader-toolbar');
             const mobileNav = document.getElementById('mobile-nav');
+            const floatZoom = document.getElementById('floating-zoom-controls');
 
             if (tabId === 'reader') {
                 isReaderActive = true;
@@ -714,6 +715,7 @@
                 readerToolbar.classList.remove('hidden');
                 readerToolbar.classList.add('flex');
                 headersWrapper.classList.remove('hide-header');
+                if (floatZoom) floatZoom.classList.remove('hidden');
             } else {
                 isReaderActive = false;
                 mainHeader.classList.remove('hidden');
@@ -721,6 +723,7 @@
                 readerToolbar.classList.remove('flex');
                 headersWrapper.classList.remove('hide-header');
                 if (mobileNav) mobileNav.style.transform = 'translateY(0)';
+                if (floatZoom) floatZoom.classList.add('hidden');
             }
 
             if (tabId === 'bookmarks') renderBookmarks();
@@ -730,46 +733,37 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        /* --- Mobile Touch Zones for Page Navigation --- */
-        function setupMobilePageTouchAreas() {
-            const pageTouchArea = document.getElementById('page-touch-area');
-            let lastTapTime = 0;
+        /* --- ZOOM CONTROLS LOGIC --- */
+        function changeZoom(delta) {
+            currentZoomLevel = Math.min(Math.max(currentZoomLevel + delta, 50), 150);
+            applyZoom();
+        }
 
-            if (pageTouchArea) {
-                pageTouchArea.addEventListener('click', (e) => {
-                    if (e.target.closest('button')) return;
+        function resetZoom() {
+            currentZoomLevel = 100;
+            applyZoom();
+        }
 
-                    const now = new Date().getTime();
-                    const isDoubleTap = (now - lastTapTime < 300);
-                    lastTapTime = now;
+        function applyZoom() {
+            const headerZoomTxt = document.getElementById('zoom-percentage-header');
+            const floatZoomTxt = document.getElementById('floating-zoom-text');
+            if (headerZoomTxt) headerZoomTxt.innerText = `${currentZoomLevel}%`;
+            if (floatZoomTxt) floatZoomTxt.innerText = `${currentZoomLevel}%`;
 
-                    if (isDoubleTap) {
-                        const headersWrapper = document.getElementById('headers-wrapper');
-                        const mobileNav = document.getElementById('mobile-nav');
-                        
-                        if (headersWrapper.classList.contains('hide-header')) {
-                            headersWrapper.classList.remove('hide-header');
-                            if (mobileNav) mobileNav.style.transform = 'translateY(0)';
-                        } else {
-                            headersWrapper.classList.add('hide-header');
-                            if (mobileNav) mobileNav.style.transform = 'translateY(100%)';
-                        }
-                    } else {
-                        const rect = pageTouchArea.getBoundingClientRect();
-                        const clickX = e.clientX - rect.left;
-                        const width = rect.width;
+            const scrollContainer = document.getElementById('reader-scroll-container');
+            if (scrollContainer) {
+                // Adjust container max width based on zoom level
+                const baseWidth = 42; // base rem width (max-w-2xl equivalent)
+                scrollContainer.style.maxWidth = `${(baseWidth * currentZoomLevel) / 100}rem`;
+            }
 
-                        if (clickX > width / 2) {
-                            nextPagePanel();
-                        } else {
-                            prevPagePanel();
-                        }
-                    }
-                });
+            const pagePanelImg = document.getElementById('single-panel-img');
+            if (pagePanelImg) {
+                pagePanelImg.style.transform = `scale(${currentZoomLevel / 100})`;
             }
         }
 
-        /* --- Scroll & Hide Mechanism --- */
+        /* --- SCROLL & AUTO-HIDE CONTROLS --- */
         function setupScrollManager() {
             window.onscroll = function() {
                 if (!isReaderActive) return;
@@ -777,19 +771,22 @@
                 const currentScrollPos = window.pageYOffset || document.documentElement.scrollTop;
                 const headersWrapper = document.getElementById('headers-wrapper');
                 const mobileNav = document.getElementById('mobile-nav');
+                const floatZoom = document.getElementById('floating-zoom-controls');
 
                 if (currentScrollPos > prevScrollPos && currentScrollPos > 50) {
                     headersWrapper.classList.add('hide-header');
                     if (mobileNav) mobileNav.style.transform = 'translateY(100%)';
+                    if (floatZoom) floatZoom.classList.add('hide-zoom-controls');
                 } else {
                     headersWrapper.classList.remove('hide-header');
                     if (mobileNav) mobileNav.style.transform = 'translateY(0)';
+                    if (floatZoom) floatZoom.classList.remove('hide-zoom-controls');
                 }
 
                 prevScrollPos = currentScrollPos;
 
                 const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                const progressPercent = (currentScrollPos / docHeight) * 100;
+                const progressPercent = docHeight > 0 ? (currentScrollPos / docHeight) * 100 : 100;
                 const progressBarEl = document.getElementById('reading-progress');
                 if (progressBarEl) progressBarEl.style.width = progressPercent + '%';
             };
@@ -806,16 +803,58 @@
                         e.preventDefault();
                         const headersWrapper = document.getElementById('headers-wrapper');
                         const mobileNav = document.getElementById('mobile-nav');
+                        const floatZoom = document.getElementById('floating-zoom-controls');
                         
                         if (headersWrapper.classList.contains('hide-header')) {
                             headersWrapper.classList.remove('hide-header');
                             if (mobileNav) mobileNav.style.transform = 'translateY(0)';
+                            if (floatZoom) floatZoom.classList.remove('hide-zoom-controls');
                         } else {
                             headersWrapper.classList.add('hide-header');
                             if (mobileNav) mobileNav.style.transform = 'translateY(100%)';
+                            if (floatZoom) floatZoom.classList.add('hide-zoom-controls');
                         }
                     }
                     lastClickTime = now;
+                });
+            }
+        }
+
+        function setupMobilePageTouchAreas() {
+            const pageTouchArea = document.getElementById('page-touch-area');
+            let lastTapTime = 0;
+
+            if (pageTouchArea) {
+                pageTouchArea.addEventListener('click', (e) => {
+                    if (e.target.closest('button')) return;
+
+                    const now = new Date().getTime();
+                    const isDoubleTap = (now - lastTapTime < 300);
+                    lastTapTime = now;
+
+                    if (isDoubleTap) {
+                        const headersWrapper = document.getElementById('headers-wrapper');
+                        const mobileNav = document.getElementById('mobile-nav');
+                        const floatZoom = document.getElementById('floating-zoom-controls');
+                        
+                        if (headersWrapper.classList.contains('hide-header')) {
+                            headersWrapper.classList.remove('hide-header');
+                            if (mobileNav) mobileNav.style.transform = 'translateY(0)';
+                            if (floatZoom) floatZoom.classList.remove('hide-zoom-controls');
+                        } else {
+                            headersWrapper.classList.add('hide-header');
+                            if (mobileNav) mobileNav.style.transform = 'translateY(100%)';
+                            if (floatZoom) floatZoom.classList.add('hide-zoom-controls');
+                        }
+                    } else {
+                        const rect = pageTouchArea.getBoundingClientRect();
+                        const clickX = e.clientX - rect.left;
+                        if (clickX > rect.width / 2) {
+                            nextPagePanel();
+                        } else {
+                            prevPagePanel();
+                        }
+                    }
                 });
             }
         }
@@ -868,6 +907,7 @@
             `).join('');
 
             applyReaderView();
+            applyZoom();
             switchTab('reader');
         }
 
@@ -955,81 +995,6 @@
             }
         }
 
-        function handlePanelFilesSelect(input) {
-            if (input.files && input.files.length > 0) {
-                let loadedFiles = 0;
-                const totalFiles = input.files.length;
-                
-                Array.from(input.files).forEach((file) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        activeEpisodePanels.push(e.target.result);
-                        loadedFiles++;
-                        if (loadedFiles === totalFiles) {
-                            renderPanelReorderList();
-                        }
-                    }
-                    reader.readAsDataURL(file);
-                });
-            }
-        }
-
-        function addUrlPanel() {
-            const input = document.getElementById('ep-single-url');
-            const url = input.value.trim();
-            if (url) {
-                activeEpisodePanels.push(url);
-                input.value = "";
-                renderPanelReorderList();
-            }
-        }
-
-        function renderPanelReorderList() {
-            const list = document.getElementById('panel-reorder-list');
-            document.getElementById('ep-panel-status').innerText = `${activeEpisodePanels.length} Panel(s) Loaded`;
-
-            if (activeEpisodePanels.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No panels added yet. Select files or paste URLs above.</p>`;
-                return;
-            }
-
-            list.innerHTML = activeEpisodePanels.map((pSrc, idx) => `
-                <div class="flex items-center justify-between bg-brand-card p-2 rounded-lg border border-brand-border">
-                    <div class="flex items-center space-x-3">
-                        <span class="text-xs font-bold text-brand-500 w-5">#${idx + 1}</span>
-                        <img src="${pSrc}" class="w-10 h-10 object-cover rounded border border-brand-border">
-                        <span class="text-[10px] text-gray-400">Panel ${idx + 1}</span>
-                    </div>
-
-                    <div class="flex items-center space-x-1">
-                        <button onclick="movePanel(${idx}, -1)" class="p-1 px-2.5 bg-brand-dark hover:bg-brand-border rounded text-xs text-gray-200 border border-brand-border" ${idx === 0 ? 'disabled style="opacity:0.3"' : ''}>↑ Up</button>
-                        <button onclick="movePanel(${idx}, 1)" class="p-1 px-2.5 bg-brand-dark hover:bg-brand-border rounded text-xs text-gray-200 border border-brand-border" ${idx === activeEpisodePanels.length - 1 ? 'disabled style="opacity:0.3"' : ''}>↓ Down</button>
-                        <button onclick="removePanel(${idx})" class="p-1 px-2.5 bg-rose-950/50 hover:bg-rose-900 text-rose-400 rounded text-xs ml-1 border border-rose-900/50">✕ Delete</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function movePanel(index, direction) {
-            const targetIndex = index + direction;
-            if (targetIndex >= 0 && targetIndex < activeEpisodePanels.length) {
-                const temp = activeEpisodePanels[index];
-                activeEpisodePanels[index] = activeEpisodePanels[targetIndex];
-                activeEpisodePanels[targetIndex] = temp;
-                renderPanelReorderList();
-            }
-        }
-
-        function removePanel(index) {
-            activeEpisodePanels.splice(index, 1);
-            renderPanelReorderList();
-        }
-
-        function clearAllPanels() {
-            activeEpisodePanels = [];
-            renderPanelReorderList();
-        }
-
         function openComicDetail(comicId) {
             currentComicId = comicId;
             const comic = comics.find(c => c.id === comicId);
@@ -1108,20 +1073,79 @@
             document.getElementById('modal-upload-ep').classList.remove('hidden');
         }
 
-        function previewEpisodeBeforePublish() {
-            const title = document.getElementById('ep-title').value.trim() || 'Untitled Episode Preview';
+        function handlePanelFilesSelect(input) {
+            if (input.files && input.files.length > 0) {
+                let loadedFiles = 0;
+                const totalFiles = input.files.length;
+                
+                Array.from(input.files).forEach((file) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        activeEpisodePanels.push(e.target.result);
+                        loadedFiles++;
+                        if (loadedFiles === totalFiles) {
+                            renderPanelReorderList();
+                        }
+                    }
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
+        function addUrlPanel() {
+            const input = document.getElementById('ep-single-url');
+            const url = input.value.trim();
+            if (url) {
+                activeEpisodePanels.push(url);
+                input.value = "";
+                renderPanelReorderList();
+            }
+        }
+
+        function renderPanelReorderList() {
+            const list = document.getElementById('panel-reorder-list');
+            document.getElementById('ep-panel-status').innerText = `${activeEpisodePanels.length} Panel(s) Loaded`;
 
             if (activeEpisodePanels.length === 0) {
-                alert("Please select or add at least one panel image to preview!");
+                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No panels added yet. Select files or paste URLs above.</p>`;
                 return;
             }
 
-            document.getElementById('preview-ep-title').innerText = title;
-            document.getElementById('preview-panels-box').innerHTML = activeEpisodePanels.map((pUrl, idx) => `
-                <img src="${pUrl}" class="w-full h-auto object-cover rounded-lg border border-brand-border" alt="Panel ${idx + 1}">
-            `).join('');
+            list.innerHTML = activeEpisodePanels.map((pSrc, idx) => `
+                <div class="flex items-center justify-between bg-brand-card p-2 rounded-lg border border-brand-border">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xs font-bold text-brand-500 w-5">#${idx + 1}</span>
+                        <img src="${pSrc}" class="w-10 h-10 object-cover rounded border border-brand-border">
+                        <span class="text-[10px] text-gray-400">Panel ${idx + 1}</span>
+                    </div>
 
-            document.getElementById('modal-live-preview').classList.remove('hidden');
+                    <div class="flex items-center space-x-1">
+                        <button onclick="movePanel(${idx}, -1)" class="p-1 px-2.5 bg-brand-dark hover:bg-brand-border rounded text-xs text-gray-200 border border-brand-border" ${idx === 0 ? 'disabled style="opacity:0.3"' : ''}>↑ Up</button>
+                        <button onclick="movePanel(${idx}, 1)" class="p-1 px-2.5 bg-brand-dark hover:bg-brand-border rounded text-xs text-gray-200 border border-brand-border" ${idx === activeEpisodePanels.length - 1 ? 'disabled style="opacity:0.3"' : ''}>↓ Down</button>
+                        <button onclick="removePanel(${idx})" class="p-1 px-2.5 bg-rose-950/50 hover:bg-rose-900 text-rose-400 rounded text-xs ml-1 border border-rose-900/50">✕ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function movePanel(index, direction) {
+            const targetIndex = index + direction;
+            if (targetIndex >= 0 && targetIndex < activeEpisodePanels.length) {
+                const temp = activeEpisodePanels[index];
+                activeEpisodePanels[index] = activeEpisodePanels[targetIndex];
+                activeEpisodePanels[targetIndex] = temp;
+                renderPanelReorderList();
+            }
+        }
+
+        function removePanel(index) {
+            activeEpisodePanels.splice(index, 1);
+            renderPanelReorderList();
+        }
+
+        function clearAllPanels() {
+            activeEpisodePanels = [];
+            renderPanelReorderList();
         }
 
         function saveNewEpisode() {
@@ -1176,16 +1200,6 @@
             saveComicsStorage();
             input.value = '';
             renderComments(comic);
-        }
-
-        function toggleBookmark(id) {
-            if (bookmarks.includes(id)) {
-                bookmarks = bookmarks.filter(item => item !== id);
-            } else {
-                bookmarks.push(id);
-            }
-            localStorage.setItem('soopmic_bookmarks', JSON.stringify(bookmarks));
-            updateBookmarkBadge();
         }
 
         function updateBookmarkBadge() {
