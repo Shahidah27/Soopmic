@@ -327,7 +327,7 @@
                         <span>+ Add Character Profile</span>
                     </button>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="detail-characters"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="detail-characters"></div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -714,7 +714,7 @@
                     <div>
                         <div class="flex justify-between text-[11px] font-semibold text-gray-300 mb-1">
                             <span>Influence</span>
-                            <span id="graph-influence-text" class="text-brand-500">0%</span>
+                            <span id="graph-influence-text" class="text-brand-500 font-bold">0%</span>
                         </div>
                         <div class="w-full bg-brand-card h-2 rounded-full overflow-hidden border border-brand-border">
                             <div id="graph-influence-bar" class="bg-brand-500 h-full w-0 transition-all duration-500"></div>
@@ -724,7 +724,7 @@
                     <div>
                         <div class="flex justify-between text-[11px] font-semibold text-gray-300 mb-1">
                             <span>Attractiveness</span>
-                            <span id="graph-attractiveness-text" class="text-brand-pink">0%</span>
+                            <span id="graph-attractiveness-text" class="text-brand-pink font-bold">0%</span>
                         </div>
                         <div class="w-full bg-brand-card h-2 rounded-full overflow-hidden border border-brand-border">
                             <div id="graph-attractiveness-bar" class="bg-brand-pink h-full w-0 transition-all duration-500"></div>
@@ -734,7 +734,7 @@
                     <div>
                         <div class="flex justify-between text-[11px] font-semibold text-gray-300 mb-1">
                             <span>Power / Ability</span>
-                            <span id="graph-power-text" class="text-brand-accent">0%</span>
+                            <span id="graph-power-text" class="text-brand-accent font-bold">0%</span>
                         </div>
                         <div class="w-full bg-brand-card h-2 rounded-full overflow-hidden border border-brand-border">
                             <div id="graph-power-bar" class="bg-brand-accent h-full w-0 transition-all duration-500"></div>
@@ -744,7 +744,7 @@
                     <div>
                         <div class="flex justify-between text-[11px] font-semibold text-gray-300 mb-1">
                             <span>Intelligence</span>
-                            <span id="graph-intelligence-text" class="text-blue-400">0%</span>
+                            <span id="graph-intelligence-text" class="text-blue-400 font-bold">0%</span>
                         </div>
                         <div class="w-full bg-brand-card h-2 rounded-full overflow-hidden border border-brand-border">
                             <div id="graph-intelligence-bar" class="bg-blue-400 h-full w-0 transition-all duration-500"></div>
@@ -1130,8 +1130,8 @@
             const charGrid = document.getElementById('detail-characters');
             if (comic.characters && comic.characters.length > 0) {
                 charGrid.innerHTML = comic.characters.map((ch, idx) => `
-                    <div class="bg-brand-dark p-2.5 rounded-xl border border-brand-border hover:border-brand-accent/60 flex items-center justify-between group transition cursor-pointer" onclick="viewCharacterDetail('${comic.id}', ${idx})">
-                        <div class="flex items-center space-x-2 min-w-0">
+                    <div class="bg-brand-dark p-3 rounded-xl border border-brand-border hover:border-brand-accent flex items-center justify-between group transition cursor-pointer" onclick="viewCharacterDetail('${comic.id}', ${idx})">
+                        <div class="flex items-center space-x-3 min-w-0">
                             <img src="${ch.img}" class="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-brand-border">
                             <div class="truncate">
                                 <h4 class="text-xs font-bold text-white group-hover:text-brand-accent transition truncate">${ch.name}</h4>
@@ -1139,9 +1139,9 @@
                             </div>
                         </div>
 
-                        <!-- AUTHOR REMOVE CHARACTER BUTTON -->
-                        <button onclick="deleteCharacterProfile(event, '${comic.id}', ${idx})" class="text-gray-500 hover:text-rose-400 p-1.5 transition opacity-80 group-hover:opacity-100" title="Delete Character">
-                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        <!-- ALWAYS VISIBLE DELETE BUTTON -->
+                        <button onclick="deleteCharacterProfile(event, '${comic.id}', ${idx})" class="text-gray-400 hover:text-rose-400 p-2 transition flex-shrink-0 ml-2" title="Delete Character">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
                         </button>
                     </div>
                 `).join('');
