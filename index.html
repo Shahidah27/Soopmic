@@ -38,11 +38,6 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -66,15 +61,9 @@
             background: #10b981;
         }
 
-        .glow-green {
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.35);
-        }
-        .glow-purple {
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.35);
-        }
-        .glow-pink {
-            box-shadow: 0 0 15px rgba(236, 72, 153, 0.35);
-        }
+        .glow-green { box-shadow: 0 0 15px rgba(16, 185, 129, 0.35); }
+        .glow-purple { box-shadow: 0 0 15px rgba(139, 92, 246, 0.35); }
+        .glow-pink { box-shadow: 0 0 15px rgba(236, 72, 153, 0.35); }
 
         .panel-glow:hover {
             filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.4));
@@ -93,12 +82,6 @@
             pointer-events: none !important;
         }
 
-        .hide-zoom-controls {
-            transform: translateY(150%) !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
-
         .tab-pane {
             display: none;
             opacity: 0;
@@ -109,25 +92,17 @@
             opacity: 1;
         }
 
-        #reading-progress {
-            transition: width 0.1s ease-out;
-        }
-
-        .zoom-transition {
-            transition: max-width 0.25s ease-out, transform 0.25s ease-out;
-        }
+        #reading-progress { transition: width 0.1s ease-out; }
+        .zoom-transition { transition: max-width 0.25s ease-out, transform 0.25s ease-out; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col pb-16 md:pb-0">
 
     <!-- Top Navigation Header Container -->
     <div id="headers-wrapper" class="sticky top-0 z-40 transition-all duration-300">
-        <!-- Main Portal Header -->
         <header id="main-header" class="glass-nav border-b border-brand-border">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
-                    
-                    <!-- Logo & Brand -->
                     <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 via-brand-accent to-brand-pink p-0.5 flex items-center justify-center glow-green">
                             <div class="w-full h-full bg-brand-dark rounded-[10px] flex items-center justify-center">
@@ -140,7 +115,6 @@
                         </div>
                     </div>
 
-                    <!-- Desktop Navigation Links -->
                     <nav class="hidden md:flex items-center space-x-1">
                         <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-brand-500 bg-brand-500/10 border border-brand-500/30 flex items-center space-x-2 transition">
                             <i class="fa-solid fa-compass"></i>
@@ -161,7 +135,6 @@
                         </button>
                     </nav>
 
-                    <!-- Search & Profile Controls -->
                     <div class="flex items-center space-x-3">
                         <button onclick="openAuthModal()" id="auth-btn" class="px-3 py-1.5 rounded-xl bg-brand-500 text-black font-bold text-xs glow-green transition">
                             Log In / Verify Email
@@ -172,7 +145,6 @@
                             <span class="hidden lg:inline text-xs font-semibold text-gray-300 pr-1" id="header-username">Author</span>
                         </button>
                     </div>
-
                 </div>
             </div>
         </header>
@@ -184,56 +156,20 @@
                     <i class="fa-solid fa-chevron-left"></i>
                     <span>Exit Reader</span>
                 </button>
-                
                 <span id="reader-chapter-title" class="text-xs font-bold text-brand-500 truncate max-w-[180px] sm:max-w-xs">Chapter Title</span>
-
-                <!-- Top Toolbar Zoom Controls -->
                 <div class="flex items-center bg-brand-dark p-1 rounded-xl border border-brand-border space-x-1">
-                    <button onclick="changeZoom(-10)" class="px-2.5 py-1 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-brand-card transition" title="Zoom Out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                    <button onclick="changeZoom(-10)" class="px-2.5 py-1 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-brand-card transition"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
                     <span id="zoom-percentage-header" class="text-[11px] font-extrabold text-brand-500 px-1">100%</span>
-                    <button onclick="changeZoom(10)" class="px-2.5 py-1 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-brand-card transition" title="Zoom In"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                    <button onclick="changeZoom(10)" class="px-2.5 py-1 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-brand-card transition"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
                     <button onclick="resetZoom()" class="px-2 py-1 rounded-lg text-[10px] font-bold text-gray-400 hover:text-white hover:bg-brand-card transition">Reset</button>
                 </div>
-
-                <div class="flex items-center bg-brand-card p-1 rounded-xl border border-brand-border">
-                    <button id="mode-scroll-btn" onclick="setReaderMode('scroll')" class="px-3 py-1 rounded-lg text-xs font-bold text-white bg-brand-500/20 border border-brand-500/30 flex items-center space-x-1 transition">
-                        <i class="fa-solid fa-arrows-up-down text-[10px]"></i>
-                        <span>Scroll</span>
-                    </button>
-                    <button id="mode-page-btn" onclick="setReaderMode('page')" class="px-3 py-1 rounded-lg text-xs font-bold text-gray-400 hover:text-white flex items-center space-x-1 transition">
-                        <i class="fa-solid fa-book-open text-[10px]"></i>
-                        <span>Page Mode</span>
-                    </button>
-                </div>
-
-                <div class="flex items-center space-x-2">
-                    <button onclick="prevChapter()" class="p-2 bg-brand-card rounded-lg text-xs text-gray-300 hover:text-white" title="Previous Chapter"><i class="fa-solid fa-angles-left"></i></button>
-                    <button onclick="nextChapter()" class="p-2 bg-brand-card rounded-lg text-xs text-gray-300 hover:text-white" title="Next Chapter"><i class="fa-solid fa-angles-right"></i></button>
-                </div>
             </div>
-
-            <!-- Reading Progress Line Bar -->
             <div id="reader-progress-bar" class="w-full bg-brand-border h-1">
                 <div id="reading-progress" class="bg-brand-500 h-1 w-0"></div>
             </div>
         </div>
     </div>
 
-    <!-- Floating Reader Zoom Controls -->
-    <div id="floating-zoom-controls" class="hidden fixed bottom-6 right-6 z-50 bg-brand-card/90 backdrop-blur-md border border-brand-border rounded-2xl p-2 shadow-2xl flex items-center space-x-2 transition-all duration-300">
-        <button onclick="changeZoom(-10)" class="w-9 h-9 rounded-xl bg-brand-dark hover:bg-brand-500 hover:text-black text-gray-200 border border-brand-border flex items-center justify-center transition shadow-md active:scale-95" title="Zoom Out">
-            <i class="fa-solid fa-minus text-xs"></i>
-        </button>
-        <span id="floating-zoom-text" class="text-xs font-extrabold text-brand-500 px-1 min-w-[42px] text-center">100%</span>
-        <button onclick="changeZoom(10)" class="w-9 h-9 rounded-xl bg-brand-dark hover:bg-brand-500 hover:text-black text-gray-200 border border-brand-border flex items-center justify-center transition shadow-md active:scale-95" title="Zoom In">
-            <i class="fa-solid fa-plus text-xs"></i>
-        </button>
-        <button onclick="resetZoom()" class="w-9 h-9 rounded-xl bg-brand-dark hover:bg-gray-800 text-gray-400 hover:text-white border border-brand-border flex items-center justify-center transition shadow-md active:scale-95 text-[10px] font-bold" title="Reset Zoom">
-            1:1
-        </button>
-    </div>
-
-    <!-- Main Dynamic Content Container -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4">
 
         <!-- ================= PAGE 1: READER DASHBOARD ================= -->
@@ -302,17 +238,6 @@
                             <span class="text-xs font-bold text-white">Author (Sole Creator)</span>
                         </div>
                     </div>
-
-                    <div class="flex items-center space-x-4 pt-2">
-                        <button id="detail-like-btn" onclick="toggleLikeCurrent()" class="px-5 py-2.5 rounded-xl bg-brand-dark hover:bg-rose-950/30 text-rose-500 border border-rose-500/30 text-xs font-bold flex items-center space-x-2 transition">
-                            <i class="fa-regular fa-heart"></i>
-                            <span id="detail-like-text">Like Comic</span>
-                        </button>
-                        <button id="detail-bookmark-btn" onclick="toggleBookmarkCurrent()" class="px-5 py-2.5 rounded-xl bg-brand-dark hover:bg-brand-500/10 text-brand-500 border border-brand-500/30 text-xs font-bold flex items-center space-x-2 transition">
-                            <i class="fa-regular fa-bookmark"></i>
-                            <span id="detail-bookmark-text">Bookmark</span>
-                        </button>
-                    </div>
                 </div>
             </div>
 
@@ -359,34 +284,12 @@
         <!-- ================= PAGE 3: READING MODE ================= -->
         <section id="page-reader" class="tab-pane">
             <div id="reader-scroll-container" class="max-w-2xl mx-auto py-2 space-y-0 text-center cursor-pointer select-none zoom-transition"></div>
-
-            <!-- Page Mode Container -->
-            <div id="reader-page-container" class="relative w-full py-2 hidden flex-col items-center min-h-[85vh]">
-                <div class="flex items-center justify-between w-full max-w-4xl px-4 text-xs text-gray-400 mb-2">
-                    <span id="page-counter">Panel 1 of 1</span>
-                    <span class="text-[10px] text-brand-500">Tap Right / Left edge to navigate • Double-tap to toggle menu</span>
-                </div>
-
-                <!-- Webtoon Viewing Canvas -->
-                <div class="relative w-full flex items-center justify-center min-h-[80vh] bg-black/40 rounded-2xl border border-brand-border p-2 overflow-hidden select-none" id="page-touch-area">
-                    <button onclick="prevPagePanel()" class="absolute left-4 z-30 w-12 h-12 bg-brand-dark/80 hover:bg-brand-500 hover:text-black border border-brand-border rounded-full text-white text-base transition transform hover:scale-110 shadow-2xl hidden sm:flex items-center justify-center">
-                        <i class="fa-solid fa-chevron-left"></i>
-                    </button>
-
-                    <img id="single-panel-img" src="" class="max-h-[82vh] w-auto max-w-full object-contain rounded-xl shadow-2xl transition duration-200 pointer-events-none zoom-transition" alt="Comic Panel">
-
-                    <button onclick="nextPagePanel()" class="absolute right-4 z-30 w-12 h-12 bg-brand-dark/80 hover:bg-brand-500 hover:text-black border border-brand-border rounded-full text-white text-base transition transform hover:scale-110 shadow-2xl hidden sm:flex items-center justify-center">
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </button>
-                </div>
-            </div>
         </section>
 
         <!-- ================= PAGE 4: BOOKMARKS ================= -->
         <section id="page-bookmarks" class="tab-pane space-y-6">
             <div>
                 <h2 class="text-2xl font-bold text-white font-comic">MY BOOKMARKED COMICS</h2>
-                <p class="text-xs text-gray-400">Series saved for quick reading access</p>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6" id="bookmark-grid"></div>
         </section>
@@ -395,7 +298,6 @@
         <section id="page-likes" class="tab-pane space-y-6">
             <div>
                 <h2 class="text-2xl font-bold text-white font-comic">LIKED SERIES</h2>
-                <p class="text-xs text-gray-400">Comics you have given love and appreciation</p>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6" id="likes-grid"></div>
         </section>
@@ -407,31 +309,11 @@
                     <div class="space-y-2">
                         <span class="px-3 py-1 rounded-full text-[10px] font-bold bg-brand-accent text-white uppercase tracking-wider">Solo Creator Space</span>
                         <h1 class="text-3xl font-extrabold text-white font-comic">AUTHOR'S CREATIVE STUDIO</h1>
-                        <p class="text-gray-300 text-xs max-w-xl">Publish your original webtoons, add vertical strip episodes, and manage your releases.</p>
                     </div>
                     <button onclick="openPublishModal()" class="px-6 py-3 rounded-xl bg-brand-accent hover:bg-purple-600 text-white font-bold text-xs flex items-center space-x-2 transition glow-purple">
                         <i class="fa-solid fa-plus"></i>
                         <span>Publish New Series</span>
                     </button>
-                </div>
-
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div class="bg-brand-card border border-brand-border p-4 rounded-xl space-y-1">
-                        <span class="text-xs text-gray-400 font-semibold">Total Views</span>
-                        <p class="text-2xl font-bold text-brand-500 font-comic">0</p>
-                    </div>
-                    <div class="bg-brand-card border border-brand-border p-4 rounded-xl space-y-1">
-                        <span class="text-xs text-gray-400 font-semibold">Total Likes</span>
-                        <p class="text-2xl font-bold text-brand-pink font-comic">0</p>
-                    </div>
-                    <div class="bg-brand-card border border-brand-border p-4 rounded-xl space-y-1">
-                        <span class="text-xs text-gray-400 font-semibold">Subscribers</span>
-                        <p class="text-2xl font-bold text-brand-accent font-comic">0</p>
-                    </div>
-                    <div class="bg-brand-card border border-brand-border p-4 rounded-xl space-y-1">
-                        <span class="text-xs text-gray-400 font-semibold">Published Works</span>
-                        <p class="text-2xl font-bold text-white font-comic" id="studio-work-count">0</p>
-                    </div>
                 </div>
 
                 <div class="bg-brand-card border border-brand-border rounded-2xl p-6 space-y-4">
@@ -445,25 +327,10 @@
         <section id="page-profile" class="tab-pane space-y-6">
             <div class="max-w-xl mx-auto bg-brand-card border border-brand-border rounded-2xl p-6 md:p-8 space-y-6">
                 <h2 class="text-2xl font-bold text-white font-comic text-center">READER PROFILE</h2>
-                
-                <div class="flex flex-col items-center space-y-4">
-                    <div class="relative group">
-                        <img id="profile-avatar-preview" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="w-24 h-24 rounded-2xl object-cover border-2 border-brand-500 shadow-lg">
-                        <label class="absolute inset-0 bg-black/60 rounded-2xl opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs font-bold text-white cursor-pointer transition">
-                            <i class="fa-solid fa-camera mr-1"></i> Change
-                            <input type="file" id="avatar-input" accept="image/*" class="hidden" onchange="updateProfileAvatar(this)">
-                        </label>
-                    </div>
-                </div>
-
                 <div class="space-y-4 pt-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-300 mb-1">Display Name</label>
                         <input type="text" id="profile-name-input" value="Author" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-300 mb-1">Email Address</label>
-                        <input type="email" id="profile-email-input" placeholder="user@example.com" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-500">
                     </div>
                     <button onclick="saveProfile()" class="w-full py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-black font-extrabold text-xs transition glow-green">Save Profile Changes</button>
                 </div>
@@ -472,99 +339,7 @@
 
     </main>
 
-    <!-- Bottom Touch Nav Bar for Mobile -->
-    <div id="mobile-nav" class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-brand-dark/95 border-t border-brand-border py-2 px-4 flex justify-around items-center backdrop-blur-md transition-transform duration-300">
-        <button onclick="switchTab('dashboard')" class="flex flex-col items-center space-y-1 text-brand-500">
-            <i class="fa-solid fa-compass text-base"></i>
-            <span class="text-[10px]">Explore</span>
-        </button>
-        <button onclick="switchTab('bookmarks')" class="flex flex-col items-center space-y-1 text-gray-400">
-            <i class="fa-solid fa-bookmark text-base"></i>
-            <span class="text-[10px]">Saved</span>
-        </button>
-        <button onclick="switchTab('likes')" class="flex flex-col items-center space-y-1 text-gray-400">
-            <i class="fa-solid fa-heart text-base"></i>
-            <span class="text-[10px]">Likes</span>
-        </button>
-        <button onclick="switchTab('studio')" class="flex flex-col items-center space-y-1 text-brand-accent">
-            <i class="fa-solid fa-feather-pointed text-base"></i>
-            <span class="text-[10px]">Studio</span>
-        </button>
-        <button onclick="switchTab('profile')" class="flex flex-col items-center space-y-1 text-gray-400">
-            <i class="fa-solid fa-user text-base"></i>
-            <span class="text-[10px]">Profile</span>
-        </button>
-    </div>
-
-    <!-- MODAL 1: AUTHENTICATION -->
-    <div id="modal-auth" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-md w-full space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-lg font-bold text-white font-comic">USER ACCOUNT & VERIFICATION</h3>
-                <button onclick="closeModal('modal-auth')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            
-            <p class="text-xs text-gray-300">Log in or register your account to bookmark comics and receive updates.</p>
-            
-            <input type="email" id="auth-email" placeholder="Your Email Address" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-500">
-            <input type="password" id="auth-pass" placeholder="Password" class="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-500">
-            
-            <div class="flex gap-2">
-                <button onclick="handleRegister()" class="flex-1 py-3 bg-brand-500 text-black font-extrabold text-xs rounded-xl glow-green">Register & Send Link</button>
-                <button onclick="handleLogin()" class="flex-1 py-3 bg-brand-dark border border-brand-border text-white font-bold text-xs rounded-xl">Log In</button>
-            </div>
-            <p id="auth-status" class="text-[11px] text-brand-pink font-semibold text-center"></p>
-        </div>
-    </div>
-
-    <!-- MODAL 2: PUBLISH COMIC -->
-    <div id="modal-publish" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-lg w-full space-y-4 my-8">
-            <div class="flex justify-between items-center">
-                <h3 class="text-lg font-bold text-white font-comic">PUBLISH NEW WORK</h3>
-                <button onclick="closeModal('modal-publish')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="space-y-3">
-                <div>
-                    <label class="block text-xs font-bold text-gray-300 mb-1">Comic Title</label>
-                    <input type="text" id="pub-title" placeholder="e.g. My Original Webtoon" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-300 mb-1">Genre</label>
-                    <select id="pub-genre" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
-                        <option>Action</option>
-                        <option>Fantasy</option>
-                        <option>Sci-Fi</option>
-                        <option>Romance</option>
-                        <option>Slice of Life</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-300 mb-1">Cover Image</label>
-                    <div class="space-y-2">
-                        <div class="relative flex items-center justify-center border-2 border-dashed border-brand-border hover:border-brand-accent rounded-xl p-4 bg-brand-dark cursor-pointer transition">
-                            <input type="file" id="pub-cover-file" accept="image/*" onchange="previewCoverFile(this)" class="absolute inset-0 opacity-0 cursor-pointer">
-                            <div class="text-center space-y-1" id="pub-cover-placeholder">
-                                <i class="fa-solid fa-cloud-arrow-up text-brand-accent text-2xl"></i>
-                                <p class="text-xs font-semibold text-gray-300">Click to upload cover image file</p>
-                                <p class="text-[10px] text-gray-500">PNG, JPG, WEBP, or GIF</p>
-                            </div>
-                        </div>
-                        <p class="text-[10px] text-gray-500 text-center font-bold">OR PASTE EXTERNAL URL</p>
-                        <input type="text" id="pub-cover" placeholder="https://..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-300 mb-1">Description</label>
-                    <textarea id="pub-desc" rows="3" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white resize-none"></textarea>
-                </div>
-            </div>
-            <button onclick="publishNewComic()" class="w-full py-3 bg-brand-accent text-white font-bold text-xs rounded-xl glow-purple">Publish Comic Series</button>
-        </div>
-    </div>
-
-    <!-- MODAL 3: ADD / EDIT CHARACTER & LORE -->
+    <!-- MODAL: ADD / EDIT CHARACTER -->
     <div id="modal-add-char" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-md w-full space-y-4 my-8 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
@@ -586,7 +361,7 @@
                     <textarea id="char-desc" rows="3" placeholder="Describe character lore, personality, abilities, or background..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-brand-accent resize-none"></textarea>
                 </div>
 
-                <!-- STAT GRAPH METRICS (0-100 Sliders) -->
+                <!-- STAT SLIDERS -->
                 <div class="bg-brand-dark/60 p-3 rounded-xl border border-brand-border space-y-3">
                     <label class="block text-xs font-bold text-brand-accent uppercase tracking-wider">Character Stats & Attributes</label>
                     
@@ -625,7 +400,7 @@
 
                 <div>
                     <label class="block text-xs font-bold text-gray-300 mb-1">Character Avatar Image</label>
-                    <input type="file" id="char-img-file" accept="image/*" onchange="previewCharFile(this)" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-accent file:text-white hover:file:bg-purple-600 cursor-pointer">
+                    <input type="file" id="char-img-file" accept="image/*" onchange="previewCharFile(this)" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-accent file:text-white cursor-pointer">
                     <p class="text-[10px] text-gray-500 my-1 text-center font-bold">OR PASTE IMAGE URL</p>
                     <input type="text" id="char-img-url" placeholder="https://..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-brand-accent">
                 </div>
@@ -635,73 +410,23 @@
         </div>
     </div>
 
-    <!-- MODAL 4: UPLOAD EPISODE -->
-    <div id="modal-upload-ep" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-xl w-full space-y-4 my-8 max-h-[90vh] flex flex-col">
-            <div class="flex justify-between items-center">
-                <h3 class="text-lg font-bold text-white font-comic">UPLOAD NEW EPISODE</h3>
-                <button onclick="closeModal('modal-upload-ep')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            
-            <div class="space-y-4 overflow-y-auto pr-1 flex-grow">
-                <div>
-                    <label class="block text-xs font-bold text-gray-300 mb-1">Episode Title</label>
-                    <input type="text" id="ep-title" placeholder="e.g. Episode 1 - The Awakening" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-300 mb-1">Select Strip Panel Files</label>
-                    <div class="border-2 border-dashed border-brand-border hover:border-brand-500 rounded-xl p-4 bg-brand-dark text-center space-y-1 cursor-pointer relative">
-                        <input type="file" id="ep-panel-files" accept="image/*" multiple onchange="handlePanelFilesSelect(this)" class="absolute inset-0 opacity-0 cursor-pointer">
-                        <i class="fa-solid fa-images text-brand-500 text-2xl"></i>
-                        <p class="text-xs font-bold text-gray-300" id="ep-panel-status">Click to Select Panel Images</p>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-300 mb-1">Or Add Panel Image URL</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="ep-single-url" placeholder="https://..." class="flex-grow bg-brand-dark border border-brand-border rounded-xl p-2 text-xs text-white">
-                        <button onclick="addUrlPanel()" class="px-4 py-2 bg-brand-accent hover:bg-purple-600 text-white font-bold text-xs rounded-xl">Add URL</button>
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center">
-                        <label class="block text-xs font-bold text-brand-500">MANAGE PANEL SEQUENCE (Top to Bottom)</label>
-                        <button onclick="clearAllPanels()" class="text-[10px] text-rose-400 hover:underline">Clear All</button>
-                    </div>
-                    <div id="panel-reorder-list" class="space-y-2 bg-brand-dark p-3 rounded-xl border border-brand-border max-h-60 overflow-y-auto">
-                        <p class="text-xs text-gray-500 text-center py-4">No panels added yet. Select files or paste URLs above.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex gap-2 pt-2 border-t border-brand-border">
-                <button onclick="previewEpisodeBeforePublish()" class="flex-1 py-3 bg-brand-dark border border-brand-border text-brand-500 font-bold text-xs rounded-xl hover:bg-brand-border transition">
-                    <i class="fa-solid fa-eye mr-1"></i> Live Reader Preview
-                </button>
-                <button onclick="saveNewEpisode()" class="flex-1 py-3 bg-brand-500 text-black font-extrabold text-xs rounded-xl glow-green">
-                    Publish Episode
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 5: CHARACTER DETAIL VIEW (POP-UP FOR READERS) -->
+    <!-- MODAL: CHARACTER DETAIL VIEW (POP-UP WITH EDIT BUTTON) -->
     <div id="modal-view-char" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-lg w-full space-y-6 my-8 relative">
             
-            <!-- TOP CONTROLS: EDIT & CLOSE -->
-            <div class="absolute top-4 right-4 flex items-center space-x-2">
-                <button id="view-char-edit-btn" class="text-xs text-brand-accent hover:text-purple-300 bg-brand-accent/10 px-3 py-1 rounded-lg border border-brand-accent/30 font-bold flex items-center space-x-1 transition">
-                    <i class="fa-solid fa-pen-to-square text-xs"></i>
-                    <span>Edit Profile</span>
-                </button>
-                <button onclick="closeModal('modal-view-char')" class="text-gray-400 hover:text-white text-lg p-1"><i class="fa-solid fa-xmark"></i></button>
+            <!-- POP-UP HEADER CONTROLS (EDIT BUTTON & CLOSE BUTTON) -->
+            <div class="flex items-center justify-between border-b border-brand-border/60 pb-3">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Character Overview</span>
+                <div class="flex items-center space-x-2">
+                    <button id="view-char-edit-btn" class="text-xs text-brand-accent hover:text-white bg-brand-accent/20 hover:bg-brand-accent px-3 py-1.5 rounded-lg border border-brand-accent/40 font-bold flex items-center space-x-1.5 transition">
+                        <i class="fa-solid fa-pen-to-square text-xs"></i>
+                        <span>Edit Character</span>
+                    </button>
+                    <button onclick="closeModal('modal-view-char')" class="text-gray-400 hover:text-white text-lg p-1 transition"><i class="fa-solid fa-xmark"></i></button>
+                </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 pt-2">
+            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
                 <img id="view-char-img" src="" class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl object-cover border-2 border-brand-accent shadow-xl flex-shrink-0">
                 
                 <div class="space-y-2 text-center sm:text-left">
@@ -763,7 +488,6 @@
         </div>
     </div>
 
-    <!-- Application Script Logic -->
     <script>
         const DEFAULT_SEED_COMICS = [
             {
@@ -782,348 +506,41 @@
                         img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'
                     }
                 ],
-                episodes: [
-                    {
-                        title: 'testing 2',
-                        date: 'Oct 20, 2026',
-                        panels: [
-                            'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&auto=format&fit=crop&q=80'
-                        ]
-                    }
-                ],
+                episodes: [],
                 comments: []
             }
         ];
 
-        let currentUser = null;
         let rawStorage = localStorage.getItem('soopmic_published_comics');
         let parsedStorage = rawStorage ? JSON.parse(rawStorage) : null;
         let comics = (parsedStorage && parsedStorage.length > 0) ? parsedStorage : DEFAULT_SEED_COMICS;
 
-        let bookmarks = JSON.parse(localStorage.getItem('soopmic_bookmarks') || '[]');
-        let likes = JSON.parse(localStorage.getItem('soopmic_likes') || '[]');
         let currentComicId = null;
-        let currentChapterIndex = 0;
-        let currentPanelIndex = 0;
-        let currentReaderMode = 'scroll';
-        let currentZoomLevel = 100;
-        let editingCharIndex = null; // Tracks whether creating new (-1) or editing existing character index
-        let uploadedCoverData = "";
+        let editingCharIndex = null;
         let uploadedCharImageData = "";
-        let activeEpisodePanels = [];
-        let userProfile = JSON.parse(localStorage.getItem('soopmic_profile') || '{"name":"Author","avatar":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80","email":""}');
-
-        let prevScrollPos = window.pageYOffset || document.documentElement.scrollTop;
-        let isReaderActive = false;
 
         document.addEventListener("DOMContentLoaded", () => {
             renderComicGrid(comics);
-            updateBookmarkBadge();
-            loadProfileState();
-            setupScrollManager();
-            setupDoubleTapManager();
-            setupMobilePageTouchAreas();
         });
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
             const target = document.getElementById(`page-${tabId}`);
             if (target) target.classList.add('active');
-
-            const headersWrapper = document.getElementById('headers-wrapper');
-            const mainHeader = document.getElementById('main-header');
-            const readerToolbar = document.getElementById('reader-toolbar');
-            const mobileNav = document.getElementById('mobile-nav');
-            const floatZoom = document.getElementById('floating-zoom-controls');
-
-            if (tabId === 'reader') {
-                isReaderActive = true;
-                mainHeader.classList.add('hidden');
-                readerToolbar.classList.remove('hidden');
-                readerToolbar.classList.add('flex');
-                headersWrapper.classList.remove('hide-header');
-                
-                if (floatZoom) {
-                    floatZoom.classList.remove('hidden');
-                    floatZoom.classList.remove('hide-zoom-controls');
-                }
-            } else {
-                isReaderActive = false;
-                mainHeader.classList.remove('hidden');
-                readerToolbar.classList.add('hidden');
-                readerToolbar.classList.remove('flex');
-                headersWrapper.classList.remove('hide-header');
-                
-                if (mobileNav) mobileNav.style.transform = 'translateY(0)';
-                if (floatZoom) floatZoom.classList.add('hidden');
-            }
-
-            if (tabId === 'bookmarks') renderBookmarks();
-            if (tabId === 'likes') renderLikes();
-            if (tabId === 'studio') renderStudioWorks();
-            
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        /* --- ZOOM CONTROLS LOGIC --- */
-        function changeZoom(delta) {
-            currentZoomLevel = Math.min(Math.max(currentZoomLevel + delta, 50), 150);
-            applyZoom();
-        }
-
-        function resetZoom() {
-            currentZoomLevel = 100;
-            applyZoom();
-        }
-
-        function applyZoom() {
-            const headerZoomTxt = document.getElementById('zoom-percentage-header');
-            const floatZoomTxt = document.getElementById('floating-zoom-text');
-            if (headerZoomTxt) headerZoomTxt.innerText = `${currentZoomLevel}%`;
-            if (floatZoomTxt) floatZoomTxt.innerText = `${currentZoomLevel}%`;
-
-            const scrollContainer = document.getElementById('reader-scroll-container');
-            if (scrollContainer) {
-                const baseWidth = 42;
-                scrollContainer.style.maxWidth = `${(baseWidth * currentZoomLevel) / 100}rem`;
-            }
-
-            const pagePanelImg = document.getElementById('single-panel-img');
-            if (pagePanelImg) {
-                pagePanelImg.style.transform = `scale(${currentZoomLevel / 100})`;
-            }
-        }
-
-        /* --- SCROLL & AUTO-HIDE CONTROLS --- */
-        function setupScrollManager() {
-            window.onscroll = function() {
-                if (!isReaderActive) return;
-
-                const currentScrollPos = window.pageYOffset || document.documentElement.scrollTop;
-                const headersWrapper = document.getElementById('headers-wrapper');
-                const mobileNav = document.getElementById('mobile-nav');
-                const floatZoom = document.getElementById('floating-zoom-controls');
-
-                if (currentScrollPos > prevScrollPos && currentScrollPos > 50) {
-                    headersWrapper.classList.add('hide-header');
-                    if (mobileNav) mobileNav.style.transform = 'translateY(100%)';
-                    if (floatZoom) floatZoom.classList.add('hide-zoom-controls');
-                } else {
-                    headersWrapper.classList.remove('hide-header');
-                    if (mobileNav) mobileNav.style.transform = 'translateY(0)';
-                    if (floatZoom) floatZoom.classList.remove('hide-zoom-controls');
-                }
-
-                prevScrollPos = currentScrollPos;
-
-                const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                const progressPercent = docHeight > 0 ? (currentScrollPos / docHeight) * 100 : 100;
-                const progressBarEl = document.getElementById('reading-progress');
-                if (progressBarEl) progressBarEl.style.width = progressPercent + '%';
-            };
-        }
-
-        function setupDoubleTapManager() {
-            const scrollArea = document.getElementById('reader-scroll-container');
-            let lastClickTime = 0;
-
-            if (scrollArea) {
-                scrollArea.addEventListener('click', (e) => {
-                    const now = new Date().getTime();
-                    if (now - lastClickTime < 300) {
-                        e.preventDefault();
-                        const headersWrapper = document.getElementById('headers-wrapper');
-                        const mobileNav = document.getElementById('mobile-nav');
-                        const floatZoom = document.getElementById('floating-zoom-controls');
-                        
-                        if (headersWrapper.classList.contains('hide-header')) {
-                            headersWrapper.classList.remove('hide-header');
-                            if (mobileNav) mobileNav.style.transform = 'translateY(0)';
-                            if (floatZoom) floatZoom.classList.remove('hide-zoom-controls');
-                        } else {
-                            headersWrapper.classList.add('hide-header');
-                            if (mobileNav) mobileNav.style.transform = 'translateY(100%)';
-                            if (floatZoom) floatZoom.classList.add('hide-zoom-controls');
-                        }
-                    }
-                    lastClickTime = now;
-                });
-            }
-        }
-
-        function setupMobilePageTouchAreas() {
-            const pageTouchArea = document.getElementById('page-touch-area');
-            let lastTapTime = 0;
-
-            if (pageTouchArea) {
-                pageTouchArea.addEventListener('click', (e) => {
-                    if (e.target.closest('button')) return;
-
-                    const now = new Date().getTime();
-                    const isDoubleTap = (now - lastTapTime < 300);
-                    lastTapTime = now;
-
-                    if (isDoubleTap) {
-                        const headersWrapper = document.getElementById('headers-wrapper');
-                        const mobileNav = document.getElementById('mobile-nav');
-                        const floatZoom = document.getElementById('floating-zoom-controls');
-                        
-                        if (headersWrapper.classList.contains('hide-header')) {
-                            headersWrapper.classList.remove('hide-header');
-                            if (mobileNav) mobileNav.style.transform = 'translateY(0)';
-                            if (floatZoom) floatZoom.classList.remove('hide-zoom-controls');
-                        } else {
-                            headersWrapper.classList.add('hide-header');
-                            if (mobileNav) mobileNav.style.transform = 'translateY(100%)';
-                            if (floatZoom) floatZoom.classList.add('hide-zoom-controls');
-                        }
-                    } else {
-                        const rect = pageTouchArea.getBoundingClientRect();
-                        const clickX = e.clientX - rect.left;
-                        if (clickX > rect.width / 2) {
-                            nextPagePanel();
-                        } else {
-                            prevPagePanel();
-                        }
-                    }
-                });
-            }
         }
 
         function renderComicGrid(list) {
             const grid = document.getElementById('comic-grid');
             document.getElementById('comic-count').innerText = `${list.length} Works`;
-            
-            if (list.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full py-16 text-center space-y-3 bg-brand-card/50 rounded-2xl border border-brand-border/50">
-                        <i class="fa-solid fa-layer-group text-3xl text-gray-600"></i>
-                        <h3 class="text-sm font-bold text-gray-300">No Webtoons Published Yet</h3>
-                        <p class="text-xs text-gray-500 max-w-sm mx-auto">Click Author Studio above to publish your first work!</p>
-                    </div>
-                `;
-                return;
-            }
-
             grid.innerHTML = list.map(c => `
-                <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden group hover:border-brand-500/50 transition duration-300 cursor-pointer flex flex-col" onclick="openComicDetail('${c.id}')">
-                    <div class="relative aspect-[3/4] overflow-hidden">
-                        <img src="${c.cover}" alt="${c.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        <div class="absolute top-2 right-2 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-md text-[10px] font-bold text-brand-500">${c.genre}</div>
-                    </div>
-                    <div class="p-3 flex-grow flex flex-col justify-between space-y-2">
-                        <h3 class="font-bold text-xs sm:text-sm text-white group-hover:text-brand-500 transition line-clamp-1">${c.title}</h3>
-                        <div class="flex items-center justify-between text-[10px] text-gray-400">
-                            <span><i class="fa-solid fa-heart text-rose-500 mr-1"></i>${c.likes || 0}</span>
-                            <span>${c.episodes ? c.episodes.length : 0} Ch</span>
-                        </div>
+                <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden cursor-pointer" onclick="openComicDetail('${c.id}')">
+                    <img src="${c.cover}" class="w-full h-48 object-cover">
+                    <div class="p-3">
+                        <h3 class="font-bold text-xs text-white truncate">${c.title}</h3>
+                        <span class="text-[10px] text-brand-500">${c.genre}</span>
                     </div>
                 </div>
             `).join('');
-        }
-
-        function openReader(comicId, chapterIdx) {
-            const comic = comics.find(c => c.id === comicId);
-            if (!comic || !comic.episodes || !comic.episodes[chapterIdx]) return;
-
-            currentComicId = comicId;
-            currentChapterIndex = chapterIdx;
-            currentPanelIndex = 0;
-            const chapter = comic.episodes[chapterIdx];
-
-            document.getElementById('reader-chapter-title').innerText = `${comic.title} - ${chapter.title}`;
-            
-            document.getElementById('reader-scroll-container').innerHTML = chapter.panels.map(pUrl => `
-                <img src="${pUrl}" class="w-full h-auto object-cover rounded-md panel-glow mb-2" alt="Webtoon Panel">
-            `).join('');
-
-            applyReaderView();
-            applyZoom();
-            switchTab('reader');
-        }
-
-        function setReaderMode(mode) {
-            currentReaderMode = mode;
-            const scrollBtn = document.getElementById('mode-scroll-btn');
-            const pageBtn = document.getElementById('mode-page-btn');
-
-            if (mode === 'scroll') {
-                scrollBtn.className = "px-3 py-1 rounded-lg text-xs font-bold text-white bg-brand-500/20 border border-brand-500/30 flex items-center space-x-1 transition";
-                pageBtn.className = "px-3 py-1 rounded-lg text-xs font-bold text-gray-400 hover:text-white flex items-center space-x-1 transition";
-            } else {
-                pageBtn.className = "px-3 py-1 rounded-lg text-xs font-bold text-white bg-brand-500/20 border border-brand-500/30 flex items-center space-x-1 transition";
-                scrollBtn.className = "px-3 py-1 rounded-lg text-xs font-bold text-gray-400 hover:text-white flex items-center space-x-1 transition";
-            }
-
-            applyReaderView();
-        }
-
-        function applyReaderView() {
-            const scrollBox = document.getElementById('reader-scroll-container');
-            const pageBox = document.getElementById('reader-page-container');
-
-            if (currentReaderMode === 'scroll') {
-                scrollBox.classList.remove('hidden');
-                pageBox.classList.add('hidden');
-                pageBox.classList.remove('flex');
-            } else {
-                scrollBox.classList.add('hidden');
-                pageBox.classList.remove('hidden');
-                pageBox.classList.add('flex');
-                updatePagePanelDisplay();
-            }
-        }
-
-        function updatePagePanelDisplay() {
-            const comic = comics.find(c => c.id === currentComicId);
-            if (!comic || !comic.episodes || !comic.episodes[currentChapterIndex]) return;
-
-            const panels = comic.episodes[currentChapterIndex].panels;
-            if (currentPanelIndex >= panels.length) currentPanelIndex = panels.length - 1;
-            if (currentPanelIndex < 0) currentPanelIndex = 0;
-
-            document.getElementById('single-panel-img').src = panels[currentPanelIndex];
-            document.getElementById('page-counter').innerText = `Panel ${currentPanelIndex + 1} of ${panels.length}`;
-
-            const progress = ((currentPanelIndex + 1) / panels.length) * 100;
-            document.getElementById('reading-progress').style.width = progress + '%';
-        }
-
-        function nextPagePanel() {
-            const comic = comics.find(c => c.id === currentComicId);
-            if (!comic || !comic.episodes || !comic.episodes[currentChapterIndex]) return;
-
-            const panels = comic.episodes[currentChapterIndex].panels;
-            if (currentPanelIndex < panels.length - 1) {
-                currentPanelIndex++;
-                updatePagePanelDisplay();
-            } else {
-                nextChapter();
-            }
-        }
-
-        function prevPagePanel() {
-            if (currentPanelIndex > 0) {
-                currentPanelIndex--;
-                updatePagePanelDisplay();
-            } else {
-                prevChapter();
-            }
-        }
-
-        function closeReader() { switchTab('detail'); }
-
-        function nextChapter() {
-            const comic = comics.find(c => c.id === currentComicId);
-            if (comic && comic.episodes && currentChapterIndex < comic.episodes.length - 1) {
-                openReader(currentComicId, currentChapterIndex + 1);
-            }
-        }
-
-        function prevChapter() {
-            if (currentChapterIndex > 0) {
-                openReader(currentComicId, currentChapterIndex - 1);
-            }
         }
 
         function openComicDetail(comicId) {
@@ -1148,7 +565,7 @@
                             </div>
                         </div>
 
-                        <!-- EDIT & DELETE BUTTONS -->
+                        <!-- EDIT & DELETE BUTTONS ON CARD -->
                         <div class="flex items-center space-x-1 flex-shrink-0 ml-2">
                             <button onclick="editCharacterProfile(event, '${comic.id}', ${idx})" class="text-gray-400 hover:text-brand-accent p-1.5 transition" title="Edit Character">
                                 <i class="fa-solid fa-pen-to-square text-xs"></i>
@@ -1163,26 +580,9 @@
                 charGrid.innerHTML = `<p class="col-span-full text-xs text-gray-500 py-2">No character profiles uploaded yet.</p>`;
             }
 
-            const epList = document.getElementById('detail-episodes');
-            if (comic.episodes && comic.episodes.length > 0) {
-                epList.innerHTML = comic.episodes.map((ep, idx) => `
-                    <div onclick="openReader('${comic.id}', ${idx})" class="bg-brand-dark p-3 rounded-xl border border-brand-border hover:border-brand-500 flex items-center justify-between cursor-pointer transition">
-                        <div class="flex items-center space-x-3">
-                            <i class="fa-solid fa-play text-brand-500 text-xs"></i>
-                            <span class="text-xs font-bold text-gray-200">${ep.title}</span>
-                        </div>
-                        <span class="text-[10px] text-gray-500">${ep.date || 'Recent'}</span>
-                    </div>
-                `).join('');
-            } else {
-                epList.innerHTML = `<p class="text-xs text-gray-500 py-4 text-center">No episodes released yet.</p>`;
-            }
-
-            renderComments(comic);
             switchTab('detail');
         }
 
-        /* --- CHARACTER POP-UP & DETAILS VIEW --- */
         function viewCharacterDetail(comicId, charIndex) {
             const comic = comics.find(c => c.id === comicId);
             if (!comic || !comic.characters || !comic.characters[charIndex]) return;
@@ -1195,7 +595,6 @@
             document.getElementById('view-char-role').innerText = ch.role || 'Character';
             document.getElementById('view-char-desc').innerText = ch.desc || 'No detailed backstory provided by author.';
 
-            // Render Animated Stat Bars & Values
             document.getElementById('graph-influence-text').innerText = `${stats.influence || 0}%`;
             document.getElementById('graph-influence-bar').style.width = `${stats.influence || 0}%`;
 
@@ -1208,7 +607,7 @@
             document.getElementById('graph-intelligence-text').innerText = `${stats.intelligence || 0}%`;
             document.getElementById('graph-intelligence-bar').style.width = `${stats.intelligence || 0}%`;
 
-            // Attach Edit Action to Top Modal Edit Button
+            // BIND EDIT BUTTON INSIDE POPUP MODAL
             const editBtn = document.getElementById('view-char-edit-btn');
             editBtn.onclick = (e) => {
                 closeModal('modal-view-char');
@@ -1218,7 +617,6 @@
             document.getElementById('modal-view-char').classList.remove('hidden');
         }
 
-        /* --- EDIT CHARACTER PROFILE --- */
         function editCharacterProfile(event, comicId, charIndex) {
             if (event) event.stopPropagation();
 
@@ -1237,7 +635,6 @@
             document.getElementById('char-desc').value = ch.desc || "";
             document.getElementById('char-img-url').value = ch.img.startsWith('http') ? ch.img : "";
 
-            // Populate sliders with existing character attributes
             document.getElementById('stat-influence').value = stats.influence;
             document.getElementById('stat-attractiveness').value = stats.attractiveness;
             document.getElementById('stat-power').value = stats.power;
@@ -1251,22 +648,8 @@
             document.getElementById('modal-add-char').classList.remove('hidden');
         }
 
-        /* --- DELETE CHARACTER PROFILE --- */
-        function deleteCharacterProfile(event, comicId, charIndex) {
-            if (event) event.stopPropagation();
-            
-            if (confirm("Are you sure you want to remove this character profile?")) {
-                const comic = comics.find(c => c.id === comicId);
-                if (comic && comic.characters) {
-                    comic.characters.splice(charIndex, 1);
-                    saveComicsStorage();
-                    openComicDetail(comicId);
-                }
-            }
-        }
-
         function openAddCharacterModal() {
-            editingCharIndex = null; // Reset to creation mode
+            editingCharIndex = null;
             uploadedCharImageData = "";
             document.getElementById('modal-char-title').innerText = "ADD CHARACTER PROFILE";
             document.getElementById('char-name').value = "";
@@ -1274,7 +657,6 @@
             document.getElementById('char-desc').value = "";
             document.getElementById('char-img-url').value = "";
 
-            // Reset Stat Sliders
             document.getElementById('stat-influence').value = 50;
             document.getElementById('stat-attractiveness').value = 50;
             document.getElementById('stat-power').value = 50;
@@ -1320,320 +702,30 @@
                 };
 
                 if (editingCharIndex !== null && editingCharIndex >= 0) {
-                    // Update existing character
                     comic.characters[editingCharIndex] = charData;
                 } else {
-                    // Add new character
                     comic.characters.push(charData);
                 }
 
-                saveComicsStorage();
+                localStorage.setItem('soopmic_published_comics', JSON.stringify(comics));
                 closeModal('modal-add-char');
                 openComicDetail(currentComicId);
             }
         }
 
-        function previewCharFile(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedCharImageData = e.target.result;
+        function deleteCharacterProfile(event, comicId, charIndex) {
+            if (event) event.stopPropagation();
+            if (confirm("Are you sure you want to remove this character profile?")) {
+                const comic = comics.find(c => c.id === comicId);
+                if (comic && comic.characters) {
+                    comic.characters.splice(charIndex, 1);
+                    localStorage.setItem('soopmic_published_comics', JSON.stringify(comics));
+                    openComicDetail(comicId);
                 }
-                reader.readAsDataURL(input.files[0]);
             }
         }
 
-        function openUploadEpisodeModal() {
-            activeEpisodePanels = [];
-            document.getElementById('ep-title').value = "";
-            renderPanelReorderList();
-            document.getElementById('modal-upload-ep').classList.remove('hidden');
-        }
-
-        function handlePanelFilesSelect(input) {
-            if (input.files && input.files.length > 0) {
-                let loadedFiles = 0;
-                const totalFiles = input.files.length;
-                
-                Array.from(input.files).forEach((file) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        activeEpisodePanels.push(e.target.result);
-                        loadedFiles++;
-                        if (loadedFiles === totalFiles) {
-                            renderPanelReorderList();
-                        }
-                    }
-                    reader.readAsDataURL(file);
-                });
-            }
-        }
-
-        function addUrlPanel() {
-            const input = document.getElementById('ep-single-url');
-            const url = input.value.trim();
-            if (url) {
-                activeEpisodePanels.push(url);
-                input.value = "";
-                renderPanelReorderList();
-            }
-        }
-
-        function renderPanelReorderList() {
-            const list = document.getElementById('panel-reorder-list');
-            document.getElementById('ep-panel-status').innerText = `${activeEpisodePanels.length} Panel(s) Loaded`;
-
-            if (activeEpisodePanels.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No panels added yet. Select files or paste URLs above.</p>`;
-                return;
-            }
-
-            list.innerHTML = activeEpisodePanels.map((pSrc, idx) => `
-                <div class="flex items-center justify-between bg-brand-card p-2 rounded-lg border border-brand-border">
-                    <div class="flex items-center space-x-3">
-                        <span class="text-xs font-bold text-brand-500 w-5">#${idx + 1}</span>
-                        <img src="${pSrc}" class="w-10 h-10 object-cover rounded border border-brand-border">
-                        <span class="text-[10px] text-gray-400">Panel ${idx + 1}</span>
-                    </div>
-
-                    <div class="flex items-center space-x-1">
-                        <button onclick="movePanel(${idx}, -1)" class="p-1 px-2.5 bg-brand-dark hover:bg-brand-border rounded text-xs text-gray-200 border border-brand-border" ${idx === 0 ? 'disabled style="opacity:0.3"' : ''}>↑ Up</button>
-                        <button onclick="movePanel(${idx}, 1)" class="p-1 px-2.5 bg-brand-dark hover:bg-brand-border rounded text-xs text-gray-200 border border-brand-border" ${idx === activeEpisodePanels.length - 1 ? 'disabled style="opacity:0.3"' : ''}>↓ Down</button>
-                        <button onclick="removePanel(${idx})" class="p-1 px-2.5 bg-rose-950/50 hover:bg-rose-900 text-rose-400 rounded text-xs ml-1 border border-rose-900/50">✕ Delete</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function movePanel(index, direction) {
-            const targetIndex = index + direction;
-            if (targetIndex >= 0 && targetIndex < activeEpisodePanels.length) {
-                const temp = activeEpisodePanels[index];
-                activeEpisodePanels[index] = activeEpisodePanels[targetIndex];
-                activeEpisodePanels[targetIndex] = temp;
-                renderPanelReorderList();
-            }
-        }
-
-        function removePanel(index) {
-            activeEpisodePanels.splice(index, 1);
-            renderPanelReorderList();
-        }
-
-        function clearAllPanels() {
-            activeEpisodePanels = [];
-            renderPanelReorderList();
-        }
-
-        function saveNewEpisode() {
-            const title = document.getElementById('ep-title').value.trim();
-
-            if (!title || activeEpisodePanels.length === 0 || !currentComicId) {
-                alert("Please fill in the title and ensure at least one panel is added.");
-                return;
-            }
-
-            const comic = comics.find(c => c.id === currentComicId);
-            if (comic) {
-                if (!comic.episodes) comic.episodes = [];
-                const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                comic.episodes.push({ title, date: today, panels: [...activeEpisodePanels] });
-                saveComicsStorage();
-                closeModal('modal-upload-ep');
-                openComicDetail(currentComicId);
-            }
-        }
-
-        function renderComments(comic) {
-            const list = document.getElementById('comment-list');
-            if (!comic.comments || comic.comments.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-500 py-4 text-center">No comments yet.</p>`;
-                return;
-            }
-            list.innerHTML = comic.comments.map(cm => `
-                <div class="bg-brand-dark p-2.5 rounded-xl border border-brand-border space-y-1">
-                    <div class="flex items-center space-x-2">
-                        <img src="${cm.avatar}" class="w-5 h-5 rounded-full object-cover">
-                        <span class="text-[11px] font-bold text-brand-500">${cm.user}</span>
-                    </div>
-                    <p class="text-[11px] text-gray-300">${cm.text}</p>
-                </div>
-            `).join('');
-        }
-
-        function postComment() {
-            const input = document.getElementById('comment-input');
-            if (!input.value.trim() || !currentComicId) return;
-
-            const comic = comics.find(c => c.id === currentComicId);
-            if (!comic.comments) comic.comments = [];
-            
-            comic.comments.unshift({
-                user: userProfile.name,
-                avatar: userProfile.avatar,
-                text: input.value.trim()
-            });
-
-            saveComicsStorage();
-            input.value = '';
-            renderComments(comic);
-        }
-
-        function updateBookmarkBadge() {
-            const badge = document.getElementById('bookmark-badge');
-            if (bookmarks.length > 0) {
-                badge.innerText = bookmarks.length;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-        }
-
-        function renderBookmarks() {
-            const saved = comics.filter(c => bookmarks.includes(c.id));
-            const grid = document.getElementById('bookmark-grid');
-            if (saved.length === 0) {
-                grid.innerHTML = `<p class="col-span-full text-xs text-gray-500 py-8 text-center">No bookmarked comics yet.</p>`;
-            } else {
-                renderComicGridInContainer(saved, grid);
-            }
-        }
-
-        function renderLikes() {
-            const saved = comics.filter(c => likes.includes(c.id));
-            const grid = document.getElementById('likes-grid');
-            if (saved.length === 0) {
-                grid.innerHTML = `<p class="col-span-full text-xs text-gray-500 py-8 text-center">No liked comics yet.</p>`;
-            } else {
-                renderComicGridInContainer(saved, grid);
-            }
-        }
-
-        function renderComicGridInContainer(list, container) {
-            container.innerHTML = list.map(c => `
-                <div class="bg-brand-card border border-brand-border rounded-xl overflow-hidden cursor-pointer" onclick="openComicDetail('${c.id}')">
-                    <img src="${c.cover}" class="w-full h-48 object-cover">
-                    <div class="p-3">
-                        <h3 class="font-bold text-xs text-white truncate">${c.title}</h3>
-                        <span class="text-[10px] text-brand-500">${c.genre}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderStudioWorks() {
-            document.getElementById('studio-work-count').innerText = comics.length;
-            const studioList = document.getElementById('studio-comic-list');
-            if (comics.length === 0) {
-                studioList.innerHTML = `<p class="text-xs text-gray-500 py-6 text-center">No works published yet. Click "Publish New Series" above to get started!</p>`;
-                return;
-            }
-            studioList.innerHTML = comics.map(c => `
-                <div class="py-3 flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <img src="${c.cover}" class="w-10 h-10 rounded-lg object-cover">
-                        <div>
-                            <h4 class="text-xs font-bold text-white">${c.title}</h4>
-                            <span class="text-[10px] text-gray-400">${c.episodes ? c.episodes.length : 0} Episodes Published</span>
-                        </div>
-                    </div>
-                    <button onclick="openComicDetail('${c.id}')" class="px-3 py-1 bg-brand-dark hover:bg-brand-border rounded-lg text-xs text-brand-500 border border-brand-border">View</button>
-                </div>
-            `).join('');
-        }
-
-        function openPublishModal() { document.getElementById('modal-publish').classList.remove('hidden'); }
-        function openAuthModal() { document.getElementById('modal-auth').classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-
-        function publishNewComic() {
-            const title = document.getElementById('pub-title').value.trim();
-            const genre = document.getElementById('pub-genre').value;
-            const coverUrl = document.getElementById('pub-cover').value.trim();
-            const desc = document.getElementById('pub-desc').value.trim();
-
-            const finalCover = uploadedCoverData || coverUrl || 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop&q=80';
-
-            if (!title) return;
-
-            const newComic = {
-                id: 'c' + (comics.length + 1),
-                title,
-                genre,
-                cover: finalCover,
-                desc,
-                likes: 0,
-                characters: [],
-                episodes: [],
-                comments: []
-            };
-
-            comics.unshift(newComic);
-            saveComicsStorage();
-            closeModal('modal-publish');
-            uploadedCoverData = "";
-            renderComicGrid(comics);
-            openComicDetail(newComic.id);
-        }
-
-        function saveComicsStorage() {
-            localStorage.setItem('soopmic_published_comics', JSON.stringify(comics));
-        }
-
-        function loadProfileState() {
-            document.getElementById('header-avatar').src = userProfile.avatar;
-            document.getElementById('profile-avatar-preview').src = userProfile.avatar;
-            document.getElementById('header-username').innerText = userProfile.name;
-            document.getElementById('profile-name-input').value = userProfile.name;
-            document.getElementById('profile-email-input').value = userProfile.email || '';
-        }
-
-        function saveProfile() {
-            userProfile.name = document.getElementById('profile-name-input').value.trim() || 'Author';
-            userProfile.email = document.getElementById('profile-email-input').value.trim();
-            localStorage.setItem('soopmic_profile', JSON.stringify(userProfile));
-            loadProfileState();
-            alert('Profile saved successfully!');
-        }
-
-        function updateProfileAvatar(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    userProfile.avatar = e.target.result;
-                    document.getElementById('profile-avatar-preview').src = e.target.result;
-                    document.getElementById('header-avatar').src = e.target.result;
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function filterGenre(genre) {
-            document.querySelectorAll('.genre-btn').forEach(btn => {
-                btn.classList.remove('bg-brand-500', 'text-black');
-                btn.classList.add('bg-brand-dark', 'text-gray-400');
-            });
-            if (event && event.target) {
-                event.target.classList.remove('bg-brand-dark', 'text-gray-400');
-                event.target.classList.add('bg-brand-500', 'text-black');
-            }
-
-            if (genre === 'All') {
-                renderComicGrid(comics);
-            } else {
-                renderComicGrid(comics.filter(c => c.genre === genre));
-            }
-        }
-
-        function filterComics() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            const filtered = comics.filter(c => 
-                c.title.toLowerCase().includes(query) || 
-                c.genre.toLowerCase().includes(query) ||
-                c.desc.toLowerCase().includes(query)
-            );
-            renderComicGrid(filtered);
-        }
     </script>
 </body>
 </html>
