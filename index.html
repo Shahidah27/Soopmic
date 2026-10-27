@@ -219,7 +219,7 @@
         </div>
     </div>
 
-    <!-- Floating Reader Zoom Controls (Positioned at bottom right) -->
+    <!-- Floating Reader Zoom Controls -->
     <div id="floating-zoom-controls" class="hidden fixed bottom-6 right-6 z-50 bg-brand-card/90 backdrop-blur-md border border-brand-border rounded-2xl p-2 shadow-2xl flex items-center space-x-2 transition-all duration-300">
         <button onclick="changeZoom(-10)" class="w-9 h-9 rounded-xl bg-brand-dark hover:bg-brand-500 hover:text-black text-gray-200 border border-brand-border flex items-center justify-center transition shadow-md active:scale-95" title="Zoom Out">
             <i class="fa-solid fa-minus text-xs"></i>
@@ -671,8 +671,9 @@
         ];
 
         let currentUser = null;
-        let storedComics = JSON.parse(localStorage.getItem('soopmic_published_comics') || '[]');
-        let comics = storedComics.length > 0 ? storedComics : DEFAULT_SEED_COMICS;
+        let rawStorage = localStorage.getItem('soopmic_published_comics');
+        let parsedStorage = rawStorage ? JSON.parse(rawStorage) : null;
+        let comics = (parsedStorage && parsedStorage.length > 0) ? parsedStorage : DEFAULT_SEED_COMICS;
 
         let bookmarks = JSON.parse(localStorage.getItem('soopmic_bookmarks') || '[]');
         let likes = JSON.parse(localStorage.getItem('soopmic_likes') || '[]');
@@ -757,7 +758,7 @@
 
             const scrollContainer = document.getElementById('reader-scroll-container');
             if (scrollContainer) {
-                const baseWidth = 42; // base rem size for scroll view
+                const baseWidth = 42;
                 scrollContainer.style.maxWidth = `${(baseWidth * currentZoomLevel) / 100}rem`;
             }
 
