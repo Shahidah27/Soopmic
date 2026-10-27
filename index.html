@@ -564,9 +564,9 @@
         </div>
     </div>
 
-    <!-- MODAL 3: ADD CHARACTER & LORE -->
-    <div id="modal-add-char" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-md w-full space-y-4">
+    <!-- MODAL 3: ADD CHARACTER & LORE WITH STAT SLIDERS -->
+    <div id="modal-add-char" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-md w-full space-y-4 my-8 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white font-comic">ADD CHARACTER PROFILE</h3>
                 <button onclick="closeModal('modal-add-char')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
@@ -575,17 +575,59 @@
             <div class="space-y-3">
                 <div>
                     <label class="block text-xs font-bold text-gray-300 mb-1">Character Name</label>
-                    <input type="text" id="char-name" placeholder="e.g. Kai Vance" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
+                    <input type="text" id="char-name" placeholder="e.g. Kai Vance" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-brand-accent">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-300 mb-1">Role / Lore Note</label>
-                    <input type="text" id="char-role" placeholder="e.g. Protagonist / Rogue Ninja" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Role / Tagline</label>
+                    <input type="text" id="char-role" placeholder="e.g. Antagonist / Rogue Commander" class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-brand-accent">
                 </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Character Description / Backstory</label>
+                    <textarea id="char-desc" rows="3" placeholder="Describe character lore, personality, abilities, or background..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-brand-accent resize-none"></textarea>
+                </div>
+
+                <!-- STAT GRAPH METRICS (0-100 Sliders) -->
+                <div class="bg-brand-dark/60 p-3 rounded-xl border border-brand-border space-y-3">
+                    <label class="block text-xs font-bold text-brand-accent uppercase tracking-wider">Character Stats & Attributes</label>
+                    
+                    <div>
+                        <div class="flex justify-between text-[11px] text-gray-300 font-semibold mb-1">
+                            <span>Influence</span>
+                            <span id="val-influence" class="text-brand-500 font-bold">50%</span>
+                        </div>
+                        <input type="range" id="stat-influence" min="0" max="100" value="50" oninput="document.getElementById('val-influence').innerText = this.value + '%'" class="w-full accent-brand-500 cursor-pointer">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-[11px] text-gray-300 font-semibold mb-1">
+                            <span>Attractiveness</span>
+                            <span id="val-attractiveness" class="text-brand-pink font-bold">50%</span>
+                        </div>
+                        <input type="range" id="stat-attractiveness" min="0" max="100" value="50" oninput="document.getElementById('val-attractiveness').innerText = this.value + '%'" class="w-full accent-brand-pink cursor-pointer">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-[11px] text-gray-300 font-semibold mb-1">
+                            <span>Power / Ability</span>
+                            <span id="val-power" class="text-brand-accent font-bold">50%</span>
+                        </div>
+                        <input type="range" id="stat-power" min="0" max="100" value="50" oninput="document.getElementById('val-power').innerText = this.value + '%'" class="w-full accent-brand-accent cursor-pointer">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-[11px] text-gray-300 font-semibold mb-1">
+                            <span>Intelligence</span>
+                            <span id="val-intelligence" class="text-blue-400 font-bold">50%</span>
+                        </div>
+                        <input type="range" id="stat-intelligence" min="0" max="100" value="50" oninput="document.getElementById('val-intelligence').innerText = this.value + '%'" class="w-full accent-blue-400 cursor-pointer">
+                    </div>
+                </div>
+
                 <div>
                     <label class="block text-xs font-bold text-gray-300 mb-1">Character Avatar Image</label>
                     <input type="file" id="char-img-file" accept="image/*" onchange="previewCharFile(this)" class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-accent file:text-white hover:file:bg-purple-600 cursor-pointer">
                     <p class="text-[10px] text-gray-500 my-1 text-center font-bold">OR PASTE IMAGE URL</p>
-                    <input type="text" id="char-img-url" placeholder="https://..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white">
+                    <input type="text" id="char-img-url" placeholder="https://..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-brand-accent">
                 </div>
             </div>
 
@@ -646,6 +688,73 @@
         </div>
     </div>
 
+    <!-- MODAL 5: CHARACTER DETAIL VIEW (POP-UP FOR READERS) -->
+    <div id="modal-view-char" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-6 max-w-lg w-full space-y-6 my-8 relative">
+            <button onclick="closeModal('modal-view-char')" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+
+            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                <img id="view-char-img" src="" class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl object-cover border-2 border-brand-accent shadow-xl flex-shrink-0">
+                
+                <div class="space-y-2 text-center sm:text-left">
+                    <span id="view-char-role" class="px-3 py-1 rounded-full text-[10px] font-bold bg-brand-accent/20 text-brand-accent border border-brand-accent/30 uppercase tracking-wider">Role</span>
+                    <h2 id="view-char-name" class="text-2xl font-extrabold text-white font-comic">Character Name</h2>
+                    <p id="view-char-desc" class="text-xs text-gray-300 leading-relaxed max-h-32 overflow-y-auto pr-1">Character backstory details will appear here...</p>
+                </div>
+            </div>
+
+            <!-- VISUAL STAT GRAPH / ATTRIBUTE METRICS -->
+            <div class="bg-brand-dark/80 p-4 rounded-xl border border-brand-border space-y-3">
+                <h4 class="text-xs font-bold text-brand-500 uppercase tracking-wider flex items-center space-x-1.5">
+                    <i class="fa-solid fa-chart-column"></i>
+                    <span>CHARACTER ATTRIBUTES GRAPH</span>
+                </h4>
+
+                <div class="space-y-2.5 pt-1">
+                    <div>
+                        <div class="flex justify-between text-[11px] font-semibold text-gray-300 mb-1">
+                            <span>Influence</span>
+                            <span id="graph-influence-text" class="text-brand-500">0%</span>
+                        </div>
+                        <div class="w-full bg-brand-card h-2 rounded-full overflow-hidden border border-brand-border">
+                            <div id="graph-influence-bar" class="bg-brand-500 h-full w-0 transition-all duration-500"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-[11px] font-semibold text-gray-300 mb-1">
+                            <span>Attractiveness</span>
+                            <span id="graph-attractiveness-text" class="text-brand-pink">0%</span>
+                        </div>
+                        <div class="w-full bg-brand-card h-2 rounded-full overflow-hidden border border-brand-border">
+                            <div id="graph-attractiveness-bar" class="bg-brand-pink h-full w-0 transition-all duration-500"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-[11px] font-semibold text-gray-300 mb-1">
+                            <span>Power / Ability</span>
+                            <span id="graph-power-text" class="text-brand-accent">0%</span>
+                        </div>
+                        <div class="w-full bg-brand-card h-2 rounded-full overflow-hidden border border-brand-border">
+                            <div id="graph-power-bar" class="bg-brand-accent h-full w-0 transition-all duration-500"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-[11px] font-semibold text-gray-300 mb-1">
+                            <span>Intelligence</span>
+                            <span id="graph-intelligence-text" class="text-blue-400">0%</span>
+                        </div>
+                        <div class="w-full bg-brand-card h-2 rounded-full overflow-hidden border border-brand-border">
+                            <div id="graph-intelligence-bar" class="bg-blue-400 h-full w-0 transition-all duration-500"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Application Script Logic -->
     <script>
         const DEFAULT_SEED_COMICS = [
@@ -656,7 +765,15 @@
                 cover: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop&q=80',
                 desc: 'An epic tale of rebellion and survival created by Soop.',
                 likes: 12,
-                characters: [],
+                characters: [
+                    {
+                        name: 'Kai',
+                        role: 'Antagonist',
+                        desc: 'A ruthless commander who leads the rebel suppression unit.',
+                        stats: { influence: 85, attractiveness: 70, power: 90, intelligence: 80 },
+                        img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'
+                    }
+                ],
                 episodes: [
                     {
                         title: 'testing 2',
@@ -1012,13 +1129,20 @@
 
             const charGrid = document.getElementById('detail-characters');
             if (comic.characters && comic.characters.length > 0) {
-                charGrid.innerHTML = comic.characters.map(ch => `
-                    <div class="bg-brand-dark p-2.5 rounded-xl border border-brand-border flex items-center space-x-2">
-                        <img src="${ch.img}" class="w-10 h-10 rounded-lg object-cover">
-                        <div>
-                            <h4 class="text-xs font-bold text-white">${ch.name}</h4>
-                            <span class="text-[10px] text-gray-400">${ch.role}</span>
+                charGrid.innerHTML = comic.characters.map((ch, idx) => `
+                    <div class="bg-brand-dark p-2.5 rounded-xl border border-brand-border hover:border-brand-accent/60 flex items-center justify-between group transition cursor-pointer" onclick="viewCharacterDetail('${comic.id}', ${idx})">
+                        <div class="flex items-center space-x-2 min-w-0">
+                            <img src="${ch.img}" class="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-brand-border">
+                            <div class="truncate">
+                                <h4 class="text-xs font-bold text-white group-hover:text-brand-accent transition truncate">${ch.name}</h4>
+                                <span class="text-[10px] text-gray-400 truncate block">${ch.role}</span>
+                            </div>
                         </div>
+
+                        <!-- AUTHOR REMOVE CHARACTER BUTTON -->
+                        <button onclick="deleteCharacterProfile(event, '${comic.id}', ${idx})" class="text-gray-500 hover:text-rose-400 p-1.5 transition opacity-80 group-hover:opacity-100" title="Delete Character">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
                     </div>
                 `).join('');
             } else {
@@ -1044,30 +1168,110 @@
             switchTab('detail');
         }
 
+        /* --- CHARACTER POP-UP & DETAILS VIEW --- */
+        function viewCharacterDetail(comicId, charIndex) {
+            const comic = comics.find(c => c.id === comicId);
+            if (!comic || !comic.characters || !comic.characters[charIndex]) return;
+
+            const ch = comic.characters[charIndex];
+            const stats = ch.stats || { influence: 50, attractiveness: 50, power: 50, intelligence: 50 };
+
+            document.getElementById('view-char-img').src = ch.img;
+            document.getElementById('view-char-name').innerText = ch.name;
+            document.getElementById('view-char-role').innerText = ch.role || 'Character';
+            document.getElementById('view-char-desc').innerText = ch.desc || 'No detailed backstory provided by author.';
+
+            // Render Animated Stat Bars & Values
+            document.getElementById('graph-influence-text').innerText = `${stats.influence || 0}%`;
+            document.getElementById('graph-influence-bar').style.width = `${stats.influence || 0}%`;
+
+            document.getElementById('graph-attractiveness-text').innerText = `${stats.attractiveness || 0}%`;
+            document.getElementById('graph-attractiveness-bar').style.width = `${stats.attractiveness || 0}%`;
+
+            document.getElementById('graph-power-text').innerText = `${stats.power || 0}%`;
+            document.getElementById('graph-power-bar').style.width = `${stats.power || 0}%`;
+
+            document.getElementById('graph-intelligence-text').innerText = `${stats.intelligence || 0}%`;
+            document.getElementById('graph-intelligence-bar').style.width = `${stats.intelligence || 0}%`;
+
+            document.getElementById('modal-view-char').classList.remove('hidden');
+        }
+
+        /* --- DELETE CHARACTER PROFILE --- */
+        function deleteCharacterProfile(event, comicId, charIndex) {
+            event.stopPropagation(); // Prevents opening character detail modal when clicking delete
+            
+            if (confirm("Are you sure you want to remove this character profile?")) {
+                const comic = comics.find(c => c.id === comicId);
+                if (comic && comic.characters) {
+                    comic.characters.splice(charIndex, 1);
+                    saveComicsStorage();
+                    openComicDetail(comicId);
+                }
+            }
+        }
+
         function openAddCharacterModal() {
             uploadedCharImageData = "";
             document.getElementById('char-name').value = "";
             document.getElementById('char-role').value = "";
+            document.getElementById('char-desc').value = "";
             document.getElementById('char-img-url').value = "";
+
+            // Reset Stat Sliders
+            document.getElementById('stat-influence').value = 50;
+            document.getElementById('stat-attractiveness').value = 50;
+            document.getElementById('stat-power').value = 50;
+            document.getElementById('stat-intelligence').value = 50;
+            document.getElementById('val-influence').innerText = "50%";
+            document.getElementById('val-attractiveness').innerText = "50%";
+            document.getElementById('val-power').innerText = "50%";
+            document.getElementById('val-intelligence').innerText = "50%";
+
             document.getElementById('modal-add-char').classList.remove('hidden');
         }
 
         function saveCharacterProfile() {
             const name = document.getElementById('char-name').value.trim();
             const role = document.getElementById('char-role').value.trim();
+            const desc = document.getElementById('char-desc').value.trim();
             const url = document.getElementById('char-img-url').value.trim();
 
-            if (!name || !currentComicId) return;
+            const influence = parseInt(document.getElementById('stat-influence').value);
+            const attractiveness = parseInt(document.getElementById('stat-attractiveness').value);
+            const power = parseInt(document.getElementById('stat-power').value);
+            const intelligence = parseInt(document.getElementById('stat-intelligence').value);
+
+            if (!name || !currentComicId) {
+                alert("Please enter a character name.");
+                return;
+            }
 
             const finalImg = uploadedCharImageData || url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80';
             const comic = comics.find(c => c.id === currentComicId);
 
             if (comic) {
                 if (!comic.characters) comic.characters = [];
-                comic.characters.push({ name, role, img: finalImg });
+                comic.characters.push({
+                    name,
+                    role,
+                    desc,
+                    img: finalImg,
+                    stats: { influence, attractiveness, power, intelligence }
+                });
                 saveComicsStorage();
                 closeModal('modal-add-char');
                 openComicDetail(currentComicId);
+            }
+        }
+
+        function previewCharFile(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedCharImageData = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
             }
         }
 
